@@ -10,6 +10,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -18,6 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import lombok.AllArgsConstructor;
@@ -36,7 +38,9 @@ public class AppUser implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@Column(name = "id")
+	@GeneratedValue(generator = "UUID")
+	@GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+	@Column(name = "id", updatable = false, nullable = false, columnDefinition = "uniqueidentifier")
 	private UUID id;
 
 	@Column(name = "username")
@@ -49,11 +53,8 @@ public class AppUser implements Serializable {
 	private String email;
 
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(
-			name = "app_user_role",
-			joinColumns = { @JoinColumn(name = "user_id") },
-			inverseJoinColumns = {@JoinColumn(name = "role_id") }
-	)
+	@JoinTable(name = "app_user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "role_id") })
 	private Set<AppRole> appRoles = new HashSet<>();
 
 	@Column(name = "status")
