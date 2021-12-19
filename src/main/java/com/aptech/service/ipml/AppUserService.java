@@ -1,10 +1,9 @@
 package com.aptech.service.ipml;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.aptech.dto.UserDto;
 import com.aptech.dto.UserRegister;
 import com.aptech.entity.AppUser;
@@ -12,16 +11,23 @@ import com.aptech.handle.exception.EmailExistException;
 import com.aptech.handle.exception.UsernameExistException;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.service.IAppUserService;
+import com.aptech.service.IEmailSenderService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AppUserService implements IAppUserService {
 
-	private static final Logger logger = LogManager.getLogger(AppUserService.class);
+	private static final Logger logger = LoggerFactory.getLogger(AppUserService.class);
 
 	@Autowired
 	private AppUserRepository appRepository;
+
+	@Autowired
+	private IEmailSenderService emailSenderService;
+
+//	@Autowired
+//	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Override
 	public UserDto register(UserRegister userRegister) throws EmailExistException, UsernameExistException {
@@ -39,7 +45,10 @@ public class AppUserService implements IAppUserService {
 
 			AppUser userNew = mapper.convertValue(userRegister, AppUser.class);
 
+//			userNew.setPassword(bCryptPasswordEncoder.encode(userRegister.getPassword()));
 			appRepository.save(userNew);
+
+			emailSenderService.sendVerifyEmailRegister(userNew.getEmail(), "https://www.google.com/");
 
 			UserDto userDto = mapper.convertValue(userNew, UserDto.class);
 
@@ -48,7 +57,7 @@ public class AppUserService implements IAppUserService {
 		} catch (EmailExistException | UsernameExistException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.error(e);
+			logger.error(e.getMessage());
 		}
 
 		return null;
