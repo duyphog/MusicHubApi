@@ -11,9 +11,9 @@ import com.aptech.domain.HttpResponse;
 import com.aptech.domain.HttpResponseError;
 
 @RestControllerAdvice
-public class AppExceptionHandling {
+public class AppExceptionHandler {
 
-	private final Logger logger = LogManager.getLogger(AppExceptionHandling.class);
+	private final Logger logger = LogManager.getLogger(AppExceptionHandler.class);
 
 	// Email
 	@ExceptionHandler(EmailExistException.class)
