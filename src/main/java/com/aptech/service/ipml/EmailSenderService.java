@@ -30,21 +30,26 @@ public class EmailSenderService implements IEmailSenderService {
 
 	@Value("${spring.mail.username}")
 	private String emailFromAddress;
+	
+	@Value("${app.config.baseurl.verify.email}")
+	private String baseUrlVerifyEmail;
 
+	
+	//TODO: handle delay
 	@Override
-	public void sendVerifyEmailRegister(String mailTo, String actionUrl) throws MessagingException, IOException {
+	public void sendVerifyEmailRegister(String mailTo, String token) throws MessagingException, IOException {
 		MimeMessage message = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
 				StandardCharsets.UTF_8.name());
 
 		final Context context = new Context();
-		context.setVariable("user_verify_link", actionUrl);
+		context.setVariable("user_verify_link", baseUrlVerifyEmail + token);
 
 		String html = templateEngine.process(TEMPLATE_VERIFY_EMAIL_NAME, context);
 
 		helper.setTo(mailTo);
 		helper.setText(html, true);
-		helper.setSubject(EmailSenderConstant.REGISTER_CONFIRM_MAIL_SUBJECT);
+		helper.setSubject(EmailSenderConstant.REGISTER_VETIFY_MAIL_SUBJECT);
 		helper.setFrom(emailFromAddress);
 
 		javaMailSender.send(message);

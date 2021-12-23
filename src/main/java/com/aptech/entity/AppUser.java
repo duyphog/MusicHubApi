@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -51,18 +52,24 @@ public class AppUser implements Serializable {
 
 	@Column(name = "email")
 	private String email;
+	
+	@Column(name = "enabled")
+	private boolean enabled;
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "app_user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "role_id") })
 	private Set<AppRole> appRoles = new HashSet<>();
-
+	
 	@Column(name = "status")
-	private Boolean status;
+	private boolean status;
 
 	@OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserInfo userInfo;
 
+	@OneToMany(mappedBy = "appUser")
+	private Set<VerificationToken> verificationTokens;
+	
 	@CreationTimestamp
 	@Column(name = "date_new")
 	private Date dateNew;

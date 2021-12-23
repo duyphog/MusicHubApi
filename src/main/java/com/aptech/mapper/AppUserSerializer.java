@@ -27,7 +27,6 @@ public class AppUserSerializer extends StdSerializer<UserRegister> {
 		jgen.writeStartObject();
 
 		jgen.writeStringField("username", value.getUsername());
-		jgen.writeStringField("password", value.getPassword());
 		jgen.writeStringField("email", value.getEmail());
 
 		jgen.writeEndObject();

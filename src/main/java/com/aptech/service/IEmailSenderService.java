@@ -6,7 +6,6 @@ import javax.mail.MessagingException;
 
 public interface IEmailSenderService {
 
-	void sendVerifyEmailRegister(String mailTo, String actionUrl)
-			throws MessagingException, IOException;
+	void sendVerifyEmailRegister(String mailTo, String token) throws MessagingException, IOException;
 
 }
