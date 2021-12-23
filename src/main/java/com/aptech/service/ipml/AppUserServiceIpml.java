@@ -25,9 +25,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class AppUserService implements IAppUserService {
+public class AppUserServiceIpml implements IAppUserService {
 
-	private static final Logger logger = LoggerFactory.getLogger(AppUserService.class);
+	private static final Logger logger = LoggerFactory.getLogger(AppUserServiceIpml.class);
 
 	@Autowired
 	private AppUserRepository appRepository;

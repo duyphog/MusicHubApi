@@ -18,7 +18,7 @@ import com.aptech.constant.EmailSenderConstant;
 import com.aptech.service.IEmailSenderService;
 
 @Service
-public class EmailSenderService implements IEmailSenderService {
+public class EmailSenderServiceImpl implements IEmailSenderService {
 
 	public static final String TEMPLATE_VERIFY_EMAIL_NAME = "VerifyEmail";
 
