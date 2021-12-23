@@ -1,6 +1,5 @@
 package com.aptech.controller;
 
-import java.lang.ProcessBuilder.Redirect;
 import java.net.URI;
 import java.util.UUID;
 
@@ -17,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aptech.domain.HttpResponse;
+import com.aptech.domain.HttpResponseError;
 import com.aptech.domain.HttpResponseSuccess;
 import com.aptech.dto.UserDto;
+import com.aptech.dto.UserLogin;
 import com.aptech.dto.UserRegister;
 import com.aptech.handle.exception.EmailExistException;
 import com.aptech.handle.exception.UsernameExistException;
@@ -46,5 +47,15 @@ public class UserController {
 		String url = verifyResult ? "https://www.google.com/search?q=success" : "https://www.google.com/search?q=fail";
 
 		return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(url)).build();
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<HttpResponse> login(@Valid @RequestBody UserLogin userLogin) {
+		UserDto user = appUserService.login(userLogin);
+		
+		if(user == null)
+			return ResponseEntity.ok(new HttpResponseError(HttpStatus.BAD_REQUEST, null, "Login fail"));
+		else
+			return ResponseEntity.ok(new HttpResponseSuccess<UserDto>(user));
 	}
 }

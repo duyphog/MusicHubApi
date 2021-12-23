@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.aptech.dto.UserDto;
+import com.aptech.dto.UserLogin;
 import com.aptech.dto.UserRegister;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.VerificationToken;
@@ -26,11 +27,11 @@ public class AppUserServiceIpml implements IAppUserService {
 	private final Logger logger = LoggerFactory.getLogger(AppUserServiceIpml.class);
 
 	@Autowired
-	private AppUserRepository appRepository;
+	private AppUserRepository appUserRepository;
 
 	@Autowired
 	private VerificationTokenRepository verificationTokenRepository;
-	
+
 	@Autowired
 	private IAppMailService appMailService;
 
@@ -40,11 +41,11 @@ public class AppUserServiceIpml implements IAppUserService {
 	@Override
 	public UserDto register(UserRegister userRegister) throws EmailExistException, UsernameExistException {
 		try {
-			AppUser userByEmail = appRepository.findByEmail(userRegister.getEmail());
+			AppUser userByEmail = appUserRepository.findByEmail(userRegister.getEmail());
 			if (userByEmail != null)
 				throw new EmailExistException("Email is exist: " + userRegister.getEmail());
 
-			AppUser userByUsername = appRepository.findByUsername(userRegister.getUsername());
+			AppUser userByUsername = appUserRepository.findByUsername(userRegister.getUsername());
 			if (userByUsername != null)
 				throw new UsernameExistException("Username is exist: " + userRegister.getUsername());
 
@@ -56,9 +57,9 @@ public class AppUserServiceIpml implements IAppUserService {
 			userNew.setStatus(true);
 
 //			userNew.setPassword(bCryptPasswordEncoder.encode(userRegister.getPassword()));
-			appRepository.save(userNew);
+			appUserRepository.save(userNew);
 
-			appMailService.sendMailVerify(userNew);
+			//appMailService.sendMailVerify(userNew);
 
 			UserDto userDto = mapper.convertValue(userNew, UserDto.class);
 
@@ -92,5 +93,27 @@ public class AppUserServiceIpml implements IAppUserService {
 
 			return false;
 		}
+	}
+
+	@Override
+	public UserDto login(UserLogin userLogin) {
+		try {
+			AppUser user = appUserRepository.findByUsername(userLogin.getUsername());
+			if (user != null) {
+				if (user.getPassword().equals(userLogin.getPassword())) {
+
+					ObjectMapper mapper = new ObjectMapper()
+							.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+					UserDto userDto = mapper.convertValue(user, UserDto.class);
+
+					return userDto;
+				}
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+		
+		return null;
 	}
 }
