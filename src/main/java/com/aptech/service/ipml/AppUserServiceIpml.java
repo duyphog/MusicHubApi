@@ -11,6 +11,7 @@ import com.aptech.dto.UserLogin;
 import com.aptech.dto.UserRegister;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.VerificationToken;
+import com.aptech.handle.exception.BadRequestException;
 import com.aptech.handle.exception.EmailExistException;
 import com.aptech.handle.exception.UsernameExistException;
 import com.aptech.repository.AppUserRepository;
@@ -44,7 +45,8 @@ public class AppUserServiceIpml implements IAppUserService {
 			AppUser userByEmail = appUserRepository.findByEmail(userRegister.getEmail());
 			if (userByEmail != null)
 				throw new EmailExistException("Email is exist: " + userRegister.getEmail());
-
+			// TODO: Check email confirm, return message or resend mail
+			
 			AppUser userByUsername = appUserRepository.findByUsername(userRegister.getUsername());
 			if (userByUsername != null)
 				throw new UsernameExistException("Username is exist: " + userRegister.getUsername());
@@ -99,16 +101,28 @@ public class AppUserServiceIpml implements IAppUserService {
 	public UserDto login(UserLogin userLogin) {
 		try {
 			AppUser user = appUserRepository.findByUsername(userLogin.getUsername());
-			if (user != null) {
-				if (user.getPassword().equals(userLogin.getPassword())) {
+			
+			// TODO: Return error message
+			if(user == null)
+				throw new BadRequestException("User is not exist: " + userLogin.getUsername());
+			
+			// TODO: Return error message
+			if(!user.isEnabled())
+				return null;
+			
+			// TODO: Return error message
+			if(!user.isStatus())
+				return null;
+			
+			// compare password
+			if (user.getPassword().equals(userLogin.getPassword())) {
+				
+				ObjectMapper mapper = new ObjectMapper()
+						.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-					ObjectMapper mapper = new ObjectMapper()
-							.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				UserDto userDto = mapper.convertValue(user, UserDto.class);
 
-					UserDto userDto = mapper.convertValue(user, UserDto.class);
-
-					return userDto;
-				}
+				return userDto;
 			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
