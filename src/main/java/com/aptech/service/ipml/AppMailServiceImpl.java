@@ -32,14 +32,19 @@ public class AppMailServiceImpl implements IAppMailService {
 	@Value("${app.config.baseurl.verify.email}")
 	private String baseUrlVerifyEmail;
 
-	@Autowired
 	private SpringTemplateEngine templateEngine;
 
-	@Autowired
 	private AppMailSender mailSender;
 
-	@Autowired
 	private VerificationTokenRepository verificationTokenRepository;
+
+	@Autowired
+	public AppMailServiceImpl(SpringTemplateEngine templateEngine,
+			VerificationTokenRepository verificationTokenRepository, AppMailSender mailSender) {
+		this.templateEngine = templateEngine;
+		this.verificationTokenRepository = verificationTokenRepository;
+		this.mailSender = mailSender;
+	}
 
 	@Override
 	@Async("threadPoolTaskExecutorForVerifyEmail")

@@ -55,14 +55,19 @@ public class AppUser implements Serializable {
 	
 	@Column(name = "enabled")
 	private boolean enabled;
+	
+	@Column(name = "account_non_locked")
+	private boolean accountNonLocked;
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinTable(name = "app_user_role", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "role_id") })
 	private Set<AppRole> appRoles = new HashSet<>();
 	
-	@Column(name = "status")
-	private boolean status;
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(name = "app_user_authority", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = {
+			@JoinColumn(name = "authority_id") })
+    private Set<AppAuthority> authorities;
 
 	@OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private UserInfo userInfo;

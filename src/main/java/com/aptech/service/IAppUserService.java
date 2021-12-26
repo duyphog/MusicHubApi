@@ -1,9 +1,12 @@
-package com.aptech.service;
+ package com.aptech.service;
 
 import java.util.UUID;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
 import com.aptech.dto.UserDto;
-import com.aptech.dto.UserLogin;
+import com.aptech.dto.UserInfoDto;
 import com.aptech.dto.UserRegister;
 import com.aptech.handle.exception.EmailExistException;
 import com.aptech.handle.exception.UsernameExistException;
@@ -13,5 +16,7 @@ public interface IAppUserService {
 
 	boolean verifyEmail(UUID token);
 	
-	UserDto login(UserLogin userLogin);
+	UserInfoDto getProfile(UUID userId);
+	
+	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 }
