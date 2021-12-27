@@ -1,6 +1,5 @@
 package com.aptech.service.ipml;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -14,11 +13,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aptech.constant.BeanIdConstant;
-import com.aptech.domain.AppUserDetails;
-import com.aptech.dto.UserDto;
+import com.aptech.domain.AppUserDomain;
+import com.aptech.dto.AppUserDto;
 import com.aptech.dto.UserInfoDto;
 import com.aptech.dto.UserRegister;
-import com.aptech.entity.AppAuthority;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
@@ -63,7 +61,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	}
 
 	@Override
-	public UserDto register(UserRegister userRegister) throws EmailExistException, UsernameExistException {
+	public AppUserDto register(UserRegister userRegister) throws EmailExistException, UsernameExistException {
 		try {
 			AppUser userByEmail = appUserRepository.findByEmail(userRegister.getEmail());
 			if (userByEmail != null)
@@ -79,17 +77,11 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			AppUser userNew = mapper.convertValue(userRegister, AppUser.class);
 
-			UserInfo info = new UserInfo();
-			info.setFirstName("");
-			info.setLastName("");
-
-			userNew.setUserInfo(info);
-
 			// TODO: Set roles, authorities
 			// userNew.setAppRoles(appRoles);
 			// userNew.setAuthorities(new Set<AppAuthority>());
 
-			userNew.setEnabled(false);
+			userNew.setEnabled(true);
 			userNew.setAccountNonLocked(true);
 
 			// endcode password
@@ -101,7 +93,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			// Send mail verify
 			appMailService.sendMailVerify(userNew);
 
-			UserDto userDto = mapper.convertValue(userNew, UserDto.class);
+			AppUserDto userDto = mapper.convertValue(userNew, AppUserDto.class);
 
 			return userDto;
 
@@ -149,29 +141,41 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			throw new UsernameNotFoundException("User not found by username: " + username);
 		}
 
-		AppUserDetails userPrincipal = new AppUserDetails(appUser);
+		AppUserDomain appUserDomain = new AppUserDomain(appUser);
 
-		return userPrincipal;
+		return appUserDomain;
 	}
 
 	@Override
 	public UserInfoDto getProfile(UUID userId) {
 
+		UserInfoDto userInfoDto = new UserInfoDto();
+
 		try {
-			UserInfo userInfo = userInfoRepository.findById(userId).orElse(null);
-
-			if (userInfo == null)
+			AppUser user = appUserRepository.findById(userId).orElse(null);
+			AppUser users = appUserRepository.findByUsername("phongnd");
+					
+			if(user == null)
 				return null;
+			
+			if (user.getUserInfo() != null) {
+				ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
+						false);
 
-			UserInfoDto userInfoDto = new UserInfoDto();
+				userInfoDto = mapper.convertValue(user, UserInfoDto.class);
+				
+			} else {
+				userInfoDto.setUserId(user.getId().toString());
+				userInfoDto.setEmail(user.getEmail());
+				userInfoDto.setUsername(user.getUsername());
+			}
 
 			return userInfoDto;
 
 		} catch (Exception e) {
 			logger.error(e.getMessage());
-
+			e.printStackTrace();
 			return null;
 		}
 	}
-
 }

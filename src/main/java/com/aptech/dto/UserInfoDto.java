@@ -11,10 +11,17 @@ import lombok.Setter;
 @Setter
 public class UserInfoDto {
 	
+	private String userId;
+	
+	private String username;
+	
 	private String firstName;
 
 	private String lastName;
 	
 	private String email;
 	
+	private String avatarImg;
+	
+	private String story;
 }

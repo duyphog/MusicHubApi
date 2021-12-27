@@ -10,17 +10,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.aptech.entity.AppUser;
 
-public class AppUserDetails implements UserDetails {
+public class AppUserDomain implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
 	private AppUser appUser;
 	
-	public AppUserDetails() {
+	public AppUserDomain() {
 		super();
 	}
 	
-	public AppUserDetails(AppUser appUser) {
+	public AppUserDomain(AppUser appUser) {
 		super();
 		this.appUser = appUser;
 	}

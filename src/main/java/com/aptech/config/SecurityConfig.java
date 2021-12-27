@@ -13,7 +13,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -21,7 +20,6 @@ import org.springframework.web.filter.CorsFilter;
 
 import com.aptech.constant.BeanIdConstant;
 import com.aptech.constant.SecurityConstant;
-import com.aptech.filter.AppAuthenticationFailureHandler;
 import com.aptech.filter.JwtAccessDeniedHandler;
 import com.aptech.filter.JwtAuthenticationEntryPoint;
 import com.aptech.filter.JwtAuthorizationFilter;
@@ -77,11 +75,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
 	}
-
-    @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        return new AppAuthenticationFailureHandler();
-    }
     
 	// Used by spring security if CORS is enabled.
 	@Bean

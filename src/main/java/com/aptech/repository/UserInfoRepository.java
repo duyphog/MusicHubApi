@@ -11,6 +11,6 @@ import com.aptech.entity.UserInfo;
 
 public interface UserInfoRepository extends JpaRepository<UserInfo, UUID> {
 
-	@Query("select u from UserInfo u where u.appuser_id = :appUserID")
-	UserInfo findByAppUserId(@Param("appUserID") UUID appUserID);
+//	@Query("select u from UserInfo u where u.appuser_id = :appUserID")
+//	UserInfo findByAppUserId(@Param("appUserID") UUID appUserID);
 }

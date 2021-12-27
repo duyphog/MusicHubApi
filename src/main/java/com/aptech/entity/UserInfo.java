@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -44,8 +46,14 @@ public class UserInfo implements Serializable {
 	@Column(name = "last_name")
 	private String lastName;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_id")
+	@Column(name = "avatar_img")
+	private String avatarImg;
+	
+	@Column(name = "story")
+	private String story;
+	
+	@OneToOne
+	@PrimaryKeyJoinColumn
 	private AppUser appUser;
 
 	@CreationTimestamp

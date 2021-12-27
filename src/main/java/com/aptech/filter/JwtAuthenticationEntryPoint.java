@@ -1,7 +1,7 @@
 package com.aptech.filter;
 
-import com.aptech.domain.HttpResponse;
-import com.aptech.domain.HttpResponseError;
+import com.aptech.dto.HttpResponse;
+import com.aptech.dto.HttpResponseError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

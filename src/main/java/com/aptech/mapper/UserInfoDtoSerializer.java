@@ -8,15 +8,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
-public class UserDtoSerializer extends StdSerializer<AppUser> {
+public class UserInfoDtoSerializer extends StdSerializer<AppUser> {
 
 	private static final long serialVersionUID = 1L;
 
-	public UserDtoSerializer() {
+	public UserInfoDtoSerializer() {
 		this(null);
 	}
 
-	public UserDtoSerializer(Class<AppUser> clazz) {
+	public UserInfoDtoSerializer(Class<AppUser> clazz) {
 		super(clazz);
 	}
 
@@ -26,14 +26,9 @@ public class UserDtoSerializer extends StdSerializer<AppUser> {
 
 		jgen.writeStartObject();
 
-		jgen.writeStringField("userId", value.getId().toString());
 		jgen.writeStringField("username", value.getUsername());
 		jgen.writeStringField("email", value.getEmail());
-		jgen.writeStringField("firstName", value.getUserInfo().getFirstName());
-		jgen.writeStringField("lastName", value.getUserInfo().getFirstName());
-		jgen.writeStringField("avatarImg", value.getUserInfo().getAvatarImg());
-		jgen.writeStringField("story", value.getUserInfo().getStory());
-		
+
 		jgen.writeEndObject();
 	}
 }

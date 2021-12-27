@@ -20,11 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aptech.domain.AppUserDetails;
-import com.aptech.domain.HttpResponse;
-import com.aptech.domain.HttpResponseError;
-import com.aptech.domain.HttpResponseSuccess;
-import com.aptech.dto.UserDto;
+import com.aptech.domain.AppUserDomain;
+import com.aptech.dto.HttpResponse;
+import com.aptech.dto.HttpResponseError;
+import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.AppUserDto;
 import com.aptech.dto.UserInfoDto;
 import com.aptech.dto.UserLogin;
 import com.aptech.dto.UserRegister;
@@ -58,10 +58,10 @@ public class UserController {
 	public ResponseEntity<HttpResponse> register(@Valid @RequestBody UserRegister userRegister)
 			throws EmailExistException, UsernameExistException {
 		
-		UserDto user = appUserService.register(userRegister);
+		AppUserDto user = appUserService.register(userRegister);
 		
 		return user != null 
-				? ResponseEntity.ok(new HttpResponseSuccess<UserDto>(user))
+				? ResponseEntity.ok(new HttpResponseSuccess<AppUserDto>(user))
 				: ResponseEntity.ok(new HttpResponseError(null, "Unknow error!"));
 	}
 
@@ -79,12 +79,12 @@ public class UserController {
 
 		Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userLogin.getUsername(), userLogin.getPassword()));
 		
-		AppUserDetails appUserDetails = (AppUserDetails) authentication.getPrincipal();
+		AppUserDomain appUserDetails = (AppUserDomain) authentication.getPrincipal();
 		
 		String userToken = appJwtTokenProvider.generateJwtToken(appUserDetails);
-		UserDto userDto = new UserDto(appUserDetails.getUsername(), appUserDetails.getEmail(), userToken);
+		AppUserDto userDto = new AppUserDto(appUserDetails.getUsername(), appUserDetails.getEmail(), userToken);
 		
-		return ResponseEntity.ok(new HttpResponseSuccess<UserDto>(userDto));
+		return ResponseEntity.ok(new HttpResponseSuccess<AppUserDto>(userDto));
 	}
 	
 	@GetMapping("/profiles")

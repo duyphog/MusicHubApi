@@ -12,8 +12,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-import com.aptech.domain.HttpResponse;
-import com.aptech.domain.HttpResponseError;
+import com.aptech.dto.HttpResponse;
+import com.aptech.dto.HttpResponseError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component

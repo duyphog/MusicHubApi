@@ -1,7 +1,7 @@
 package com.aptech.infrastructure;
 
 import com.aptech.constant.SecurityConstant;
-import com.aptech.domain.AppUserDetails;
+import com.aptech.domain.AppUserDomain;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -29,7 +29,7 @@ public class AppJwtTokenProvider {
 	@Value("${jwt.secret}")
 	private String secret;
 
-	public String generateJwtToken(AppUserDetails appUserDetails) {
+	public String generateJwtToken(AppUserDomain appUserDetails) {
 		
 		String[] claims = getClaimsFromUser(appUserDetails);
 
@@ -40,7 +40,7 @@ public class AppJwtTokenProvider {
 				.sign(Algorithm.HMAC512(secret.getBytes()));
 	}
 
-	private String[] getClaimsFromUser(AppUserDetails appUserDetails) {
+	private String[] getClaimsFromUser(AppUserDomain appUserDetails) {
 		List<String> authorities = new ArrayList<String>();
 		for (GrantedAuthority grantedAuthority : appUserDetails.getAuthorities()) {
 			authorities.add(grantedAuthority.getAuthority());

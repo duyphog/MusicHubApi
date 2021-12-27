@@ -69,7 +69,8 @@ public class AppUser implements Serializable {
 			@JoinColumn(name = "authority_id") })
     private Set<AppAuthority> authorities;
 
-	@OneToOne(mappedBy = "appUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "userinfo_id", referencedColumnName = "id")
 	private UserInfo userInfo;
 
 	@OneToMany(mappedBy = "appUser")
@@ -77,7 +78,7 @@ public class AppUser implements Serializable {
 	
 	@CreationTimestamp
 	@Column(name = "date_new")
-	private Date dateNew;
+	private Date dateNew;	
 
 	@Column(name = "user_new")
 	private String userNew;

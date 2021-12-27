@@ -1,4 +1,4 @@
-package com.aptech.domain;
+package com.aptech.dto;
 
 import java.util.Date;
 
