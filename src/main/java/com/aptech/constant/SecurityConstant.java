@@ -15,8 +15,7 @@ public class SecurityConstant {
 	
 	public final static Long EXPIRATION_TIME = 432000000L;
 	
-
-	public final static String[] PUBLIC_URLS = { "/user/register", "/user/login", "/user/verify/**" };
+	public final static String[] PUBLIC_URLS = { "/user/register", "/user/login", "/user/verify/**", "/swagger-ui/**", "/webjars/**", "/v3/**", "/swagger-resources/**"};
 	
 	public final static String[] PUBLIC_GET_URLS = {};
 }
