@@ -28,6 +28,7 @@ public class AppUserDomain implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		List<GrantedAuthority> grantedAuthorityList = new ArrayList<GrantedAuthority>();
+		
 		grantedAuthorityList.add(new SimpleGrantedAuthority("ROLE_USER"));
 		
 		return grantedAuthorityList;

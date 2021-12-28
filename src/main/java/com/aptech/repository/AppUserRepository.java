@@ -1,12 +1,12 @@
 package com.aptech.repository;
 
-import java.util.UUID;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import com.aptech.entity.AppUser;
 
-public interface AppUserRepository extends JpaRepository<AppUser, UUID> {
+@Repository
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 
 	AppUser findByEmail(String email);
 

@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,9 +25,10 @@ import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
-import com.aptech.dto.AppUserDto;
+import com.aptech.dto.ChangePassword;
 import com.aptech.dto.UserInfoDto;
 import com.aptech.dto.UserLogin;
+import com.aptech.dto.UserLoginRes;
 import com.aptech.dto.UserRegister;
 import com.aptech.handle.exception.EmailExistException;
 import com.aptech.handle.exception.UsernameExistException;
@@ -58,11 +60,11 @@ public class UserController {
 	public ResponseEntity<HttpResponse> register(@Valid @RequestBody UserRegister userRegister)
 			throws EmailExistException, UsernameExistException {
 		
-		AppUserDto user = appUserService.register(userRegister);
+		boolean isSuccess = appUserService.register(userRegister);
 		
-		return user != null 
-				? ResponseEntity.ok(new HttpResponseSuccess<AppUserDto>(user))
-				: ResponseEntity.ok(new HttpResponseError(null, "Unknow error!"));
+		return isSuccess
+				? ResponseEntity.ok(new HttpResponseSuccess<String>("Register success, please verify email to login!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, "Unknow error!"));
 	}
 
 	@GetMapping("/verify/{token}")
@@ -82,18 +84,38 @@ public class UserController {
 		AppUserDomain appUserDetails = (AppUserDomain) authentication.getPrincipal();
 		
 		String userToken = appJwtTokenProvider.generateJwtToken(appUserDetails);
-		AppUserDto userDto = new AppUserDto(appUserDetails.getUsername(), appUserDetails.getEmail(), userToken);
+		UserLoginRes res = new UserLoginRes(appUserDetails.getUsername(), userToken);
 		
-		return ResponseEntity.ok(new HttpResponseSuccess<AppUserDto>(userDto));
+		return ResponseEntity.ok(new HttpResponseSuccess<UserLoginRes>(res));
 	}
 	
 	@GetMapping("/profiles")
-	public ResponseEntity<HttpResponse> getProfiles(@Valid @RequestParam UUID userId) {
+	public ResponseEntity<HttpResponse> getProfiles(@Valid @RequestParam Long userId) {
 		
 		UserInfoDto userInfo = appUserService.getProfile(userId);
 		
 		return userInfo != null 
 				? ResponseEntity.ok(new HttpResponseSuccess<UserInfoDto>(userInfo))
-				: ResponseEntity.ok(new HttpResponseError(null, "Unknow error!"));
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, "Unknow error!"));
+	}
+	
+	@PutMapping("/profiles")
+	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestParam UserInfoDto userInfo) {
+		
+		boolean success = appUserService.saveProfile(userInfo);
+		
+		return success 
+				? ResponseEntity.ok(new HttpResponseSuccess<String>("Success!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, "Unknow error!"));
+	}
+	
+	@PutMapping("/password")
+	public ResponseEntity<HttpResponse> changePassword(@Valid @RequestBody ChangePassword changePassword) {
+		
+		boolean success = appUserService.changePassword(changePassword);
+		
+		return success 
+				? ResponseEntity.ok(new HttpResponseSuccess<String>("Success!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, "Change password fail!"));
 	}
 }

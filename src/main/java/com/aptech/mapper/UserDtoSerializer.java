@@ -26,13 +26,14 @@ public class UserDtoSerializer extends StdSerializer<AppUser> {
 
 		jgen.writeStartObject();
 
-		jgen.writeStringField("userId", value.getId().toString());
+		jgen.writeNumberField("userId", value.getId());
 		jgen.writeStringField("username", value.getUsername());
 		jgen.writeStringField("email", value.getEmail());
-		jgen.writeStringField("firstName", value.getUserInfo().getFirstName());
-		jgen.writeStringField("lastName", value.getUserInfo().getFirstName());
-		jgen.writeStringField("avatarImg", value.getUserInfo().getAvatarImg());
-		jgen.writeStringField("story", value.getUserInfo().getStory());
+		
+		jgen.writeStringField("firstName", value.getUserInfo() != null ? value.getUserInfo().getFirstName() : null);
+		jgen.writeStringField("lastName", value.getUserInfo() != null ? value.getUserInfo().getFirstName() : null);
+		jgen.writeStringField("avatarImg", value.getUserInfo() != null ? value.getUserInfo().getAvatarImg() : null);
+		jgen.writeStringField("story", value.getUserInfo() != null ?  value.getUserInfo().getStory() : null);
 		
 		jgen.writeEndObject();
 	}
