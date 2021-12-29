@@ -2,7 +2,7 @@ package com.aptech.constant;
 
 public enum AppError {
 	
-	Validattion(1, "Validation error"),
+	Validattion(101, "Validation error"),
 	Unknown(99, "Unknown error");
 
 	private int errorCode;
