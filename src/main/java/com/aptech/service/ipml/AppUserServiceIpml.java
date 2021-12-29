@@ -14,8 +14,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.aptech.constant.AppError;
 import com.aptech.constant.BeanIdConstant;
 import com.aptech.constant.RoleConstant;
+import com.aptech.domain.AppBaseResult;
+import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.ChangePassword;
 import com.aptech.dto.UserInfoDto;
@@ -24,8 +27,6 @@ import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
-import com.aptech.handle.exception.EmailExistException;
-import com.aptech.handle.exception.UsernameExistException;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.UserInfoRepository;
@@ -69,7 +70,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	}
 
 	@Override
-	public boolean register(UserRegister userRegister) throws EmailExistException, UsernameExistException {
+	public AppBaseResult register(UserRegister userRegister) {
 		try {
 			ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES,
 					false);
@@ -77,7 +78,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			AppUser userByEmail = appUserRepository.findByEmail(userRegister.getEmail());
 			if (userByEmail != null) {
 				logger.warn("Email is exist: " + userRegister.getEmail() + ", Cannot further process!");
-				throw new EmailExistException("Email is exist: " + userRegister.getEmail());
+				return new AppBaseResult(false, AppError.Validattion.errorCode(),
+						"Email is exist: " + userRegister.getEmail());
 			}
 
 			// TODO: Check email confirm, return message or resend mail
@@ -85,7 +87,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			AppUser userByUsername = appUserRepository.findByUsername(userRegister.getUsername());
 			if (userByUsername != null) {
 				logger.warn("Username is exist: " + userRegister.getUsername() + ", Cannot further process!");
-				throw new UsernameExistException("Username is exist: " + userRegister.getUsername());
+				return new AppBaseResult(false, AppError.Validattion.errorCode(),
+						"Username is exist: " + userRegister.getUsername());
 			}
 
 			AppUser userNew = mapper.convertValue(userRegister, AppUser.class);
@@ -110,24 +113,23 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			// Send mail verify
 			appMailService.sendMailVerify(userNew);
 
-			return true;
+			return new AppBaseResult(true, 0, "Success");
 
-		} catch (EmailExistException | UsernameExistException e) {
-			throw e;
 		} catch (Exception e) {
-			logger.error(e.getMessage());
 			e.printStackTrace();
-			return false;
+			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
 
 	@Override
-	public boolean verifyEmail(UUID token) {
+	public AppBaseResult verifyEmail(UUID token) {
 		VerificationToken vToken = verificationTokenRepository.findByToken(token);
 
 		if (vToken != null) {
-			if (vToken.getVerifyDate() != null)
-				return false;
+			if (vToken.getVerifyDate() != null) {
+				logger.warn("Token verified!");
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Token verified!");
+			}
 
 			vToken.setVerify(true);
 			vToken.setVerifyDate(AppUtil.getNow());
@@ -136,11 +138,10 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			verificationTokenRepository.save(vToken);
 
-			return true;
+			return new AppBaseResult(true, 0, "Success");
 		} else {
 			logger.warn("Token is not exist: " + token.toString());
-
-			return false;
+			return new AppBaseResult(false, AppError.Unknown.errorCode(), "Token is not exist!");
 		}
 	}
 
@@ -162,7 +163,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	}
 
 	@Override
-	public UserInfoDto getProfile(Long userId) {
+	public AppServiceResult<UserInfoDto> getProfile(Long userId) {
 
 		UserInfoDto userInfoDto = new UserInfoDto();
 		try {
@@ -170,7 +171,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			if (user == null) {
 				logger.warn("AppUser is null, Cannot further process!");
-				return null;
+				return new AppServiceResult<UserInfoDto>(false, AppError.Validattion.errorCode(), "User is not exist!",
+						null);
 			}
 
 			userInfoDto.setUserId(user.getId());
@@ -186,17 +188,17 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				userInfoDto.setStory(user.getUserInfo().getStory());
 			}
 
-			return userInfoDto;
+			return new AppServiceResult<UserInfoDto>(true, 0, "Success", userInfoDto);
 
 		} catch (Exception e) {
-			logger.error(e.getMessage());
 			e.printStackTrace();
-			return null;
+			return new AppServiceResult<UserInfoDto>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
 		}
 	}
 
 	@Override
-	public boolean saveProfile(UserInfoDto userInfo) {
+	public AppBaseResult saveProfile(UserInfoDto userInfo) {
 		try {
 			String currentUsername = AppUtil.getCurrentUsername();
 
@@ -205,7 +207,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				AppUser user = appUserRepository.findByUsername(currentUsername);
 				if (userInfo.getUserId() != user.getId()) {
 					logger.warn("Not match UserId, Cannot further process!");
-					return false;
+					return new AppBaseResult(false, AppError.Validattion.errorCode(), "User is not match id");
 				}
 
 				// TODO: Implement mapping
@@ -216,44 +218,44 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 				// Save user
 				appUserRepository.save(user);
-				return true;
+				return new AppBaseResult(true, 0, "Success");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
-		return false;
+
+		return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 	}
 
 	@Override
-	public boolean changePassword(ChangePassword changePassword) {
+	public AppBaseResult changePassword(ChangePassword changePassword) {
 		try {
 			String currentUsername = AppUtil.getCurrentUsername();
-			
-			if(currentUsername.equals(changePassword.getUsername())) {
+
+			if (currentUsername.equals(changePassword.getUsername())) {
 				logger.warn("Not match UserId, Cannot further process!");
-				return false;
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Not match UserId");
 			}
-			
-			if(changePassword.getNewPassword().equals(changePassword.getOldPassword())) {
+
+			if (changePassword.getNewPassword().equals(changePassword.getOldPassword())) {
 				logger.warn("New password euqals old password, Cannot further process!");
-				return false;
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "New password euqals old password");
 			}
-			
+
 			AppUser user = appUserRepository.findByUsername(currentUsername);
 			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
 			user.setUserEdit(currentUsername);
-			
+
 			appUserRepository.save(user);
-			
-			return true;
+
+			return new AppBaseResult(true, AppError.Validattion.errorCode(), "Success");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
-		
-		return false;
+
+		return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 	}
-	
-	
+
 }

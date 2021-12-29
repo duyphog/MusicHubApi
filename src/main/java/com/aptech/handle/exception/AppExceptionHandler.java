@@ -31,23 +31,6 @@ public class AppExceptionHandler {
     private static final String ERROR_PROCESSING_FILE = "Error occurred while processing file";
     private static final String NOT_ENOUGH_PERMISSION = "You do not have enough permission";
 	
-	// Email
-	@ExceptionHandler(EmailExistException.class)
-	public ResponseEntity<HttpResponse> emailExistException(EmailExistException exception) {
-		return createHttpResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
-	}
-
-	@ExceptionHandler(EmailNotFoundException.class)
-	public ResponseEntity<HttpResponse> emailNotFoundException(EmailNotFoundException exception) {
-		return createHttpResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
-	}
-
-	// UserName
-	@ExceptionHandler(UsernameExistException.class)
-	public ResponseEntity<HttpResponse> usernameExistException(UsernameExistException exception) {
-		return createHttpResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
-	}
-	
 	// Account
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<HttpResponse> accountDisabledException() {

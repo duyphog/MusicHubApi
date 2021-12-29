@@ -9,7 +9,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserInfoDto {
+public class UserInfoDto extends BaseDto {
 	
 	private Long userId;
 	

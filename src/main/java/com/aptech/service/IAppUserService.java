@@ -4,22 +4,23 @@ import java.util.UUID;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.aptech.domain.AppBaseResult;
+import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.ChangePassword;
 import com.aptech.dto.UserInfoDto;
 import com.aptech.dto.UserRegister;
-import com.aptech.handle.exception.EmailExistException;
-import com.aptech.handle.exception.UsernameExistException;
 
 public interface IAppUserService {
-	boolean register(UserRegister userRegister) throws EmailExistException, UsernameExistException;
+	AppBaseResult register(UserRegister userRegister);
 
-	boolean verifyEmail(UUID token);
+	AppBaseResult verifyEmail(UUID token);
 	
-	UserInfoDto getProfile(Long userId);
+	AppServiceResult<UserInfoDto> getProfile(Long userId);
 	
-	boolean saveProfile(UserInfoDto userInfo);
+	AppBaseResult saveProfile(UserInfoDto userInfo);
 	
-	boolean changePassword(ChangePassword changePassword);
+	AppBaseResult changePassword(ChangePassword changePassword);
 	
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 }
