@@ -14,27 +14,27 @@ public final class AppServiceResult<T extends BaseDto> extends AppBaseResult {
 	}
 
 	public boolean isSuccess() {
-		return this.isSuccess();
+		return super.isSuccess();
 	}
 
 	public void setSuccess(boolean success) {
-		this.setSuccess(success);
+		super.setSuccess(success);
 	}
 
 	public int getErrorCode() {
-		return this.getErrorCode();
+		return super.getErrorCode();
 	}
 
 	public void setErrorCode(int errorCode) {
-		this.setErrorCode(errorCode);
+		super.setErrorCode(errorCode);
 	}
 
 	public String getErrorMessage() {
-		return this.getErrorMessage();
+		return super.getErrorMessage();
 	}
 
 	public void setErrorMessage(String errorMessage) {
-		this.setErrorMessage(errorMessage);
+		super.setErrorMessage(errorMessage);
 	}
 
 	public T getData() {
