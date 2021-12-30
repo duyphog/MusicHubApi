@@ -11,12 +11,19 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @RestControllerAdvice
@@ -52,6 +59,28 @@ public class AppExceptionHandler {
         return createHttpResponse(HttpStatus.FORBIDDEN, NOT_ENOUGH_PERMISSION);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<HttpResponse> methodArgumentNotValidException(MethodArgumentNotValidException exception) {
+    	
+    	Map<String, String> errors = new HashMap<>();
+    	exception.getBindingResult().getAllErrors().forEach((error) -> {
+
+			String fieldName = ((FieldError) error).getField();
+			String message = error.getDefaultMessage();
+			errors.put(fieldName, message);
+		});
+		
+    	String jsonErrors;
+		try {
+			jsonErrors = new ObjectMapper().writeValueAsString(errors);
+		} catch (JsonProcessingException e) {
+			LOGGER.error(e.getMessage());
+			
+			jsonErrors = "Invalid data";
+		}
+        return createHttpResponse(HttpStatus.BAD_REQUEST, jsonErrors);
+    }
+    
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public ResponseEntity<HttpResponse> methodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
         HttpMethod supportedMethod = Objects.requireNonNull(exception.getSupportedHttpMethods()).iterator().next();
