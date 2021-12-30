@@ -23,6 +23,8 @@ public interface IAppUserService {
 	
 	AppBaseResult changePassword(ChangePassword changePassword);
 	
+	AppBaseResult resetPassword(String email);
+	
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 	
 	AppBaseResult uploadImage(MultipartFile file);

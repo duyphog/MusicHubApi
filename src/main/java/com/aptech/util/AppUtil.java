@@ -3,6 +3,7 @@ package com.aptech.util;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,20 @@ public class AppUtil {
 			currentUser = authentication.getName();
 		
 		return currentUser;
+	}
+	
+	
+	public static String RandomString(int length) {
+	    int leftLimit = 97; // letter 'a'
+	    int rightLimit = 122; // letter 'z'
+	    Random random = new Random();
+
+	    String generatedString = random.ints(leftLimit, rightLimit + 1)
+	      .limit(length)
+	      .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+	      .toString();
+	    
+	    return generatedString;
 	}
 	
 }

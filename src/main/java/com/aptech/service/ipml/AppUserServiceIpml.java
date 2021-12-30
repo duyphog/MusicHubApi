@@ -223,7 +223,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				user.getUserInfo().setFirstName(userInfo.getFirstName());
 				user.getUserInfo().setLastName(userInfo.getLastName());
 				user.getUserInfo().setStory(userInfo.getStory());
-				
+
 				user.getUserInfo().setUserEdit(currentUsername);
 
 				// Save user
@@ -253,17 +253,17 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			}
 
 			AppUser user = appUserRepository.findByUsername(currentUsername);
-			
-			if(user == null) {
+
+			if (user == null) {
 				logger.warn("User is not exist!, Cannot further process!");
 				return new AppBaseResult(false, AppError.Validattion.errorCode(), "User is not exist!");
 			}
-			
-			if (!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
+
+			if (!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())) {
 				logger.warn("Password incorrect, Cannot further process!");
 				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Password incorrect!");
 			}
-			
+
 			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
 			user.setUserEdit(currentUsername);
 
@@ -284,14 +284,14 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			if (file != null) {
 				if (!Arrays.asList(MimeTypeUtils.IMAGE_JPEG_VALUE, MimeTypeUtils.IMAGE_GIF_VALUE,
 						MimeTypeUtils.IMAGE_PNG_VALUE).contains(file.getContentType())) {
-					logger.warn(file.getOriginalFilename() + " is not an image file");
+					logger.warn(file.getOriginalFilename() + " is not an image file, Cannot further process!");
 					return new AppBaseResult(false, AppError.Validattion.errorCode(),
 							file.getOriginalFilename() + " is not an image file");
 				}
 
 				AppUser user = appUserRepository.findByUsername(AppUtil.getCurrentUsername());
 				if (user == null) {
-					logger.warn("User is not exist");
+					logger.warn("User is not exist, Cannot further process!");
 					return new AppBaseResult(false, AppError.Validattion.errorCode(), " User is not exist");
 				}
 
@@ -318,7 +318,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 				return new AppBaseResult(true, AppError.Validattion.errorCode(), imageUrl);
 			} else {
-				logger.warn("Image file is not null");
+				logger.warn("Image file is not null, Cannot further process!");
 
 				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Image file is not null");
 			}
@@ -327,6 +327,36 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
+	}
+
+	@Override
+	public AppBaseResult resetPassword(String email) {
+		try {
+			AppUser user = appUserRepository.findByEmail(email);
+
+			if (user == null) {
+				logger.warn("Email is not exist: " + email + ", Cannot further process!");
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Email is not exist: " + email);
+			}
+
+			String newPassword = AppUtil.RandomString(15);
+			String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
+			user.setPassword(encodedPassword);
+			
+			if(AppUtil.getCurrentUsername() != null) {
+				user.setUserEdit(AppUtil.getCurrentUsername());
+			}
+
+			appUserRepository.save(user);
+			appMailService.sendResetPassword(email, newPassword);
+			
+			return new AppBaseResult(true, 0, "Success!");
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
+
 	}
 
 }

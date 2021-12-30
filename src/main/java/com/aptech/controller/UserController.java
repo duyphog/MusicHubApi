@@ -157,4 +157,13 @@ public class UserController {
   
         return Files.readAllBytes(Paths.get(FileConstant.USER_FOLDER + username + "/" + fileName));
     }
+    
+    @PostMapping("/reset-password/{email}")
+	public ResponseEntity<HttpResponse> uploadImage(@PathVariable("email") String email) {
+
+		AppBaseResult result = appUserService.resetPassword(email);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Success, please check email!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
 }

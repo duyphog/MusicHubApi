@@ -26,6 +26,14 @@ public class SpringAsyncConfig implements AsyncConfigurer {
 		threadPoolTaskExecutor.setMaxPoolSize(10);
 		return threadPoolTaskExecutor;
 	}
+	
+	@Bean(name = "threadPoolTaskExecutorForResetPasswordEmail")
+	public TaskExecutor getTaskRessetExecutor() {
+		ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
+		threadPoolTaskExecutor.setCorePoolSize(2);
+		threadPoolTaskExecutor.setMaxPoolSize(10);
+		return threadPoolTaskExecutor;
+	}
 
 	@Override
 	public Executor getAsyncExecutor() {

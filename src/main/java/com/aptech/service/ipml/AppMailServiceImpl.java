@@ -25,12 +25,16 @@ public class AppMailServiceImpl implements IAppMailService {
 	private final Logger logger = LoggerFactory.getLogger(AppMailServiceImpl.class);
 
 	public static final String TEMPLATE_VERIFY_EMAIL_NAME = "VerifyEmail";
-
+	public static final String TEMPLATE_RESET_PASSWORD_EMAIL_NAME = "ResetPassword";
+	
 	@Value("${spring.mail.username}")
 	private String emailFromAddress;
 
 	@Value("${app.config.baseurl.verify.email}")
 	private String baseUrlVerifyEmail;
+	
+	@Value("${app.config.url.loginapp}")
+	private String loginLink;
 
 	private SpringTemplateEngine templateEngine;
 
@@ -78,8 +82,27 @@ public class AppMailServiceImpl implements IAppMailService {
 			return true;
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 		}
 
 		return false;
+	}
+
+	@Override
+	@Async("threadPoolTaskExecutorForResetPasswordEmail")
+	public void sendResetPassword(String email, String newPassword) {
+		try {
+			final Context context = new Context();
+			context.setVariable("login_link", loginLink);
+			context.setVariable("password", newPassword);
+			
+			String html = templateEngine.process(TEMPLATE_RESET_PASSWORD_EMAIL_NAME, context);
+
+			mailSender.sendMimeMessage(emailFromAddress, email, html, EmailSenderConstant.RESET_PASSWORD_MAIL_SUBJECT, true);
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		
 	}
 }
