@@ -223,6 +223,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				user.getUserInfo().setFirstName(userInfo.getFirstName());
 				user.getUserInfo().setLastName(userInfo.getLastName());
 				user.getUserInfo().setStory(userInfo.getStory());
+				
+				user.getUserInfo().setUserEdit(currentUsername);
 
 				// Save user
 				appUserRepository.save(user);
@@ -240,7 +242,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 		try {
 			String currentUsername = AppUtil.getCurrentUsername();
 
-			if (currentUsername.equals(changePassword.getUsername())) {
+			if (!currentUsername.equals(changePassword.getUsername())) {
 				logger.warn("Not match UserId, Cannot further process!");
 				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Not match UserId");
 			}
@@ -251,6 +253,17 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			}
 
 			AppUser user = appUserRepository.findByUsername(currentUsername);
+			
+			if(user == null) {
+				logger.warn("User is not exist!, Cannot further process!");
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "User is not exist!");
+			}
+			
+			if (!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())){
+				logger.warn("Password incorrect, Cannot further process!");
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Password incorrect!");
+			}
+			
 			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
 			user.setUserEdit(currentUsername);
 

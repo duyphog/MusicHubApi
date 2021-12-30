@@ -109,7 +109,7 @@ public class UserController {
 	}
 
 	@PutMapping("/profiles")
-	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestParam UserInfoDto userInfo) {
+	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestBody UserInfoDto userInfo) {
 
 		AppBaseResult result = appUserService.saveProfile(userInfo);
 
