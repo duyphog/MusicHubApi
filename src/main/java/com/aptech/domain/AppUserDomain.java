@@ -67,5 +67,9 @@ public class AppUserDomain implements UserDetails {
 	public String getEmail() {
 		return this.appUser.getEmail();
 	}
+	
+	public Long getUserId() {
+		return this.appUser.getId();
+	}
 
 }

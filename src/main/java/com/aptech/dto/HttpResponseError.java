@@ -2,11 +2,6 @@ package com.aptech.dto;
 
 import org.springframework.http.HttpStatus;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public class HttpResponseError extends HttpResponse {
 
 	private String reason;
@@ -24,6 +19,22 @@ public class HttpResponseError extends HttpResponse {
 		super(Boolean.FALSE, httpStatus);
 
 		this.reason = reason;
+		this.errorMessage = errorMessage;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
 }
