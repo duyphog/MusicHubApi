@@ -35,6 +35,7 @@ import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.UserInfoDtoReq;
 import com.aptech.dto.ChangePassword;
 import com.aptech.dto.UserInfoDtoRes;
 import com.aptech.dto.UserLogin;
@@ -109,7 +110,7 @@ public class UserController {
 	}
 
 	@PutMapping("/profiles")
-	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestBody UserInfoDtoRes userInfo) {
+	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestBody UserInfoDtoReq userInfo) {
 
 		AppBaseResult result = appUserService.saveProfile(userInfo);
 
