@@ -36,7 +36,7 @@ import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.ChangePassword;
-import com.aptech.dto.UserInfoDto;
+import com.aptech.dto.UserInfoDtoRes;
 import com.aptech.dto.UserLogin;
 import com.aptech.dto.UserLoginRes;
 import com.aptech.dto.UserRegister;
@@ -102,14 +102,14 @@ public class UserController {
 	@GetMapping("/profiles")
 	public ResponseEntity<HttpResponse> getProfiles(@Valid @RequestParam Long userId) {
 
-		AppServiceResult<UserInfoDto> result = appUserService.getProfile(userId);
+		AppServiceResult<UserInfoDtoRes> result = appUserService.getProfile(userId);
 
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<UserInfoDto>(result.getData()))
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<UserInfoDtoRes>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 
 	@PutMapping("/profiles")
-	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestBody UserInfoDto userInfo) {
+	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestBody UserInfoDtoRes userInfo) {
 
 		AppBaseResult result = appUserService.saveProfile(userInfo);
 

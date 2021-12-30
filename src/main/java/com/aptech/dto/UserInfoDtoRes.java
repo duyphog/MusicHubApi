@@ -1,6 +1,6 @@
 package com.aptech.dto;
 
-public class UserInfoDto extends BaseDto {
+public class UserInfoDtoRes extends BaseDto {
 	
 	private Long userId;
 	
@@ -16,11 +16,11 @@ public class UserInfoDto extends BaseDto {
 	
 	private String story;
 
-	public UserInfoDto() {
+	public UserInfoDtoRes() {
 		
 	}
 	
-	public UserInfoDto(Long userId, String username, String firstName, String lastName, String email, String avatarImg,
+	public UserInfoDtoRes(Long userId, String username, String firstName, String lastName, String email, String avatarImg,
 			String story) {
 		super();
 		this.userId = userId;

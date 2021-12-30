@@ -30,7 +30,8 @@ import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.ChangePassword;
-import com.aptech.dto.UserInfoDto;
+import com.aptech.dto.UserInfoDtoReq;
+import com.aptech.dto.UserInfoDtoRes;
 import com.aptech.dto.UserRegister;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
@@ -171,15 +172,15 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	}
 
 	@Override
-	public AppServiceResult<UserInfoDto> getProfile(Long userId) {
+	public AppServiceResult<UserInfoDtoRes> getProfile(Long userId) {
 
-		UserInfoDto userInfoDto = new UserInfoDto();
+		UserInfoDtoRes userInfoDto = new UserInfoDtoRes();
 		try {
 			AppUser user = appUserRepository.findById(userId).orElse(null);
 
 			if (user == null) {
 				logger.warn("AppUser is null, Cannot further process!");
-				return new AppServiceResult<UserInfoDto>(false, AppError.Validattion.errorCode(), "User is not exist!",
+				return new AppServiceResult<UserInfoDtoRes>(false, AppError.Validattion.errorCode(), "User is not exist!",
 						null);
 			}
 
@@ -196,17 +197,17 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				userInfoDto.setStory(user.getUserInfo().getStory());
 			}
 
-			return new AppServiceResult<UserInfoDto>(true, 0, "Success", userInfoDto);
+			return new AppServiceResult<UserInfoDtoRes>(true, 0, "Success", userInfoDto);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new AppServiceResult<UserInfoDto>(false, AppError.Unknown.errorCode(),
+			return new AppServiceResult<UserInfoDtoRes>(false, AppError.Unknown.errorCode(),
 					AppError.Unknown.errorMessage(), null);
 		}
 	}
 
 	@Override
-	public AppBaseResult saveProfile(UserInfoDto userInfo) {
+	public AppBaseResult saveProfile(UserInfoDtoReq userInfo) {
 		try {
 			String currentUsername = AppUtil.getCurrentUsername();
 
