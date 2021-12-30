@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
@@ -23,4 +24,6 @@ public interface IAppUserService {
 	AppBaseResult changePassword(ChangePassword changePassword);
 	
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
+	
+	AppBaseResult uploadImage(MultipartFile file);
 }

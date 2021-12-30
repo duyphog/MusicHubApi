@@ -1,5 +1,10 @@
 package com.aptech.service.ipml;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,9 +18,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MimeTypeUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.aptech.constant.AppError;
 import com.aptech.constant.BeanIdConstant;
+import com.aptech.constant.FileConstant;
 import com.aptech.constant.RoleConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
@@ -29,7 +38,6 @@ import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
-import com.aptech.repository.UserInfoRepository;
 import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.IAppUserService;
 import com.aptech.service.IAppMailService;
@@ -38,6 +46,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @Qualifier(BeanIdConstant.USER_DETAIL_SERVICE)
@@ -46,8 +55,6 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	private final Logger logger = LoggerFactory.getLogger(AppUserServiceIpml.class);
 
 	private AppUserRepository appUserRepository;
-
-	private UserInfoRepository userInfoRepository;
 
 	private VerificationTokenRepository verificationTokenRepository;
 
@@ -58,11 +65,10 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	@Autowired
-	public AppUserServiceIpml(AppUserRepository appUserRepository, UserInfoRepository userInfoRepository,
-			AppRoleRepository appRoleRepository, VerificationTokenRepository verificationTokenRepository,
-			IAppMailService appMailService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
+			VerificationTokenRepository verificationTokenRepository, IAppMailService appMailService,
+			BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.appUserRepository = appUserRepository;
-		this.userInfoRepository = userInfoRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
 		this.appRoleRepository = appRoleRepository;
 		this.appMailService = appMailService;
@@ -99,6 +105,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			// TODO: Set authorities
 
 			userNew.setUserInfo(new UserInfo());
+			// Random image
+			userNew.getUserInfo().setAvatarImg(FileConstant.TEMP_PROFILE_IMAGE_BASE_URL + userRegister.getUsername());
 
 			userNew.setEnabled(false);
 
@@ -222,7 +230,6 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e.getMessage());
 		}
 
 		return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
@@ -256,6 +263,57 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 		}
 
 		return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+	}
+
+	@Override
+	public AppBaseResult uploadImage(MultipartFile file) {
+		try {
+			if (file != null) {
+				if (!Arrays.asList(MimeTypeUtils.IMAGE_JPEG_VALUE, MimeTypeUtils.IMAGE_GIF_VALUE,
+						MimeTypeUtils.IMAGE_PNG_VALUE).contains(file.getContentType())) {
+					logger.warn(file.getOriginalFilename() + " is not an image file");
+					return new AppBaseResult(false, AppError.Validattion.errorCode(),
+							file.getOriginalFilename() + " is not an image file");
+				}
+
+				AppUser user = appUserRepository.findByUsername(AppUtil.getCurrentUsername());
+				if (user == null) {
+					logger.warn("User is not exist");
+					return new AppBaseResult(false, AppError.Validattion.errorCode(), " User is not exist");
+				}
+
+				Path userFolder = Paths.get(FileConstant.USER_FOLDER + AppUtil.getCurrentUsername()).toAbsolutePath()
+						.normalize();
+
+				if (!Files.exists(userFolder)) {
+					Files.createDirectories(userFolder);
+				}
+
+				Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + "." + "jpg"));
+
+				Files.copy(file.getInputStream(), userFolder.resolve(user.getUsername() + "." + "jpg"),
+						REPLACE_EXISTING);
+
+				String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(
+						FileConstant.USER_IMAGE_PATH + user.getUsername() + "/" + user.getUsername() + "." + "jpg")
+						.toUriString();
+
+				user.getUserInfo().setAvatarImg(imageUrl);
+				user.getUserInfo().setUserEdit(AppUtil.getCurrentUsername());
+
+				appUserRepository.save(user);
+
+				return new AppBaseResult(true, AppError.Validattion.errorCode(), imageUrl);
+			} else {
+				logger.warn("Image file is not null");
+
+				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Image file is not null");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+
+			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
 	}
 
 }
