@@ -8,8 +8,8 @@ public final class AppServiceResult<T extends BaseDto> extends AppBaseResult {
 	public AppServiceResult() {
 	}
 
-	public AppServiceResult(boolean success, int errorCode, String errorMessage, T data) {
-		super(success, errorCode, errorMessage);
+	public AppServiceResult(boolean success, int errorCode, String message, T data) {
+		super(success, errorCode, message);
 		this.data = data;
 	}
 
@@ -29,12 +29,12 @@ public final class AppServiceResult<T extends BaseDto> extends AppBaseResult {
 		super.setErrorCode(errorCode);
 	}
 
-	public String getErrorMessage() {
-		return super.getErrorMessage();
+	public String getMessage() {
+		return super.getMessage();
 	}
 
-	public void setErrorMessage(String errorMessage) {
-		super.setErrorMessage(errorMessage);
+	public void setMessage(String message) {
+		super.setMessage(message);
 	}
 
 	public T getData() {

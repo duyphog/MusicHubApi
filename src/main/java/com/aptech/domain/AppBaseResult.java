@@ -3,15 +3,15 @@ package com.aptech.domain;
 public class AppBaseResult {
 	private boolean success;
 	private int errorCode;
-	private String errorMessage;
+	private String message;
 
 	public AppBaseResult() {
 	}
 
-	public AppBaseResult(boolean success, int errorCode, String errorMessage) {
+	public AppBaseResult(boolean success, int errorCode, String message) {
 		this.success = success;
 		this.errorCode = errorCode;
-		this.errorMessage = errorMessage;
+		this.message = message;
 	}
 
 	public boolean isSuccess() {
@@ -30,11 +30,11 @@ public class AppBaseResult {
 		this.errorCode = errorCode;
 	}
 
-	public String getErrorMessage() {
-		return errorMessage;
+	public String getMessage() {
+		return message;
 	}
 
-	protected void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+	protected void setMessage(String message) {
+		this.message = message;
 	}
 }
