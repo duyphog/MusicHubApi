@@ -1,8 +1,6 @@
 package com.aptech.domain;
 
-import com.aptech.dto.BaseDto;
-
-public final class AppServiceResult<T extends BaseDto> extends AppBaseResult {
+public final class AppServiceResult<T> extends AppBaseResult {
 	private T data;
 
 	public AppServiceResult() {
