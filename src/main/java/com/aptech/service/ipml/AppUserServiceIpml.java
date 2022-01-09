@@ -1,7 +1,6 @@
 package com.aptech.service.ipml;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -20,7 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.aptech.constant.AppError;
 import com.aptech.constant.BeanIdConstant;
@@ -37,6 +35,7 @@ import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
+import com.aptech.provider.FileManager;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.VerificationTokenRepository;
@@ -47,7 +46,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.SneakyThrows;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 @Service
 @Qualifier(BeanIdConstant.USER_DETAIL_SERVICE)
@@ -64,16 +62,19 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	private IAppMailService appMailService;
 
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
+	
+	private FileManager fileManager;
 
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
 			VerificationTokenRepository verificationTokenRepository, IAppMailService appMailService,
-			BCryptPasswordEncoder bCryptPasswordEncoder) {
+			BCryptPasswordEncoder bCryptPasswordEncoder, FileManager fileManager) {
 		this.appUserRepository = appUserRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
 		this.appRoleRepository = appRoleRepository;
 		this.appMailService = appMailService;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+		this.fileManager = fileManager;
 	}
 
 	@Override
@@ -296,21 +297,9 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 					return new AppBaseResult(false, AppError.Validattion.errorCode(), " User is not exist");
 				}
 
-				Path userFolder = Paths.get(FileConstant.USER_FOLDER + AppUtil.getCurrentUsername()).toAbsolutePath()
-						.normalize();
-
-				if (!Files.exists(userFolder)) {
-					Files.createDirectories(userFolder);
-				}
-
-				Files.deleteIfExists(Paths.get(userFolder + user.getUsername() + "." + "jpg"));
-
-				Files.copy(file.getInputStream(), userFolder.resolve(user.getUsername() + "." + "jpg"),
-						REPLACE_EXISTING);
-
-				String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(
-						FileConstant.USER_IMAGE_PATH + user.getUsername() + "/" + user.getUsername() + "." + "jpg")
-						.toUriString();
+				Path userFolder = Paths.get(FileConstant.USER_FOLDER + AppUtil.getCurrentUsername()).toAbsolutePath().normalize();
+				
+				String imageUrl = fileManager.uploadImage(userFolder, user.getUsername(), file);
 
 				user.getUserInfo().setAvatarImg(imageUrl);
 				user.getUserInfo().setUserEdit(AppUtil.getCurrentUsername());
