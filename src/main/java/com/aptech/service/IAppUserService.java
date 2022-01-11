@@ -12,6 +12,7 @@ import com.aptech.dto.ChangePassword;
 import com.aptech.dto.UserInfoDtoReq;
 import com.aptech.dto.UserInfoDtoRes;
 import com.aptech.dto.UserRegister;
+import com.aptech.handle.exception.NotAnImageFileException;
 
 public interface IAppUserService {
 	AppBaseResult register(UserRegister userRegister);
@@ -28,5 +29,5 @@ public interface IAppUserService {
 	
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 	
-	AppBaseResult uploadImage(MultipartFile file);
+	AppBaseResult uploadImage(MultipartFile file) throws NotAnImageFileException;
 }

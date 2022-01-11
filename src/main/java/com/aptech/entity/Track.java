@@ -48,6 +48,9 @@ public class Track implements Serializable {
 
 	@Column(name = "image_url")
 	private String imageUrl;
+	
+	@Column(name = "track_url")
+	private String trackUrl;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)

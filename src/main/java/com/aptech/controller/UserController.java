@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -41,6 +39,7 @@ import com.aptech.dto.UserInfoDtoRes;
 import com.aptech.dto.UserLogin;
 import com.aptech.dto.UserLoginRes;
 import com.aptech.dto.UserRegister;
+import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.infrastructure.AppJwtTokenProvider;
 import com.aptech.service.IAppUserService;
 
@@ -128,7 +127,7 @@ public class UserController {
 	}
 
 	@PostMapping("/upload-profile-image")
-	public ResponseEntity<HttpResponse> uploadImage(@RequestParam("profileImage") MultipartFile file) {
+	public ResponseEntity<HttpResponse> uploadImage(@RequestParam("profileImage") MultipartFile file) throws NotAnImageFileException {
 
 		AppBaseResult result = appUserService.uploadImage(file);
 
@@ -151,13 +150,6 @@ public class UserController {
 		}
 		return byteArrayOutputStream.toByteArray();
 	}
-	
-    @GetMapping(path = "/image/{username}/{fileName}", produces = IMAGE_JPEG_VALUE)
-    public byte[] getProfileImage(@PathVariable("username") String username, @PathVariable("fileName") String fileName)
-            throws IOException {
-  
-        return Files.readAllBytes(Paths.get(FileConstant.USER_FOLDER + username + "/" + fileName));
-    }
     
     @PostMapping("/reset-password/{email}")
 	public ResponseEntity<HttpResponse> uploadImage(@PathVariable("email") String email) {

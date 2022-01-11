@@ -1,6 +1,7 @@
 package com.aptech.handle.exception;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,19 @@ public class AppExceptionHandler {
         LOGGER.error(exception.getMessage());
         return createHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
     }
+    
+    @ExceptionHandler(NotAnImageFileException.class)
+    public ResponseEntity<HttpResponse> notAnImageFileException(NotAnImageFileException exception) {
+        LOGGER.error(exception.getMessage());
+        return createHttpResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
+    }
+    
+    @ExceptionHandler(NoSuchFileException.class)
+    public ResponseEntity<HttpResponse> noSuchFileException(NoSuchFileException exception) {
+        LOGGER.error(exception.getMessage());
+        return createHttpResponse(HttpStatus.BAD_REQUEST, "File not found!");
+    }
+    
 	private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
 		HttpResponse httpResponse = new HttpResponseError(httpStatus, httpStatus.getReasonPhrase(), message);
 		return new ResponseEntity<>(httpResponse, httpStatus);

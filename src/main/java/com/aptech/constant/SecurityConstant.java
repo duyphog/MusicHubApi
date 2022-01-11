@@ -20,6 +20,7 @@ public class SecurityConstant {
 			"/swagger-ui/**", "/webjars/**", "/v3/**", "/swagger-resources/**"};
 	
 	public final static String[] PUBLIC_GET_URLS = {
-			"/genre"
+			"/genre",
+			"/myfile/images/**"
 	};
 }

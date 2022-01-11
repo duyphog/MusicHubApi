@@ -17,14 +17,14 @@ import com.aptech.service.IGenreService;
 
 
 @Service
-public class GenreService implements IGenreService {
+public class GenreServiceImpl implements IGenreService {
 
-	private final Logger logger = LoggerFactory.getLogger(GenreService.class);
+	private final Logger logger = LoggerFactory.getLogger(GenreServiceImpl.class);
 
 	private GenreRepository genreRepository;
 
 	@Autowired
-	public GenreService(GenreRepository genreRepository) {
+	public GenreServiceImpl(GenreRepository genreRepository) {
 		this.genreRepository = genreRepository;
 	}
 

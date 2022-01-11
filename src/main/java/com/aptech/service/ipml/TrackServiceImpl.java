@@ -21,14 +21,14 @@ import com.aptech.service.ITrackService;
 
 
 @Service
-public class TrackService implements ITrackService {
+public class TrackServiceImpl implements ITrackService {
 
-	private final Logger logger = LoggerFactory.getLogger(TrackService.class);
+	private final Logger logger = LoggerFactory.getLogger(TrackServiceImpl.class);
 
 	private TrackRepository trackRepository;
 
 	@Autowired
-	public TrackService(TrackRepository trackRepository) {
+	public TrackServiceImpl(TrackRepository trackRepository) {
 		this.trackRepository = trackRepository;
 	}
 

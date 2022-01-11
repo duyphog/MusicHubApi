@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -51,8 +52,9 @@ public class Album implements Serializable {
 	@Column(name = "image_url")
 	private String imageUrl;
 	
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "albums")
-	private Set<AppUser> appUsers = new HashSet<>();
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private AppUser appUser;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name = "artist_album", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {

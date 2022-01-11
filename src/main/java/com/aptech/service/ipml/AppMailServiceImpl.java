@@ -17,7 +17,7 @@ import com.aptech.entity.VerificationToken;
 import com.aptech.infrastructure.AppMailSender;
 import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.IAppMailService;
-import com.aptech.util.AppUtil;
+import com.aptech.util.AppUtils;
 
 @Service
 public class AppMailServiceImpl implements IAppMailService {
@@ -56,7 +56,7 @@ public class AppMailServiceImpl implements IAppMailService {
 		VerificationToken vToken = new VerificationToken();
 		vToken.setToken(UUID.randomUUID());
 		vToken.setAppUser(appUser);
-		vToken.setDateNew(AppUtil.getNow());
+		vToken.setDateNew(AppUtils.getNow());
 		vToken.setVerify(false);
 		vToken.setSend(false);
 
@@ -65,7 +65,7 @@ public class AppMailServiceImpl implements IAppMailService {
 		boolean isSuccess = sendVerifyEmailRegister(appUser.getEmail(), vToken.getToken().toString());
 
 		vToken.setSend(isSuccess);
-		vToken.setLastTime(AppUtil.getNow());
+		vToken.setLastTime(AppUtils.getNow());
 
 		verificationTokenRepository.save(vToken);
 	}

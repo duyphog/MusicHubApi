@@ -3,7 +3,6 @@ package com.aptech.service.ipml;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.constant.AppError;
@@ -35,13 +33,14 @@ import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
+import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.provider.FileManager;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.IAppUserService;
 import com.aptech.service.IAppMailService;
-import com.aptech.util.AppUtil;
+import com.aptech.util.AppUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -142,7 +141,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			}
 
 			vToken.setVerify(true);
-			vToken.setVerifyDate(AppUtil.getNow());
+			vToken.setVerifyDate(AppUtils.getNow());
 
 			vToken.getAppUser().setEnabled(true);
 
@@ -210,7 +209,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	@Override
 	public AppBaseResult saveProfile(UserInfoDtoReq userInfo) {
 		try {
-			String currentUsername = AppUtil.getCurrentUsername();
+			String currentUsername = AppUtils.getCurrentUsername();
 
 			if (currentUsername != null) {
 
@@ -242,7 +241,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	@Override
 	public AppBaseResult changePassword(ChangePassword changePassword) {
 		try {
-			String currentUsername = AppUtil.getCurrentUsername();
+			String currentUsername = AppUtils.getCurrentUsername();
 
 			if (!currentUsername.equals(changePassword.getUsername())) {
 				logger.warn("Not match UserId, Cannot further process!");
@@ -281,28 +280,22 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	}
 
 	@Override
-	public AppBaseResult uploadImage(MultipartFile file) {
+	public AppBaseResult uploadImage(MultipartFile file) throws NotAnImageFileException {
 		try {
 			if (file != null) {
-				if (!Arrays.asList(MimeTypeUtils.IMAGE_JPEG_VALUE, MimeTypeUtils.IMAGE_GIF_VALUE,
-						MimeTypeUtils.IMAGE_PNG_VALUE).contains(file.getContentType())) {
-					logger.warn(file.getOriginalFilename() + " is not an image file, Cannot further process!");
-					return new AppBaseResult(false, AppError.Validattion.errorCode(),
-							file.getOriginalFilename() + " is not an image file");
-				}
 
-				AppUser user = appUserRepository.findByUsername(AppUtil.getCurrentUsername());
+				AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 				if (user == null) {
 					logger.warn("User is not exist, Cannot further process!");
 					return new AppBaseResult(false, AppError.Validattion.errorCode(), " User is not exist");
 				}
 
-				Path userFolder = Paths.get(FileConstant.USER_FOLDER + AppUtil.getCurrentUsername()).toAbsolutePath().normalize();
+				Path userFolder = Paths.get(FileConstant.USER_IMAGE_FOLDER + AppUtils.getCurrentUsername()).toAbsolutePath().normalize();
 				
-				String imageUrl = fileManager.uploadImage(userFolder, user.getUsername(), file);
+				String imageUrl = fileManager.uploadUserImage(userFolder, user.getUsername(), file);
 
 				user.getUserInfo().setAvatarImg(imageUrl);
-				user.getUserInfo().setUserEdit(AppUtil.getCurrentUsername());
+				user.getUserInfo().setUserEdit(AppUtils.getCurrentUsername());
 
 				appUserRepository.save(user);
 
@@ -316,6 +309,10 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			e.printStackTrace();
 
 			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		} catch (NotAnImageFileException e) {
+			
+			e.printStackTrace();
+			throw e;
 		}
 	}
 
@@ -329,12 +326,12 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Email is not exist: " + email);
 			}
 
-			String newPassword = AppUtil.RandomString(15);
+			String newPassword = AppUtils.RandomString(15);
 			String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
 			user.setPassword(encodedPassword);
 			
-			if(AppUtil.getCurrentUsername() != null) {
-				user.setUserEdit(AppUtil.getCurrentUsername());
+			if(AppUtils.getCurrentUsername() != null) {
+				user.setUserEdit(AppUtils.getCurrentUsername());
 			}
 
 			appUserRepository.save(user);
