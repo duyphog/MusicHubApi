@@ -13,6 +13,7 @@ import com.aptech.constant.AppError;
 import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.AlbumDto;
+import com.aptech.dto.AlbumRes;
 import com.aptech.entity.Album;
 import com.aptech.entity.AppUser;
 import com.aptech.handle.exception.NotAnImageFileException;
@@ -40,19 +41,19 @@ public class AlbumServiceIpml implements IAlbumService {
 	}
 
 	@Override
-	public AppServiceResult<Album> getAlbum(Long id) {
+	public AppServiceResult<AlbumRes> getAlbum(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppServiceResult<List<Album>> getAlbumForUserId(Long userId) {
+	public AppServiceResult<List<AlbumRes>> getAlbumForUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppServiceResult<Album> addAlbum(AlbumDto albumDto) throws NotAnImageFileException {
+	public AppServiceResult<AlbumRes> addAlbum(AlbumDto albumDto) throws NotAnImageFileException {
 		try {
 			// TODO: Mapping
 			Album newAlbum = new Album();
@@ -78,7 +79,8 @@ public class AlbumServiceIpml implements IAlbumService {
 
 			albumRepository.save(newAlbum);
 
-			return new AppServiceResult<Album>(true, 0, "success", newAlbum);
+			AlbumRes dto = new AlbumRes(newAlbum.getId(), newAlbum.getName(), newAlbum.getDescription(), newAlbum.getReleaseDate(), newAlbum.getImageUrl());
+			return new AppServiceResult<AlbumRes>(true, 0, "success", dto);
 		} catch (NotAnImageFileException e) {
 			e.printStackTrace();
 
@@ -87,14 +89,14 @@ public class AlbumServiceIpml implements IAlbumService {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 
-			return new AppServiceResult<Album>(true, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+			return new AppServiceResult<AlbumRes>(true, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
 					null);
 		}
 
 	}
 
 	@Override
-	public AppServiceResult<Album> deleteAlbum(Long id) {
+	public AppServiceResult<AlbumRes> deleteAlbum(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

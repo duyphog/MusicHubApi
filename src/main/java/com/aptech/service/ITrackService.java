@@ -2,17 +2,20 @@
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.entity.Track;
+import com.aptech.dto.CreateTrack;
+import com.aptech.dto.TrackDto;
+import com.aptech.handle.exception.NotAnAudioFileException;
+import com.aptech.handle.exception.NotAnImageFileException;
 
 public interface ITrackService {
 	
-	AppServiceResult<Track> getTrack();
+	AppServiceResult<TrackDto> getTrack();
 	
-	AppServiceResult<Track> addTrack();
+	AppServiceResult<TrackDto> addTrack(CreateTrack track) throws NotAnImageFileException, NotAnAudioFileException;
 	
-	AppServiceResult<Track> updateTrack();
+	AppServiceResult<TrackDto> updateTrack();
 	
-	AppBaseResult removeTrack();
+	AppBaseResult removeTrack(long trackId);
 	
 	AppBaseResult likedTrack(boolean state);
 	

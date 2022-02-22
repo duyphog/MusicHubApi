@@ -4,16 +4,16 @@ import java.util.List;
 
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.AlbumDto;
-import com.aptech.entity.Album;
+import com.aptech.dto.AlbumRes;
 import com.aptech.handle.exception.NotAnImageFileException;
 
 public interface IAlbumService {
 	
-	AppServiceResult<Album> getAlbum(Long id);
+	AppServiceResult<AlbumRes> getAlbum(Long id);
 	
-	AppServiceResult<List<Album>> getAlbumForUserId(Long userId);
+	AppServiceResult<List<AlbumRes>> getAlbumForUserId(Long userId);
 	
-	AppServiceResult<Album> addAlbum(AlbumDto albumDto) throws NotAnImageFileException;
+	AppServiceResult<AlbumRes> addAlbum(AlbumDto albumDto) throws NotAnImageFileException;
 	
-	AppServiceResult<Album> deleteAlbum(Long id);
+	AppServiceResult<AlbumRes> deleteAlbum(Long id);
 }

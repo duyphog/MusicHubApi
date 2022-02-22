@@ -1,24 +1,32 @@
 package com.aptech.service.ipml;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aptech.constant.AppError;
+import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.dto.AlbumRes;
+import com.aptech.dto.CreateTrack;
 import com.aptech.dto.GenreDto;
-import com.aptech.entity.Genre;
+import com.aptech.dto.TrackDto;
+import com.aptech.entity.Album;
+import com.aptech.entity.AppUser;
 import com.aptech.entity.Track;
+import com.aptech.handle.exception.NotAnAudioFileException;
+import com.aptech.handle.exception.NotAnImageFileException;
+import com.aptech.provider.FileManager;
+import com.aptech.repository.AlbumRepository;
+import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.GenreRepository;
 import com.aptech.repository.TrackRepository;
-import com.aptech.service.IGenreService;
 import com.aptech.service.ITrackService;
-
+import com.aptech.util.AppUtils;
 
 @Service
 public class TrackServiceImpl implements ITrackService {
@@ -26,34 +34,122 @@ public class TrackServiceImpl implements ITrackService {
 	private final Logger logger = LoggerFactory.getLogger(TrackServiceImpl.class);
 
 	private TrackRepository trackRepository;
+	private AppUserRepository appUserRepository;
+	private AlbumRepository albumRepository;
+	private GenreRepository genreRepository;
+	private FileManager fileManager;
 
 	@Autowired
-	public TrackServiceImpl(TrackRepository trackRepository) {
+	public TrackServiceImpl(TrackRepository trackRepository, AppUserRepository appUserRepository,
+			FileManager fileManager, AlbumRepository albumRepository, GenreRepository genreRepository) {
 		this.trackRepository = trackRepository;
+		this.appUserRepository = appUserRepository;
+		this.fileManager = fileManager;
+		this.albumRepository = albumRepository;
+		this.genreRepository = genreRepository;
 	}
 
 	@Override
-	public AppServiceResult<Track> getTrack() {
+	public AppServiceResult<TrackDto> getTrack() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppServiceResult<Track> addTrack() {
+	public AppServiceResult<TrackDto> addTrack(CreateTrack track) throws NotAnImageFileException, NotAnAudioFileException {
+		try {
+			AppUser appUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
+
+			Track newTrack = new Track();
+			newTrack.setName(track.getName());
+			newTrack.setDescription(track.getDescription());
+			newTrack.setAppUser(appUser);
+			newTrack.setReleaseDate(AppUtils.ParseDateString(track.getReleaseDate()));			
+			
+			newTrack.setGenre(genreRepository.findById(track.getGenreId()).orElse(null));
+			
+			if (track.getComposerId() != null) {
+				AppUser composer = appUserRepository.findById(track.getComposerId()).orElse(null);
+				newTrack.setComposer(composer);
+			}
+
+			if (track.getAlbumId() != null) {
+				Album album = albumRepository.findById(track.getAlbumId()).orElse(null);
+				newTrack.setAlbum(album);
+			}
+
+			if (track.getImageFile() != null) {
+				Path imageFolder = Paths.get(FileConstant.TRACK_IMGAGE_FOLDER + AppUtils.normalizeUri(track.getName()))
+						.toAbsolutePath().normalize();
+
+				String imageUrl = fileManager.uploadSongImage(imageFolder, AppUtils.normalizeUri(track.getName()),
+						track.getImageFile());
+
+				newTrack.setImageUrl(imageUrl);
+			}
+			
+			if (track.getTrackFile() != null) {
+				Path songFolder = Paths.get(FileConstant.TRACK_FOLDER).toAbsolutePath().normalize();
+
+				String trackUrl = fileManager.uploadAudioFile(songFolder, AppUtils.getCurrentUsername(),
+						AppUtils.normalizeUri(track.getName()), track.getTrackFile());
+
+				newTrack.setTrackUrl(trackUrl);
+			}
+
+			newTrack.setUserNew(AppUtils.getCurrentUsername());
+
+			trackRepository.save(newTrack);
+
+			TrackDto dto = new TrackDto(
+					newTrack.getId(), newTrack.getName(), newTrack.getReleaseDate(), newTrack.getComposer().getUsername(), newTrack.getComposer().getId(), 
+					new GenreDto(newTrack.getGenre().getId(), newTrack.getGenre().getName(), ""),
+					newTrack.getDescription(), newTrack.getImageUrl(), newTrack.getTrackUrl(), 
+					new AlbumRes(newTrack.getAlbum().getId(), newTrack.getAlbum().getName(), newTrack.getAlbum().getDescription(), newTrack.getAlbum().getReleaseDate(), newTrack.getAlbum().getImageUrl()), 
+					newTrack.getLiked(), newTrack.getListened()
+			);
+			return new AppServiceResult<TrackDto>(true, 0, "Success", dto);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			logger.error(e.getMessage());
+
+			return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+					null);
+		}
+	}
+
+	@Override
+	public AppServiceResult<TrackDto> updateTrack() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppServiceResult<Track> updateTrack() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public AppBaseResult removeTrack(long trackId) {
+		try {
+			
+			Track track = trackRepository.getById(trackId);
+			if(track != null) {
+				trackRepository.delete(track);
+				
+				return new AppBaseResult(true, 0, null);
+			}
+			else {
+				logger.warn("Track is not exist: " + String.valueOf(trackId) + ", Cannot further process!");
+				return new AppBaseResult(false, AppError.Validattion.errorCode(),
+						"Track is not exist: " + String.valueOf(trackId));
+			}
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 
-	@Override
-	public AppBaseResult removeTrack() {
-		// TODO Auto-generated method stub
-		return null;
+			logger.error(e.getMessage());
+			
+			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
 	}
 
 	@Override

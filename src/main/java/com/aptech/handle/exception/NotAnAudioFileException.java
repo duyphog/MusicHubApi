@@ -1,10 +1,10 @@
 package com.aptech.handle.exception;
 
-public class BadRequestException extends Exception {
+public class NotAnAudioFileException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public BadRequestException(String message) {
+	public NotAnAudioFileException(String message) {
 		super(message);
 	}
 }

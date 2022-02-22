@@ -2,18 +2,21 @@ package com.aptech.dto;
 
 import java.util.Date;
 
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public class AlbumDto {
 
-	@Required
+	@NotEmpty
 	private String name;
-
-	@Required
+	
+	@Email
+	@NotEmpty
 	private String description;
 
-	@Required
+	@NotEmpty
 	private Date releaseDate;
 
 	private MultipartFile imageFile;

@@ -29,8 +29,8 @@ public class Track implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "name")
@@ -42,6 +42,10 @@ public class Track implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "composer_id", nullable = true)
 	private AppUser composer;
+	
+	@ManyToOne
+	@JoinColumn(name = "genre_id", nullable = false)
+	private Genre genre;
 
 	@Column(name = "description")
 	private String description;
@@ -64,7 +68,7 @@ public class Track implements Serializable {
 	private long liked;
 
 	@Column(name = "listened")
-	private String listened;
+	private long listened;
 
 	@CreationTimestamp
 	@Column(name = "date_new")
