@@ -2,7 +2,7 @@ package com.aptech.mapper;
 
 import java.io.IOException;
 
-import com.aptech.dto.UserRegister;
+import com.aptech.dto.user.UserRegister;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;

@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppServiceResult;
-import com.aptech.dto.AlbumDto;
-import com.aptech.dto.AlbumRes;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumRes;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.service.IAlbumService;
 import com.aptech.util.AppUtils;
@@ -44,9 +44,10 @@ public class AlbumController {
 			@RequestParam(value="description") String description,
 			@RequestParam(value="releaseDate", required = true) String releaseDate,
 			@RequestParam(value="imageFile", required = false) MultipartFile imageFile,
-			@RequestParam(value="artistId", required = false) Long artistId ) throws NotAnImageFileException {
+			@RequestParam(value="artistId", required = false) Long artistId,
+			@RequestParam(value="imageFile", required = true) MultipartFile[] trackFiles) throws NotAnImageFileException {
 		
-		AlbumDto dto = new AlbumDto(name, description, AppUtils.ParseDateString(releaseDate), imageFile, artistId);
+		AlbumDto dto = new AlbumDto(name, description, AppUtils.ParseDateString(releaseDate), imageFile, artistId, trackFiles);
 		
 		AppServiceResult<AlbumRes> result = albumservice.addAlbum(dto);
 

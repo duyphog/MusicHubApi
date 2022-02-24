@@ -12,11 +12,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.dto.CreateTrack;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
-import com.aptech.dto.TrackDto;
+import com.aptech.dto.track.CreateTrack;
+import com.aptech.dto.track.TrackDto;
 import com.aptech.handle.exception.NotAnAudioFileException;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.service.ITrackService;
@@ -51,10 +51,11 @@ public class TrackController {
 				@RequestParam(value="imageFile", required = false) MultipartFile imageFile,
 				@RequestParam(value="trackFile", required = false) MultipartFile trackFile,
 				@RequestParam(value="albumId", required = false) Long albumId,
-				@RequestParam(value="artistId", required = false) Long artistId 
+				@RequestParam(value="artistId", required = false) Long artistId,
+				@RequestParam(value="singerIds", required = false) Long[] singerIds
 			) throws NotAnImageFileException, NotAnAudioFileException {
 		
-		CreateTrack track = new CreateTrack(name, releaseDate, composerId, genreId, description, imageFile, trackFile, albumId, artistId);
+		CreateTrack track = new CreateTrack(name, releaseDate, composerId, genreId, description, imageFile, trackFile, albumId, artistId, singerIds);
 		AppServiceResult<TrackDto> result = trackService.addTrack(track);
 		
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<TrackDto>(result.getData()))

@@ -2,12 +2,19 @@ package com.aptech.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -29,8 +36,8 @@ public class Track implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "name")
@@ -42,17 +49,22 @@ public class Track implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "composer_id", nullable = true)
 	private AppUser composer;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "genre_id", nullable = false)
 	private Genre genre;
 
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "track_singer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "singer_id") })
+	private Set<Singer> singers = new HashSet<>();
+	
 	@Column(name = "description")
 	private String description;
 
 	@Column(name = "image_url")
 	private String imageUrl;
-	
+
 	@Column(name = "track_url")
 	private String trackUrl;
 
@@ -83,4 +95,8 @@ public class Track implements Serializable {
 
 	@Column(name = "user_edit")
 	private String userEdit;
+	
+	public void AddSinger(Singer singer) {
+		this.singers.add(singer);
+	}
 }

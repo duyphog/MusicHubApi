@@ -3,8 +3,8 @@
 import java.util.List;
 
 import com.aptech.domain.AppServiceResult;
-import com.aptech.dto.AlbumDto;
-import com.aptech.dto.AlbumRes;
+import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumRes;
 import com.aptech.handle.exception.NotAnImageFileException;
 
 public interface IAlbumService {

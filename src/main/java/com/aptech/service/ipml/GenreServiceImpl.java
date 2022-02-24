@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.aptech.constant.AppError;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.dto.GenreDto;
+import com.aptech.dto.genre.GenreDto;
 import com.aptech.entity.Genre;
 import com.aptech.repository.GenreRepository;
 import com.aptech.service.IGenreService;

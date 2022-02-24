@@ -8,10 +8,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.dto.ChangePassword;
-import com.aptech.dto.UserInfoDtoReq;
-import com.aptech.dto.UserInfoDtoRes;
-import com.aptech.dto.UserRegister;
+import com.aptech.dto.user.ChangePassword;
+import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.userinfo.UserInfoDtoReq;
+import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.handle.exception.NotAnImageFileException;
 
 public interface IAppUserService {
