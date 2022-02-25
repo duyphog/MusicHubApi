@@ -1,8 +1,6 @@
-package com.aptech.dto.album;
+package com.aptech.dto.appsatus;
 
-import java.util.Date;
-
-import com.aptech.entity.Album;
+import com.aptech.entity.AppStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,26 +10,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AlbumRes {
+public class AppStatusDto {
 
 	private Long id;
 
 	private String name;
-
 	private String description;
 
-	private Date releaseDate;
-
-	private String imageUrl;
-	
-	public static AlbumRes CreateFromEntity(Album src) {
-		AlbumRes dest = new AlbumRes();
+	public static AppStatusDto CreateFromEntity(AppStatus src) {
+		AppStatusDto dest = new AppStatusDto();
 
 		dest.id = src.getId();
 		dest.name = src.getName();
 		dest.description = src.getDescription();
-		dest.releaseDate = src.getReleaseDate();
-		dest.imageUrl = src.getImageUrl();
 
 		return dest;
 	}

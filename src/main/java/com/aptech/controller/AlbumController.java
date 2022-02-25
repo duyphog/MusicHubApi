@@ -12,8 +12,8 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
-import com.aptech.dto.album.AlbumRes;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.service.IAlbumService;
 import com.aptech.util.AppUtils;
@@ -21,14 +21,14 @@ import com.aptech.util.AppUtils;
 @RestController
 @RequestMapping("/album")
 public class AlbumController {
-	
+
 	private IAlbumService albumservice;
-	
+
 	@Autowired
 	public AlbumController(IAlbumService albumservice) {
 		this.albumservice = albumservice;
 	}
-	
+
 //	@GetMapping
 //	public ResponseEntity<HttpResponse> getAlbum() {
 //
@@ -37,21 +37,23 @@ public class AlbumController {
 //		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<GenreDto>>(result.getData()))
 //				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 //	}
-	
-	@PostMapping
-	public ResponseEntity<HttpResponse> addAlbum(
-			@RequestParam(value="name") String name,
-			@RequestParam(value="description") String description,
-			@RequestParam(value="releaseDate", required = true) String releaseDate,
-			@RequestParam(value="imageFile", required = false) MultipartFile imageFile,
-			@RequestParam(value="artistId", required = false) Long artistId,
-			@RequestParam(value="imageFile", required = true) MultipartFile[] trackFiles) throws NotAnImageFileException {
-		
-		AlbumDto dto = new AlbumDto(name, description, AppUtils.ParseDateString(releaseDate), imageFile, artistId, trackFiles);
-		
-		AppServiceResult<AlbumRes> result = albumservice.addAlbum(dto);
 
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<AlbumRes>(result.getData()))
+	@PostMapping
+	public ResponseEntity<HttpResponse> createAlbum(@RequestParam(value = "name") String name,
+			@RequestParam(value = "musicProduction") String musicProduction,
+			@RequestParam(value = "musicYear", required = true) int musicYear,
+			@RequestParam(value = "imgFile", required = false) MultipartFile imgFile,
+			@RequestParam(value = "categoryId", required = true) Long categoryId,
+			@RequestParam(value = "singerIds", required = true) Long[] singerIds,
+			@RequestParam(value = "genreIds", required = true) Long[] genreIds
+//			@RequestParam(value="imageFile", required = true) MultipartFile[] trackFiles
+	) throws NotAnImageFileException {
+
+		AlbumCreate newAlbum = new AlbumCreate(name, musicProduction, musicYear, imgFile, categoryId, singerIds, genreIds);
+
+		AppServiceResult<AlbumDto> result = albumservice.createAlbum(newAlbum);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<AlbumDto>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }

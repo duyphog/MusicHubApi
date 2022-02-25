@@ -36,34 +36,46 @@ public class Album implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "description")
-	private String description;
-	
-	@Column(name = "release_date")
-	private Date releaseDate;
-	
-	@Column(name = "image_url")
-	private String imageUrl;
-	
+	@Column(name = "music_production")
+	private String musicProduction;
+
+	@Column(name = "music_year")
+	private int musicYear;
+
+	@Column(name = "img_url")
+	private String imgUrl;
+
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private AppUser appUser;
+	@JoinColumn(name = "category_id", nullable = false)
+	private Category category;
+
+	@ManyToOne
+	@JoinColumn(name = "status_id", nullable = false)
+	private AppStatus appStatus;
 	
-	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-	@JoinTable(name = "artist_album", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "album_id") })
-	private Set<AppUser> artists = new HashSet<>();
-	
+	@ManyToMany(fetch = FetchType.LAZY,  cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(name = "album_singer", joinColumns = { @JoinColumn(name = "album_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "artist_id") })
+	private Set<Artist> singers = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY,  cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(name = "album_genre", joinColumns = { @JoinColumn(name = "album_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "genre_id") })
+	private Set<Genre> genres = new HashSet<>();
+
+	@Column(name = "is_active")
+	private boolean isActive;
+
 	@CreationTimestamp
 	@Column(name = "date_new")
-	private Date dateNew;	
+	private Date dateNew;
 
 	@Column(name = "user_new")
 	private String userNew;

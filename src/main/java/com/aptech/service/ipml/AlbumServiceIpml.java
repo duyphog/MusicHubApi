@@ -12,14 +12,21 @@ import org.springframework.stereotype.Service;
 import com.aptech.constant.AppError;
 import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
-import com.aptech.dto.album.AlbumRes;
 import com.aptech.entity.Album;
-import com.aptech.entity.AppUser;
+import com.aptech.entity.AppStatus;
+import com.aptech.entity.Artist;
+import com.aptech.entity.Category;
+import com.aptech.entity.Genre;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.provider.FileManager;
 import com.aptech.repository.AlbumRepository;
+import com.aptech.repository.AppStatusRepository;
 import com.aptech.repository.AppUserRepository;
+import com.aptech.repository.ArtistRepository;
+import com.aptech.repository.CategoryRepository;
+import com.aptech.repository.GenreRepository;
 import com.aptech.service.IAlbumService;
 import com.aptech.util.AppUtils;
 
@@ -30,57 +37,109 @@ public class AlbumServiceIpml implements IAlbumService {
 
 	private AlbumRepository albumRepository;
 	private AppUserRepository appUserRepository;
+	private CategoryRepository categoryRepository;
+	private ArtistRepository artistRepository;
+	private GenreRepository genreRepository;
+	private AppStatusRepository appStatusRepository;
+
 	private FileManager fileManager;
 
 	@Autowired
 	public AlbumServiceIpml(AlbumRepository albumRepository, AppUserRepository appUserRepository,
-			FileManager fileManager) {
+			CategoryRepository categoryRepository, ArtistRepository artistRepository, GenreRepository genreRepository,
+			AppStatusRepository appStatusRepository, FileManager fileManager) {
 		this.albumRepository = albumRepository;
 		this.appUserRepository = appUserRepository;
+		this.categoryRepository = categoryRepository;
+		this.artistRepository = artistRepository;
+		this.genreRepository = genreRepository;
+		this.appStatusRepository = appStatusRepository;
 		this.fileManager = fileManager;
 	}
 
 	@Override
-	public AppServiceResult<AlbumRes> getAlbum(Long id) {
+	public AppServiceResult<AlbumDto> getAlbum(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppServiceResult<List<AlbumRes>> getAlbumForUserId(Long userId) {
+	public AppServiceResult<List<AlbumDto>> getAlbumForUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AppServiceResult<AlbumRes> addAlbum(AlbumDto albumDto) throws NotAnImageFileException {
+	public AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws NotAnImageFileException {
 		try {
-			// TODO: Mapping
+			
+			Long countExistAlbumName = albumRepository.findContainsName(album.getName());
+			
+			if(countExistAlbumName > 0) {
+				logger.warn("Album name is exist: " + album.getName() + ". Can not handle farther!");
+				return new AppServiceResult<AlbumDto>(false, AppError.Validattion.errorCode(),
+						"Album name is exist " + album.getName(), null);
+			}
+			
 			Album newAlbum = new Album();
-			newAlbum.setName(albumDto.getName());
-			newAlbum.setDescription(albumDto.getDescription());
-			newAlbum.setReleaseDate(albumDto.getReleaseDate());
 
-			if (AppUtils.getCurrentUsername() != null) {
-				AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
+			newAlbum.setName(album.getName());
+			newAlbum.setMusicProduction(album.getMusicProduction());
+			newAlbum.setMusicYear(album.getMusicYear());
+			newAlbum.getAppStatus();
 
-				newAlbum.setAppUser(user);
+			Category category = categoryRepository.findById(album.getCategoryId()).orElse(null);
+			if (category == null) {
+				logger.warn("Category id is not exist: " + album.getCategoryId() + ". Can not handle farther!");
+				return new AppServiceResult<AlbumDto>(false, AppError.Validattion.errorCode(),
+						"Category id isnot exist: " + album.getCategoryId(), null);
 			}
 
-			if (albumDto.getImageFile() != null) {
-				Path userFolder = Paths
-						.get(FileConstant.ALBUM_IMGAGE_FOLDER + AppUtils.normalizeUri(newAlbum.getName()))
+			newAlbum.setCategory(category);
+			newAlbum.setActive(false);
+
+			for (Long singerId : album.getSingerIds()) {
+				Artist singer = artistRepository.findSingerById(singerId);
+				if (singer == null) {
+					logger.warn("Singer id is not exist: " + singerId + ". Can not handle farther!");
+					return new AppServiceResult<AlbumDto>(false, AppError.Validattion.errorCode(),
+							"Singer id is not exist: " + singerId, null);
+				} else
+					newAlbum.getSingers().add(singer);
+			}
+
+			for (Long genreId : album.getGenreIds()) {
+				Genre genre = genreRepository.findById(genreId).orElse(null);
+				if (genre == null) {
+					logger.warn("Genre id is not exist: " + genreId + ". Can not handle farther!");
+					return new AppServiceResult<AlbumDto>(false, AppError.Validattion.errorCode(),
+							"Genre id is not exist: " + genreId, null);
+				} else
+					newAlbum.getGenres().add(genre);
+			}
+
+			String currentUserLogin = AppUtils.getCurrentUsername();
+			newAlbum.setUserNew(currentUserLogin == null ? "system" : currentUserLogin);
+
+			if (album.getImgFile() != null) {
+	
+				Path userFolder = Paths.get(
+						FileConstant.ALBUM_IMGAGE_FOLDER + AppUtils.normalizeUri(newAlbum.getName()))
 						.toAbsolutePath().normalize();
 
 				String imageUrl = fileManager.uploadAlbumImage(userFolder, AppUtils.normalizeUri(newAlbum.getName()),
-						albumDto.getImageFile());
-				newAlbum.setImageUrl(imageUrl);
-			}
+						album.getImgFile());
 
+				newAlbum.setImgUrl(imageUrl);
+			}
+			AppStatus defaultStatus = appStatusRepository.getDefaultAppStatus();
+			newAlbum.setAppStatus(defaultStatus);
+			
 			albumRepository.save(newAlbum);
 
-			AlbumRes dto = new AlbumRes(newAlbum.getId(), newAlbum.getName(), newAlbum.getDescription(), newAlbum.getReleaseDate(), newAlbum.getImageUrl());
-			return new AppServiceResult<AlbumRes>(true, 0, "success", dto);
+			final AlbumDto dto = AlbumDto.CreateFromEntity(newAlbum);
+
+			return new AppServiceResult<AlbumDto>(true, 0, "Succeed!", dto);
 		} catch (NotAnImageFileException e) {
 			e.printStackTrace();
 
@@ -89,14 +148,14 @@ public class AlbumServiceIpml implements IAlbumService {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 
-			return new AppServiceResult<AlbumRes>(true, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+			return new AppServiceResult<AlbumDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
 					null);
 		}
 
 	}
 
 	@Override
-	public AppServiceResult<AlbumRes> deleteAlbum(Long id) {
+	public AppServiceResult<AlbumDto> deleteAlbum(Long id) {
 		// TODO Auto-generated method stub
 		return null;
 	}

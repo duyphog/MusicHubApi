@@ -26,7 +26,7 @@ import com.aptech.provider.FileManager;
 import com.aptech.repository.AlbumRepository;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.GenreRepository;
-import com.aptech.repository.SingerRepository;
+import com.aptech.repository.ArtistRepository;
 import com.aptech.repository.TrackRepository;
 import com.aptech.service.ITrackService;
 import com.aptech.util.AppUtils;
@@ -40,7 +40,7 @@ public class TrackServiceImpl implements ITrackService {
 	private AppUserRepository appUserRepository;
 	private AlbumRepository albumRepository;
 	private GenreRepository genreRepository;
-	private SingerRepository singerRepository;
+	private ArtistRepository singerRepository;
 	private ModelMapper modelMapper;
 
 	private FileManager fileManager;
@@ -48,7 +48,7 @@ public class TrackServiceImpl implements ITrackService {
 	@Autowired
 	public TrackServiceImpl(TrackRepository trackRepository, AppUserRepository appUserRepository,
 			FileManager fileManager, AlbumRepository albumRepository, GenreRepository genreRepository,
-			SingerRepository singerRepository, ModelMapper modelMapper
+			ArtistRepository singerRepository, ModelMapper modelMapper
 			) {
 		this.trackRepository = trackRepository;
 		this.appUserRepository = appUserRepository;
@@ -80,15 +80,15 @@ public class TrackServiceImpl implements ITrackService {
 			newTrack.setGenre(genreRepository.findById(track.getGenreId()).orElse(null));
 
 			for (Long singerId : track.getSingerIds()) {
-				Singer singer = singerRepository.findById(singerId).orElse(null);
-				if(singer == null) {
-					logger.warn("SingerId: "+ singerId + " is not exist!");
-
-					return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), "SingerId: "+ singerId + " is not exist!",
-							null);
-				}
-				else
-					newTrack.AddSinger(singer);
+//				Singer singer = singerRepository.findById(singerId).orElse(null);
+//				if(singer == null) {
+//					logger.warn("SingerId: "+ singerId + " is not exist!");
+//
+//					return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), "SingerId: "+ singerId + " is not exist!",
+//							null);
+//				}
+//				else
+//					newTrack.AddSinger(singer);
 			}
 
 			if (track.getComposerId() != null) {

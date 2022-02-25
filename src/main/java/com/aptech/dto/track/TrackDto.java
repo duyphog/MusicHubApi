@@ -2,8 +2,6 @@ package com.aptech.dto.track;
 
 import java.util.Date;
 
-import com.aptech.dto.album.AlbumRes;
-import com.aptech.dto.composer.ComposerDto;
 import com.aptech.dto.genre.GenreDto;
 import com.aptech.entity.Track;
 
@@ -20,8 +18,8 @@ public class TrackDto {
 	private Long id;
 	private String name;
 	private Date releaseDate;
-	private AlbumRes album;
-	private ComposerDto composer;
+//	private AbumDto album;
+//	private ComposerDto composer;
 	private GenreDto genre;
 	private String description;
 	private String imageUrl;
@@ -35,8 +33,8 @@ public class TrackDto {
 		dest.id = src.getId();
 		dest.name = src.getName();
 		dest.releaseDate = src.getReleaseDate();
-		dest.album = AlbumRes.CreateFromEntity(src.getAlbum());
-		dest.composer = ComposerDto.CreateFromEntity(src.getComposer());
+//		dest.album = AbumDto.CreateFromEntity(src.getAlbum());
+//		dest.composer = ComposerDto.CreateFromEntity(src.getComposer());
 		dest.genre = GenreDto.CreateFromEntity(src.getGenre());
 		dest.description = src.getDescription();
 		dest.imageUrl = src.getImageUrl();
