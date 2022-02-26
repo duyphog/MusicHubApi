@@ -37,6 +37,7 @@ import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserLogin;
 import com.aptech.dto.user.UserLoginRes;
 import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.handle.exception.NotAnImageFileException;
@@ -72,7 +73,7 @@ public class UserController {
 		AppBaseResult result = appUserService.register(userRegister);
 
 		return result.isSuccess()
-				? ResponseEntity.ok(new HttpResponseSuccess<String>("Register success, please verify email to login!"))
+				? ResponseEntity.ok(new HttpResponseSuccess<String>("Register succeed!, please verify email to login!"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 
@@ -127,7 +128,8 @@ public class UserController {
 	}
 
 	@PostMapping("/upload-profile-image")
-	public ResponseEntity<HttpResponse> uploadImage(@RequestParam("profileImage") MultipartFile file) throws NotAnImageFileException {
+	public ResponseEntity<HttpResponse> uploadImage(@RequestParam("profileImage") MultipartFile file)
+			throws NotAnImageFileException {
 
 		AppBaseResult result = appUserService.uploadImage(file);
 
@@ -150,13 +152,22 @@ public class UserController {
 		}
 		return byteArrayOutputStream.toByteArray();
 	}
-    
-    @PostMapping("/reset-password/{email}")
+
+	@PostMapping("/reset-password/{email}")
 	public ResponseEntity<HttpResponse> uploadImage(@PathVariable("email") String email) {
 
 		AppBaseResult result = appUserService.resetPassword(email);
 
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Success, please check email!"))
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!, please check email!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+
+	@PutMapping("/white-list")
+	public ResponseEntity<HttpResponse> updateWhiteList(@Valid @RequestBody UserWhiteList dto) {
+
+		AppBaseResult result = appUserService.updateWhiteList(dto);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }

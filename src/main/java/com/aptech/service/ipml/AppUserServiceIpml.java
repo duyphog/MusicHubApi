@@ -29,16 +29,19 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
+import com.aptech.entity.Track;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.provider.FileManager;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
+import com.aptech.repository.TrackRepository;
 import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.IAppUserService;
 import com.aptech.service.IAppMailService;
@@ -62,6 +65,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 	private IAppMailService appMailService;
 
+	private TrackRepository trackRepository;
+
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private FileManager fileManager;
@@ -69,11 +74,12 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
 			VerificationTokenRepository verificationTokenRepository, IAppMailService appMailService,
-			BCryptPasswordEncoder bCryptPasswordEncoder, FileManager fileManager) {
+			TrackRepository trackRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileManager fileManager) {
 		this.appUserRepository = appUserRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
 		this.appRoleRepository = appRoleRepository;
 		this.appMailService = appMailService;
+		this.trackRepository = trackRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 		this.fileManager = fileManager;
 	}
@@ -366,6 +372,34 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Email is not exist: " + email);
 		}
 
+	}
+
+	@Override
+	public AppBaseResult updateWhiteList(UserWhiteList dto) {
+		try {
+			AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
+
+			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
+			
+			if(track == null) {
+				logger.warn("TrackId is not exist: " + dto.getTrackId() + ", Cannot further process!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "TrackId is not exist: " + dto.getTrackId());
+			}
+
+			if(dto.getIsAdd())
+				user.getWhiteList().add(track);
+			else
+				user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
+			
+			appUserRepository.save(user);
+			
+			return AppBaseResult.GenarateIsSucceed();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
 	}
 
 }

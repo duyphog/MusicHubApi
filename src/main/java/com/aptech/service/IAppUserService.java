@@ -10,6 +10,7 @@ import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.handle.exception.NotAnImageFileException;
@@ -30,4 +31,6 @@ public interface IAppUserService {
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 	
 	AppServiceResult<String> uploadImage(MultipartFile file) throws NotAnImageFileException;
+	
+	AppBaseResult updateWhiteList(UserWhiteList dto);
 }
