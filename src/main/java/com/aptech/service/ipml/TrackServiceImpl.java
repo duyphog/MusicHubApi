@@ -2,6 +2,9 @@ package com.aptech.service.ipml;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import com.aptech.constant.AppError;
 import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.entity.Album;
@@ -189,7 +193,7 @@ public class TrackServiceImpl implements ITrackService {
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
-	
+
 	@Override
 	public AppBaseResult deactiveTrack(Long trackId) {
 		try {
@@ -227,7 +231,28 @@ public class TrackServiceImpl implements ITrackService {
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
+	
+	@Override
+	public AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId) {
+		try {
+			List<Track> tracks = trackRepository.findAllByAppStatusId(statusId);
+			
+			List<TrackDto> result = new ArrayList<TrackDto>();
 
+			tracks.forEach(item -> {
+				result.add(TrackDto.CreateFromEntity(item));
+			});
+
+			return new AppServiceResult<List<TrackDto>>(true, 0, "Success", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<List<TrackDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+	
 	@Override
 	public AppBaseResult listenedTrack(Long trackId) {
 		try {
@@ -242,6 +267,39 @@ public class TrackServiceImpl implements ITrackService {
 			e.printStackTrace();
 
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
+	}
+
+	
+	@Override
+	public AppServiceResult<TrackDto> updateAppStatus(Long trackId, Long statusId) {
+		try {
+			Track track = trackRepository.findById(trackId).orElse(null);
+			if (track == null) {
+				logger.warn("Track id is not exist: " + trackId + ". Can not handle farther!");
+				return new AppServiceResult<TrackDto>(false, AppError.Validattion.errorCode(),
+						"Track id is not exist: " + trackId, null);
+			}
+
+			AppStatus appStatus = appStatusRepository.findById(statusId).orElse(null);
+			if (appStatus == null) {
+				logger.warn("AppStatus id is not exist: " + statusId + ". Can not handle farther!");
+				return new AppServiceResult<TrackDto>(false, AppError.Validattion.errorCode(),
+						"AppStatus id is not exist: " + statusId, null);
+			}
+
+			track.setAppStatus(appStatus);
+			track.setActive(appStatus.isSetActive());
+
+			trackRepository.save(track);
+
+			return new AppServiceResult<TrackDto>(true, 0, "Succeed!", TrackDto.CreateFromEntity(track));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+					null);
 		}
 	}
 

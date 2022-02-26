@@ -1,7 +1,10 @@
 package com.aptech.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +18,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.handle.exception.NotAnAudioFileException;
@@ -104,6 +108,15 @@ public class TrackController {
 		AppBaseResult result = trackService.likedTrack(trackId, false);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(params = "statusid")
+	public ResponseEntity<HttpResponse> getTrackByStatus(@RequestParam(value = "statusid") Long statusId) {
+
+		AppServiceResult<List<TrackDto>> result = trackService.getTrackByAppStatus(statusId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<TrackDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }

@@ -1,5 +1,7 @@
 package com.aptech.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,4 +14,6 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 	
 	@Query("SELECT count(a) FROM Album a WHERE name = :albumName")
 	public Long findContainsName(@Param("albumName") String albumName);
+	
+	public List<Album> findAllByAppStatusId(Long appStatusId);
 }

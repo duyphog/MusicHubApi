@@ -6,6 +6,7 @@ import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.handle.exception.NotAnImageFileException;
 
 public interface IAlbumService {
@@ -20,5 +21,7 @@ public interface IAlbumService {
 	
 	AppBaseResult deleteAlbum(Long id);
 	
-	AppServiceResult<AlbumDto> updateAppStatus(Long appStatusId);
+	AppServiceResult<List<AlbumDto>> getAlbumByAppStatus(Long statusId);
+	
+	AppServiceResult<AlbumWithoutTrackDto> updateAppStatus(Long albumId, Long appStatusId);
 }

@@ -16,6 +16,7 @@ import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.entity.Album;
 import com.aptech.entity.AppStatus;
 import com.aptech.entity.AppUser;
@@ -226,11 +227,59 @@ public class AlbumServiceIpml implements IAlbumService {
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
-
+	
 	@Override
-	public AppServiceResult<AlbumDto> updateAppStatus(Long appStatusId) {
-		// TODO Auto-generated method stub
-		return null;
+	public AppServiceResult<List<AlbumDto>> getAlbumByAppStatus(Long appStatusId) {
+		try {
+			List<Album> albums = albumRepository.findAllByAppStatusId(appStatusId);
+			
+			List<AlbumDto> result = new ArrayList<AlbumDto>();
+
+			albums.forEach(item -> {
+				result.add(AlbumDto.CreateFromEntity(item));
+			});
+
+			return new AppServiceResult<List<AlbumDto>>(true, 0, "Success", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<List<AlbumDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+	
+	@Override
+	public AppServiceResult<AlbumWithoutTrackDto> updateAppStatus(Long albumId, Long appStatusId) {
+		try {
+			Album album = albumRepository.findById(albumId).orElse(null);
+			if (album == null) {
+				logger.warn("Album id is not exist: " + albumId + ". Can not handle farther!");
+				return new AppServiceResult<AlbumWithoutTrackDto>(false, AppError.Validattion.errorCode(),
+						"Album id is not exist: " + albumId, null);
+			}
+
+			AppStatus appStatus = appStatusRepository.findById(appStatusId).orElse(null);
+			if (appStatus == null) {
+				logger.warn("AppStatus id is not exist: " + appStatusId + ". Can not handle farther!");
+				return new AppServiceResult<AlbumWithoutTrackDto>(false, AppError.Validattion.errorCode(),
+						"AppStatus id is not exist: " + appStatusId, null);
+			}
+
+			album.setAppStatus(appStatus);
+			album.setActive(appStatus.isSetActive());
+			
+			albumRepository.save(album);
+
+			return new AppServiceResult<AlbumWithoutTrackDto>(true, 0, "Succeed!",
+					AlbumWithoutTrackDto.CreateFromEntity(album));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<AlbumWithoutTrackDto>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
 	}
 
 }

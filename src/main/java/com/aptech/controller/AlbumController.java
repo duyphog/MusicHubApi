@@ -2,6 +2,8 @@ package com.aptech.controller;
 
 import java.util.List;
 
+import javax.websocket.server.PathParam;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,8 +44,17 @@ public class AlbumController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AlbumDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
-	@RequestMapping(path = "/{id}", method=RequestMethod.GET)
+
+	@GetMapping(params = "statusid")
+	public ResponseEntity<HttpResponse> getAlbumByStatus(@RequestParam(value = "statusid") Long statusId) {
+
+		AppServiceResult<List<AlbumDto>> result = albumservice.getAlbumByAppStatus(statusId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AlbumDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> getAlbum(@PathVariable("id") Long id) {
 
 		AppServiceResult<AlbumDto> result = albumservice.getAlbum(id);
@@ -51,7 +62,7 @@ public class AlbumController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<AlbumDto>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<HttpResponse> createAlbum(@RequestParam(value = "name") String name,
 			@RequestParam(value = "musicProduction") String musicProduction,
@@ -63,21 +74,21 @@ public class AlbumController {
 //			@RequestParam(value="imageFile", required = true) MultipartFile[] trackFiles
 	) throws NotAnImageFileException {
 
-		AlbumCreate newAlbum = new AlbumCreate(name, musicProduction, musicYear, imgFile, categoryId, singerIds, genreIds);
+		AlbumCreate newAlbum = new AlbumCreate(name, musicProduction, musicYear, imgFile, categoryId, singerIds,
+				genreIds);
 
 		AppServiceResult<AlbumDto> result = albumservice.createAlbum(newAlbum);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<AlbumDto>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
-	@RequestMapping(path = "/{id}", method=RequestMethod.DELETE)
+
+	@RequestMapping(path = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<HttpResponse> deleteAlbum(@PathVariable("id") Long id) {
 
 		AppBaseResult result = albumservice.deleteAlbum(id);
 
-		return result.isSuccess()
-				? ResponseEntity.ok(new HttpResponseSuccess<String>("Deleted!"))
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Deleted!"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }

@@ -35,4 +35,7 @@ public class AppStatus implements Serializable {
 	
 	@Column(name = "is_default")
 	private boolean isDefault;
+	
+	@Column(name = "set_active")
+	private boolean setActive;
 }

@@ -1,5 +1,7 @@
  package com.aptech.service;
 
+import java.util.List;
+
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.track.TrackCreate;
@@ -21,4 +23,8 @@ public interface ITrackService {
 	AppBaseResult likedTrack(Long trackId, boolean state);
 	
 	AppBaseResult listenedTrack(Long trackId);
+	
+	AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId);
+	
+	AppServiceResult<TrackDto> updateAppStatus(Long trackId, Long statusId);
 }

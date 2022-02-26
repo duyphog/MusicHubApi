@@ -78,6 +78,11 @@ public class AppUser implements Serializable {
 	@OneToMany(mappedBy = "appUser")
 	private Set<VerificationToken> verificationTokens;
 	
+	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@JoinTable(name = "user_track", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = {
+			@JoinColumn(name = "track_id") })
+	private Set<Track> whiteList;
+	
 	@CreationTimestamp
 	@Column(name = "date_new")
 	private Date dateNew;	
