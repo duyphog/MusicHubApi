@@ -63,7 +63,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	private IAppMailService appMailService;
 
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	private FileManager fileManager;
 
 	@Autowired
@@ -87,7 +87,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			AppUser userByEmail = appUserRepository.findByEmail(userRegister.getEmail());
 			if (userByEmail != null) {
 				logger.warn("Email is exist: " + userRegister.getEmail() + ", Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(),
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
 						"Email is exist: " + userRegister.getEmail());
 			}
 
@@ -96,7 +97,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			AppUser userByUsername = appUserRepository.findByUsername(userRegister.getUsername());
 			if (userByUsername != null) {
 				logger.warn("Username is exist: " + userRegister.getUsername() + ", Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(),
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
 						"Username is exist: " + userRegister.getUsername());
 			}
 
@@ -124,11 +126,12 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			// Send mail verify
 			appMailService.sendMailVerify(userNew);
 
-			return new AppBaseResult(true, 0, "Success");
+			return AppBaseResult.GenarateIsSucceed();
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
 
@@ -139,7 +142,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 		if (vToken != null) {
 			if (vToken.getVerifyDate() != null) {
 				logger.warn("Token verified!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Token verified!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Token verified!");
 			}
 
 			vToken.setVerify(true);
@@ -149,10 +153,10 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			verificationTokenRepository.save(vToken);
 
-			return new AppBaseResult(true, 0, "Success");
+			return AppBaseResult.GenarateIsSucceed();
 		} else {
 			logger.warn("Token is not exist: " + token.toString());
-			return new AppBaseResult(false, AppError.Unknown.errorCode(), "Token is not exist!");
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), "Token is not exist!");
 		}
 	}
 
@@ -182,8 +186,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			if (user == null) {
 				logger.warn("AppUser is null, Cannot further process!");
-				return new AppServiceResult<UserInfoDtoRes>(false, AppError.Validattion.errorCode(), "User is not exist!",
-						null);
+				return new AppServiceResult<UserInfoDtoRes>(false, AppError.Validattion.errorCode(),
+						"User is not exist!", null);
 			}
 
 			userInfoDto.setUserId(user.getId());
@@ -218,7 +222,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				AppUser user = appUserRepository.findByUsername(currentUsername);
 				if (userInfo.getUserId() != user.getId()) {
 					logger.warn("Not match UserId, Cannot further process!");
-					return new AppBaseResult(false, AppError.Validattion.errorCode(), "User is not match id");
+
+					return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "User is not match id");
 				}
 
 				// TODO: Implement mapping
@@ -231,13 +236,16 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 				// Save user
 				appUserRepository.save(user);
-				return new AppBaseResult(true, 0, "Success");
+
+				return AppBaseResult.GenarateIsSucceed();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 
-		return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 	}
 
 	@Override
@@ -247,24 +255,29 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			if (!currentUsername.equals(changePassword.getUsername())) {
 				logger.warn("Not match UserId, Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Not match UserId");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Not match UserId");
 			}
 
 			if (changePassword.getNewPassword().equals(changePassword.getOldPassword())) {
 				logger.warn("New password euqals old password, Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "New password euqals old password");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"New password euqals old password");
 			}
 
 			AppUser user = appUserRepository.findByUsername(currentUsername);
 
 			if (user == null) {
 				logger.warn("User is not exist!, Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "User is not exist!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "User is not exist!");
 			}
 
 			if (!bCryptPasswordEncoder.matches(changePassword.getOldPassword(), user.getPassword())) {
 				logger.warn("Password incorrect, Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Password incorrect!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Password incorrect!");
 			}
 
 			user.setPassword(bCryptPasswordEncoder.encode(changePassword.getNewPassword()));
@@ -272,28 +285,31 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			appUserRepository.save(user);
 
-			return new AppBaseResult(true, AppError.Validattion.errorCode(), "Success");
+			return AppBaseResult.GenarateIsSucceed();
 		} catch (Exception e) {
 			e.printStackTrace();
-			logger.error(e.getMessage());
+
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 
-		return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 	}
 
 	@Override
-	public AppBaseResult uploadImage(MultipartFile file) throws NotAnImageFileException {
+	public AppServiceResult<String> uploadImage(MultipartFile file) throws NotAnImageFileException {
 		try {
 			if (file != null) {
 
 				AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 				if (user == null) {
 					logger.warn("User is not exist, Cannot further process!");
-					return new AppBaseResult(false, AppError.Validattion.errorCode(), " User is not exist");
+
+					return new AppServiceResult<String>(false, AppError.Validattion.errorCode(), " User is not exist",
+							null);
 				}
 
-				Path userFolder = Paths.get(FileConstant.USER_IMAGE_FOLDER + AppUtils.getCurrentUsername()).toAbsolutePath().normalize();
-				
+				Path userFolder = Paths.get(FileConstant.USER_IMAGE_FOLDER + AppUtils.getCurrentUsername())
+						.toAbsolutePath().normalize();
+
 				String imageUrl = fileManager.uploadUserImage(userFolder, user.getUsername(), file);
 
 				user.getUserInfo().setAvatarImg(imageUrl);
@@ -301,18 +317,20 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 				appUserRepository.save(user);
 
-				return new AppBaseResult(true, AppError.Validattion.errorCode(), imageUrl);
+				return new AppServiceResult<String>(true, 0, "Succeed!", imageUrl);
 			} else {
 				logger.warn("Image file is not null, Cannot further process!");
 
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Image file is not null");
+				return new AppServiceResult<String>(false, AppError.Validattion.errorCode(), "Image file is not null",
+						null);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 
-			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+			return new AppServiceResult<String>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+					null);
 		} catch (NotAnImageFileException e) {
-			
+
 			e.printStackTrace();
 			throw e;
 		}
@@ -326,25 +344,26 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			if (user == null) {
 				logger.warn("Email is not exist: " + email + ", Cannot further process!");
-				return new AppBaseResult(false, AppError.Validattion.errorCode(), "Email is not exist: " + email);
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Email is not exist: " + email);
 			}
 
 			String newPassword = AppUtils.RandomString(15);
 			String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
 			user.setPassword(encodedPassword);
-			
-			if(AppUtils.getCurrentUsername() != null) {
+
+			if (AppUtils.getCurrentUsername() != null) {
 				user.setUserEdit(AppUtils.getCurrentUsername());
 			}
 
 			appUserRepository.save(user);
 			appMailService.sendResetPassword(email, newPassword);
-			
-			return new AppBaseResult(true, 0, "Success!");
+
+			return AppBaseResult.GenarateIsSucceed();
 		} catch (Exception e) {
 			e.printStackTrace();
 
-			return new AppBaseResult(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+			return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Email is not exist: " + email);
 		}
 
 	}

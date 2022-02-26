@@ -29,5 +29,5 @@ public interface IAppUserService {
 	
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 	
-	AppBaseResult uploadImage(MultipartFile file) throws NotAnImageFileException;
+	AppServiceResult<String> uploadImage(MultipartFile file) throws NotAnImageFileException;
 }

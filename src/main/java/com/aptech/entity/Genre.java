@@ -32,5 +32,5 @@ public class Genre implements Serializable {
 
 	@Column(name = "description")
 	private String description;
-
+	
 }

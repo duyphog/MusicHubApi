@@ -12,10 +12,10 @@ import com.aptech.entity.Artist;
 @Repository
 public interface ArtistRepository extends JpaRepository<Artist, Long> {
 	
-	@Query("SELECT a FROM Artist a WHERE a.isActive = 1 and a.isSinger = 1 and a.nickName LIKE %:name%")
-	public List<Artist> findSingerfindNickNameContaining(@Param("name") String name);
+	@Query(value = "SELECT * FROM artist a WHERE is_singer = 1 AND is_active = 1 AND nick_name COLLATE SQL_Latin1_General_CP1_CI_AI LIKE %:name% COLLATE SQL_Latin1_General_CP1_CI_AI ORDER BY nick_name", nativeQuery = true)
+	public List<Artist> findSingerByNickNameContaining(@Param("name") String name);
 	
-	@Query("SELECT a FROM Artist a WHERE a.isActive = 1 and a.isComposer = 1 and a.nickName LIKE %:name%")
+	@Query(value = "SELECT * FROM artist a WHERE is_composer = 1 AND is_active = 1 AND nick_name COLLATE SQL_Latin1_General_CP1_CI_AI LIKE %:name% COLLATE SQL_Latin1_General_CP1_CI_AI ORDER BY nick_name", nativeQuery = true)
 	public List<Artist> findComposerByNickNameContaining(@Param("name") String name);
 	
 	@Query("SELECT a FROM Artist a WHERE a.isActive = 1 and a.isSinger = 1 and a.id = :id")

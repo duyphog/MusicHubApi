@@ -15,7 +15,6 @@ import com.aptech.entity.Genre;
 import com.aptech.repository.GenreRepository;
 import com.aptech.service.IGenreService;
 
-
 @Service
 public class GenreServiceImpl implements IGenreService {
 
@@ -31,19 +30,20 @@ public class GenreServiceImpl implements IGenreService {
 	@Override
 	public AppServiceResult<Iterable<GenreDto>> getGenres() {
 		try {
-			Iterable<Genre> genrers =  genreRepository.findAll();
-			
+			Iterable<Genre> genrers = genreRepository.findAll();
+
 			List<GenreDto> genrerDtos = new ArrayList<GenreDto>();
 			genrers.forEach((g) -> genrerDtos.add(new GenreDto(g.getId(), g.getName(), g.getDescription())));
-			
+
 			return new AppServiceResult<Iterable<GenreDto>>(true, 0, "", (Iterable<GenreDto>) genrerDtos);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
-			
+
 			logger.error(e.getMessage());
-			
-			return new AppServiceResult<Iterable<GenreDto>>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(), null);
+
+			return new AppServiceResult<Iterable<GenreDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
 		}
 	}
 }
