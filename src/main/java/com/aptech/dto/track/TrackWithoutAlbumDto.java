@@ -81,17 +81,20 @@ public class TrackWithoutAlbumDto {
 		dest.userNew = src.getUserNew();
 		dest.userEdit = src.getUserEdit();
 
-		for (Artist singer : src.getSingers()) {
-			dest.singers.add(SingerDto.CreateFromEntity(singer));
-		}
+		if (src.getSingers() != null)
+			for (Artist singer : src.getSingers()) {
+				dest.singers.add(SingerDto.CreateFromEntity(singer));
+			}
 
-		for (Artist composer : src.getComposers()) {
-			dest.composers.add(ComposerDto.CreateFromEntity(composer));
-		}
+		if (src.getComposers() != null)
+			for (Artist composer : src.getComposers()) {
+				dest.composers.add(ComposerDto.CreateFromEntity(composer));
+			}
 
-		for (Genre genre : src.getGenre()) {
-			dest.genres.add(GenreDto.CreateFromEntity(genre));
-		}
+		if (src.getGenre() != null)
+			for (Genre genre : src.getGenre()) {
+				dest.genres.add(GenreDto.CreateFromEntity(genre));
+			}
 
 		return dest;
 	}

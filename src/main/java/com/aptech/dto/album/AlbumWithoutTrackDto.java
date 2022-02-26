@@ -41,7 +41,7 @@ public class AlbumWithoutTrackDto {
 	private List<ArtistDto> singers = new ArrayList<ArtistDto>();
 
 	private List<GenreDto> genres = new ArrayList<GenreDto>();
-	
+
 	public static AlbumWithoutTrackDto CreateFromEntity(Album src) {
 		AlbumWithoutTrackDto dest = new AlbumWithoutTrackDto();
 
@@ -54,13 +54,15 @@ public class AlbumWithoutTrackDto {
 		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
 		dest.isActive = src.isActive();
 
-		for (Artist singer : src.getSingers()) {
-			dest.singers.add(ArtistDto.CreateFromEntity(singer));
-		}
+		if (src.getSingers() != null)
+			for (Artist singer : src.getSingers()) {
+				dest.singers.add(ArtistDto.CreateFromEntity(singer));
+			}
 
-		for (Genre genre : src.getGenres()) {
-			dest.genres.add(GenreDto.CreateFromEntity(genre));
-		}
+		if (src.getGenres() != null)
+			for (Genre genre : src.getGenres()) {
+				dest.genres.add(GenreDto.CreateFromEntity(genre));
+			}
 
 		return dest;
 	}
