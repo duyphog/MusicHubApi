@@ -18,12 +18,12 @@ public class CategoryDto {
 
 	private String description;
 
-	public static CategoryDto CreateFromEntity(Category genre) {
+	public static CategoryDto CreateFromEntity(Category src) {
 		CategoryDto dto = new CategoryDto();
 
-		dto.id = genre.getId();
-		dto.name = genre.getName();
-		dto.description = genre.getDescription();
+		dto.id = src.getId();
+		dto.name = src.getName();
+		dto.description = src.getDescription();
 
 		return dto;
 	}

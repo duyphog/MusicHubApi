@@ -22,15 +22,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aptech.constant.FileConstant;
 import com.aptech.provider.FileManager;
+import com.aptech.service.ITrackService;
 
 @RestController
 @RequestMapping("/myfile")
 public class MyFileController {
 
+	private ITrackService trackService;
 	private FileManager fileManager;
 
 	@Autowired
-	public MyFileController(FileManager fileManager) {
+	public MyFileController(ITrackService trackService, FileManager fileManager) {
+		this.trackService = trackService;
 		this.fileManager = fileManager;
 	}
 
@@ -57,6 +60,8 @@ public class MyFileController {
 			HttpServletResponse response,
 			@PathVariable("fileName") String fileName
 		) throws IOException {
+		
+		trackService.listenedTrack(1000L);
 		
 		File initialFile = new File(FileConstant.TRACK_FOLDER + "/" + fileName);
 		

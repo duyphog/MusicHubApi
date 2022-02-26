@@ -1,8 +1,16 @@
 package com.aptech.dto.track;
 
+import java.util.ArrayList;
 import java.util.Date;
-
+import java.util.List;
+import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.appsatus.AppStatusDto;
+import com.aptech.dto.artist.ComposerDto;
+import com.aptech.dto.artist.SingerDto;
+import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
+import com.aptech.entity.Artist;
+import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
 
 import lombok.AllArgsConstructor;
@@ -16,32 +24,79 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TrackDto {
 	private Long id;
+
 	private String name;
-	private Date releaseDate;
-//	private AbumDto album;
-//	private ComposerDto composer;
-	private GenreDto genre;
+
+	private AlbumDto album;
+
+	private String musicProduction;
+
+	private int musicYear;
+
+	private String lyric;
+
 	private String description;
-	private String imageUrl;
-	private String trackUrl;
+
+	private CategoryDto category;
+
+	private AppStatusDto appStatus;
+
+	private boolean isActive;
+
 	private long liked;
+
 	private long listened;
-	
+
+	private String trackUrl;
+
+	private List<SingerDto> singers = new ArrayList<SingerDto>();
+
+	private List<ComposerDto> composers = new ArrayList<ComposerDto>();
+
+	private List<GenreDto> genres = new ArrayList<GenreDto>();
+
+	private Date dateNew;
+
+	private String userNew;
+
+	private Date dateEdit;
+
+	private String userEdit;
+
 	public static TrackDto CreateFromEntity(Track src) {
 		TrackDto dest = new TrackDto();
-		
+
 		dest.id = src.getId();
 		dest.name = src.getName();
-		dest.releaseDate = src.getReleaseDate();
-//		dest.album = AbumDto.CreateFromEntity(src.getAlbum());
-//		dest.composer = ComposerDto.CreateFromEntity(src.getComposer());
-		dest.genre = GenreDto.CreateFromEntity(src.getGenre());
+		dest.album = AlbumDto.CreateFromEntity(src.getAlbum());
+		dest.musicProduction = src.getMusicProduction();
+		dest.musicYear = src.getMusicYear();
+		dest.lyric = src.getLyric();
 		dest.description = src.getDescription();
-		dest.imageUrl = src.getImageUrl();
-		dest.trackUrl = src.getTrackUrl();
+		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
+		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
+		dest.isActive = src.isActive();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
-		
+		dest.trackUrl = src.getTrackUrl();
+
+		dest.dateNew = src.getDateNew();
+		dest.dateEdit = src.getDateEdit();
+		dest.userNew = src.getUserNew();
+		dest.userEdit = src.getUserEdit();
+
+		for (Artist singer : src.getSingers()) {
+			dest.singers.add(SingerDto.CreateFromEntity(singer));
+		}
+
+		for (Artist composer : src.getComposers()) {
+			dest.composers.add(ComposerDto.CreateFromEntity(composer));
+		}
+
+		for (Genre genre : src.getGenre()) {
+			dest.genres.add(GenreDto.CreateFromEntity(genre));
+		}
+
 		return dest;
 	}
 }

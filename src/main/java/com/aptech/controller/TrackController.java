@@ -15,23 +15,22 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
-import com.aptech.dto.track.CreateTrack;
+import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.handle.exception.NotAnAudioFileException;
-import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.service.ITrackService;
 
 @RestController
 @RequestMapping("/track")
 public class TrackController {
-	
+
 	private ITrackService trackService;
-	
+
 	@Autowired
 	public TrackController(ITrackService trackService) {
 		this.trackService = trackService;
 	}
-	
+
 //	@GetMapping
 //	public ResponseEntity<HttpResponse> getAlbum() {
 //
@@ -40,35 +39,70 @@ public class TrackController {
 //		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<GenreDto>>(result.getData()))
 //				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 //	}
-	
+
 	@PostMapping
-	public ResponseEntity<HttpResponse> addTrack(
-				@RequestParam(value="name") String name,
-				@RequestParam(value="releaseDate", required = true) String releaseDate,
-				@RequestParam(value="composerId", required = false) Long composerId,
-				@RequestParam(value="genreId", required = false) Long genreId,
-				@RequestParam(value="description") String description,
-				@RequestParam(value="imageFile", required = false) MultipartFile imageFile,
-				@RequestParam(value="trackFile", required = false) MultipartFile trackFile,
-				@RequestParam(value="albumId", required = false) Long albumId,
-				@RequestParam(value="artistId", required = false) Long artistId,
-				@RequestParam(value="singerIds", required = false) Long[] singerIds
-			) throws NotAnImageFileException, NotAnAudioFileException {
-		
-		CreateTrack track = new CreateTrack(name, releaseDate, composerId, genreId, description, imageFile, trackFile, albumId, artistId, singerIds);
+	public ResponseEntity<HttpResponse> addTrack(@RequestParam(value = "name", required = true) String name,
+			@RequestParam(value = "albumId", required = false) Long albumId,
+			@RequestParam(value = "musicProduction", required = false) String musicProduction,
+			@RequestParam(value = "musicYear", required = false) int musicYear,
+			@RequestParam(value = "lyric") String lyric,
+			@RequestParam(value = "description", required = false) String description,
+			@RequestParam(value = "categoryId", required = false) Long categoryId,
+			@RequestParam(value = "singerIds", required = true) Long[] singerIds,
+			@RequestParam(value = "composerIds", required = false) Long[] composerIds,
+			@RequestParam(value = "genreIds", required = false) Long[] genreIds,
+			@RequestParam(value = "trackFile", required = true) MultipartFile trackFile)
+			throws NotAnAudioFileException {
+
+		TrackCreate track = new TrackCreate(name, albumId, musicProduction, musicYear, lyric, description, categoryId,
+				singerIds, composerIds, genreIds, trackFile);
 		AppServiceResult<TrackDto> result = trackService.addTrack(track);
-		
+
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<TrackDto>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
-	@RequestMapping(path = "/remove/{trackId}", method=RequestMethod.POST)
-	public ResponseEntity<HttpResponse> removeTrack(
-			@PathVariable("filePath") long trackId
-			) {
-		
+
+	@RequestMapping(path = "/{trackId}", method = RequestMethod.DELETE)
+	public ResponseEntity<HttpResponse> removeTrack(@PathVariable("trackId") Long trackId) {
+
 		AppBaseResult result = trackService.removeTrack(trackId);
-		
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@RequestMapping(path = "/deactive/{trackId}", method = RequestMethod.PUT) 
+	public ResponseEntity<HttpResponse> deactiveTrack(@PathVariable("trackId") Long trackId) {
+
+		AppBaseResult result = trackService.deactiveTrack(trackId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@RequestMapping(path = "/listened/{trackId}", method = RequestMethod.GET)
+	public ResponseEntity<HttpResponse> listenedTrack(@PathVariable("trackId") Long trackId) {
+
+		AppBaseResult result = trackService.listenedTrack(trackId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@RequestMapping(path = "/liked/{trackId}", method = RequestMethod.GET)
+	public ResponseEntity<HttpResponse> likeTrack(@PathVariable("trackId") Long trackId) {
+
+		AppBaseResult result = trackService.likedTrack(trackId, true);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@RequestMapping(path = "/unliked/{trackId}", method = RequestMethod.GET)
+	public ResponseEntity<HttpResponse> unLikeTrack(@PathVariable("trackId") Long trackId) {
+
+		AppBaseResult result = trackService.likedTrack(trackId, false);
+
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}

@@ -52,11 +52,11 @@ public class Album implements Serializable {
 	@Column(name = "img_url")
 	private String imgUrl;
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "status_id", nullable = false)
 	private AppStatus appStatus;
 	
@@ -70,7 +70,7 @@ public class Album implements Serializable {
 			@JoinColumn(name = "genre_id") })
 	private Set<Genre> genres = new HashSet<>();
 
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
 	

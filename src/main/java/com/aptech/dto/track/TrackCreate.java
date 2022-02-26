@@ -13,28 +13,29 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateTrack {
+public class TrackCreate {
 
 	@NotEmpty
 	private String name;
 
-	@NotEmpty
-	private String releaseDate;
-
-	private Long composerId;
-
-	private Long genreId;
-
-	@NotEmpty
-	private String description;
-
-	private MultipartFile imageFile;
-
-	private MultipartFile trackFile;
-
 	private Long albumId;
 
-	private Long artistId;
+	private String musicProduction;
 
+	private int musicYear;
+	
+	private String lyric;
+	
+	private String description;
+	
+	private Long categoryId;
+
+	@NotEmpty
 	private Long[] singerIds;
+	
+	private Long[] composerIds;
+	
+	private Long[] genreIds;
+
+	private MultipartFile trackFile;
 }

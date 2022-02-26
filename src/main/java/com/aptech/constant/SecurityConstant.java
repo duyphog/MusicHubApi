@@ -23,6 +23,7 @@ public class SecurityConstant {
 			"/genre",
 			"/myfile/images/**",
 			"/myfile/songs/**",
-			"/common/**"
+			"/common/**",
+			"/track/listened/**"
 	};
 }

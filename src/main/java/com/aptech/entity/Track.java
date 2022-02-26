@@ -43,44 +43,60 @@ public class Track implements Serializable {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "release_date")
-	private Date releaseDate;
+	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinColumn(name = "album_id", nullable = true)
+	private Album album;
 
-	@ManyToOne
-	@JoinColumn(name = "composer_id", nullable = true)
-	private AppUser composer;
+	@Column(name = "music_production")
+	private String musicProduction;
 
-	@ManyToOne
-	@JoinColumn(name = "genre_id", nullable = false)
-	private Genre genre;
+	@Column(name = "music_year")
+	private int musicYear;
 
-	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinTable(name = "track_singer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "singer_id") })
-	private Set<Singer> singers = new HashSet<>();
-	
+	@Column(name = "lyric")
+	private String lyric;
+
 	@Column(name = "description")
 	private String description;
 
-	@Column(name = "image_url")
-	private String imageUrl;
-
-	@Column(name = "track_url")
-	private String trackUrl;
-
-	@ManyToOne
+	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
 
-	@ManyToOne
-	@JoinColumn(name = "album_id", nullable = true)
-	private Album album;
+	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinColumn(name = "category_id", nullable = false)
+	private Category category;
+
+	@ManyToOne(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinColumn(name = "status_id", nullable = false)
+	private AppStatus appStatus;
+
+	@Column(name = "is_active")
+	private boolean isActive;
 
 	@Column(name = "liked")
 	private long liked;
 
 	@Column(name = "listened")
 	private long listened;
+
+	@Column(name = "track_url")
+	private String trackUrl;
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinTable(name = "track_singer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "artist_id") })
+	private Set<Artist> singers = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinTable(name = "track_composer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "artist_id") })
+	private Set<Artist> composers = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
+	@JoinTable(name = "track_genre", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "genre_id") })
+	private Set<Genre> genre = new HashSet<>();
 
 	@CreationTimestamp
 	@Column(name = "date_new")
@@ -95,8 +111,4 @@ public class Track implements Serializable {
 
 	@Column(name = "user_edit")
 	private String userEdit;
-	
-	public void AddSinger(Singer singer) {
-		this.singers.add(singer);
-	}
 }
