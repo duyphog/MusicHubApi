@@ -227,4 +227,10 @@ public class AlbumServiceIpml implements IAlbumService {
 		}
 	}
 
+	@Override
+	public AppServiceResult<AlbumDto> updateAppStatus(Long appStatusId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

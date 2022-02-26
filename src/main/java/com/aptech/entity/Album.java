@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -73,6 +74,9 @@ public class Album implements Serializable {
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
+	
+	@OneToMany(mappedBy = "album")
+	private Set<Track> tracks;
 	
 	@Column(name = "is_active")
 	private boolean isActive;

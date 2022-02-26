@@ -19,4 +19,6 @@ public interface IAlbumService {
 	AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws NotAnImageFileException;
 	
 	AppBaseResult deleteAlbum(Long id);
+	
+	AppServiceResult<AlbumDto> updateAppStatus(Long appStatusId);
 }

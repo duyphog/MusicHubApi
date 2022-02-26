@@ -7,9 +7,11 @@ import com.aptech.dto.appsatus.AppStatusDto;
 import com.aptech.dto.artist.ArtistDto;
 import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
+import com.aptech.dto.track.TrackWithoutAlbumDto;
 import com.aptech.entity.Album;
 import com.aptech.entity.Artist;
 import com.aptech.entity.Genre;
+import com.aptech.entity.Track;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,6 +44,8 @@ public class AlbumDto {
 
 	private List<GenreDto> genres = new ArrayList<GenreDto>();
 
+	private List<TrackWithoutAlbumDto> tracks = new ArrayList<TrackWithoutAlbumDto>();
+	
 	public static AlbumDto CreateFromEntity(Album src) {
 		AlbumDto dest = new AlbumDto();
 
@@ -60,6 +64,10 @@ public class AlbumDto {
 
 		for (Genre genre : src.getGenres()) {
 			dest.genres.add(GenreDto.CreateFromEntity(genre));
+		}
+		
+		for (Track track : src.getTracks()) {
+			dest.tracks.add(TrackWithoutAlbumDto.CreateFromEntity(track));
 		}
 
 		return dest;
