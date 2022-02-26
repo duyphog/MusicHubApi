@@ -2,8 +2,6 @@ package com.aptech.controller;
 
 import java.util.List;
 
-import javax.websocket.server.PathParam;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +20,7 @@ import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.handle.exception.NotAnAudioFileException;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.service.IAlbumService;
 
@@ -70,14 +69,15 @@ public class AlbumController {
 			@RequestParam(value = "imgFile", required = false) MultipartFile imgFile,
 			@RequestParam(value = "categoryId", required = true) Long categoryId,
 			@RequestParam(value = "singerIds", required = true) Long[] singerIds,
-			@RequestParam(value = "genreIds", required = true) Long[] genreIds
-//			@RequestParam(value="imageFile", required = true) MultipartFile[] trackFiles
-	) throws NotAnImageFileException {
+			@RequestParam(value = "genreIds", required = true) Long[] genreIds,
+			@RequestParam(value = "trackFiles", required = false) MultipartFile[] trackFiles)
+			throws NotAnImageFileException, NotAnAudioFileException {
 
 		AlbumCreate newAlbum = new AlbumCreate(name, musicProduction, musicYear, imgFile, categoryId, singerIds,
 				genreIds);
 
-		AppServiceResult<AlbumDto> result = albumservice.createAlbum(newAlbum);
+		AppServiceResult<AlbumDto> result = trackFiles == null ? albumservice.createAlbum(newAlbum)
+				: albumservice.createAlbumWithTracks(newAlbum, trackFiles);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<AlbumDto>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));

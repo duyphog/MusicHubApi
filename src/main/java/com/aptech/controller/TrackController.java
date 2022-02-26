@@ -18,7 +18,6 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
-import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.handle.exception.NotAnAudioFileException;
@@ -74,8 +73,8 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
-	@RequestMapping(path = "/deactive/{trackId}", method = RequestMethod.PUT) 
+
+	@RequestMapping(path = "/deactive/{trackId}", method = RequestMethod.PUT)
 	public ResponseEntity<HttpResponse> deactiveTrack(@PathVariable("trackId") Long trackId) {
 
 		AppBaseResult result = trackService.deactiveTrack(trackId);
@@ -83,7 +82,7 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
+
 	@RequestMapping(path = "/listened/{trackId}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> listenedTrack(@PathVariable("trackId") Long trackId) {
 
@@ -92,7 +91,7 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
+
 	@RequestMapping(path = "/liked/{trackId}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> likeTrack(@PathVariable("trackId") Long trackId) {
 
@@ -101,7 +100,7 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
+
 	@RequestMapping(path = "/unliked/{trackId}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> unLikeTrack(@PathVariable("trackId") Long trackId) {
 
@@ -110,7 +109,7 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
+
 	@GetMapping(params = "statusid")
 	public ResponseEntity<HttpResponse> getTrackByStatus(@RequestParam(value = "statusid") Long statusId) {
 

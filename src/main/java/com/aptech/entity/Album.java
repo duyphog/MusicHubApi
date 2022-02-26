@@ -75,8 +75,8 @@ public class Album implements Serializable {
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
 	
-	@OneToMany(mappedBy = "album")
-	private Set<Track> tracks;
+	@OneToMany(mappedBy = "album", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	private Set<Track> tracks = new HashSet<>();
 	
 	@Column(name = "is_active")
 	private boolean isActive;

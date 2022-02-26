@@ -14,7 +14,6 @@ import com.aptech.constant.AppError;
 import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.entity.Album;
@@ -270,7 +269,6 @@ public class TrackServiceImpl implements ITrackService {
 		}
 	}
 
-	
 	@Override
 	public AppServiceResult<TrackDto> updateAppStatus(Long trackId, Long statusId) {
 		try {
