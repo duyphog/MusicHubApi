@@ -12,6 +12,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.appsatus.AppStatusDto;
 import com.aptech.dto.artist.ComposerDto;
 import com.aptech.dto.artist.SingerDto;
 import com.aptech.dto.category.CategoryDto;
@@ -32,7 +33,7 @@ public class CommonController {
 	@GetMapping(path = "/search-singer")
 	public ResponseEntity<HttpResponse> searchSinger(@RequestParam String search) {
 
-		AppServiceResult<List<SingerDto>> result = commonService.SearchSinger(search);
+		AppServiceResult<List<SingerDto>> result = commonService.searchSinger(search);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<SingerDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
@@ -41,7 +42,7 @@ public class CommonController {
 	@GetMapping(path = "/search-composer")
 	public ResponseEntity<HttpResponse> searchComposer(@RequestParam String search) {
 
-		AppServiceResult<List<ComposerDto>> result = commonService.SearchComposer(search);
+		AppServiceResult<List<ComposerDto>> result = commonService.searchComposer(search);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<ComposerDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
@@ -50,7 +51,7 @@ public class CommonController {
 	@GetMapping(path = "/genre")
 	public ResponseEntity<HttpResponse> getGenres() {
 
-		AppServiceResult<List<GenreDto>> result = commonService.GetGenres();
+		AppServiceResult<List<GenreDto>> result = commonService.getGenres();
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<GenreDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
@@ -59,9 +60,18 @@ public class CommonController {
 	@GetMapping(path = "/category")
 	public ResponseEntity<HttpResponse> getCategory() {
 
-		AppServiceResult<List<CategoryDto>> result = commonService.GetCategories();
+		AppServiceResult<List<CategoryDto>> result = commonService.getCategories();
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<CategoryDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/appstatus")
+	public ResponseEntity<HttpResponse> getAppStatus() {
+
+		AppServiceResult<List<AppStatusDto>> result = commonService.getAppStatus();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AppStatusDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
