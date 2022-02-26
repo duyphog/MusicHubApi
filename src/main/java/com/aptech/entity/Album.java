@@ -70,6 +70,10 @@ public class Album implements Serializable {
 			@JoinColumn(name = "genre_id") })
 	private Set<Genre> genres = new HashSet<>();
 
+	@ManyToOne
+	@JoinColumn(name = "user_id", nullable = false)
+	private AppUser appUser;
+	
 	@Column(name = "is_active")
 	private boolean isActive;
 

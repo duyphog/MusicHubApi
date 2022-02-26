@@ -16,9 +16,9 @@ import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
-import com.aptech.dto.artist.SingerDto;
 import com.aptech.entity.Album;
 import com.aptech.entity.AppStatus;
+import com.aptech.entity.AppUser;
 import com.aptech.entity.Artist;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
@@ -26,6 +26,7 @@ import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.provider.FileManager;
 import com.aptech.repository.AlbumRepository;
 import com.aptech.repository.AppStatusRepository;
+import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.ArtistRepository;
 import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
@@ -37,6 +38,7 @@ public class AlbumServiceIpml implements IAlbumService {
 
 	private final Logger logger = LoggerFactory.getLogger(AlbumServiceIpml.class);
 
+	private AppUserRepository appUserRepository;
 	private AlbumRepository albumRepository;
 	private CategoryRepository categoryRepository;
 	private ArtistRepository artistRepository;
@@ -46,9 +48,10 @@ public class AlbumServiceIpml implements IAlbumService {
 	private FileManager fileManager;
 
 	@Autowired
-	public AlbumServiceIpml(AlbumRepository albumRepository, CategoryRepository categoryRepository,
-			ArtistRepository artistRepository, GenreRepository genreRepository, AppStatusRepository appStatusRepository,
-			FileManager fileManager) {
+	public AlbumServiceIpml(AppUserRepository appUserRepository, AlbumRepository albumRepository,
+			CategoryRepository categoryRepository, ArtistRepository artistRepository, GenreRepository genreRepository,
+			AppStatusRepository appStatusRepository, FileManager fileManager) {
+		this.appUserRepository = appUserRepository;
 		this.albumRepository = albumRepository;
 		this.categoryRepository = categoryRepository;
 		this.artistRepository = artistRepository;
@@ -76,17 +79,17 @@ public class AlbumServiceIpml implements IAlbumService {
 					AppError.Unknown.errorMessage(), null);
 		}
 	}
-	
+
 	@Override
 	public AppServiceResult<AlbumDto> getAlbum(Long id) {
 		try {
 			Album album = albumRepository.findById(id).orElse(null);
-			
-			if(album == null) {
+
+			if (album == null) {
 				return new AppServiceResult<AlbumDto>(false, AppError.Validattion.errorCode(), id + " is not exist!",
 						null);
 			}
-			
+
 			AlbumDto dto = AlbumDto.CreateFromEntity(album);
 
 			return new AppServiceResult<AlbumDto>(true, 0, "Success", dto);
@@ -167,8 +170,9 @@ public class AlbumServiceIpml implements IAlbumService {
 					newAlbum.getGenres().add(genre);
 			}
 
-			String currentUserLogin = AppUtils.getCurrentUsername();
-			newAlbum.setUserNew(currentUserLogin == null ? "system" : currentUserLogin);
+			AppUser userLogedIn = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
+			newAlbum.setAppUser(userLogedIn);
+			newAlbum.setUserNew(userLogedIn.getUsername());
 
 			if (album.getImgFile() != null) {
 
