@@ -11,7 +11,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class AppUtils {
+public final class AppUtils {
 
 	public static DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -70,5 +70,24 @@ public class AppUtils {
 		input = stripAccents(input);
 		
 		return input.trim().replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
+	}
+	
+	public static String trimOrNull(String value) {
+		if(value == null || value.trim().isEmpty())
+			return null;
+		
+		return value.trim();
+	}
+	
+	public static boolean isBlank(String value) {
+			return value == null || value.trim().isEmpty() ? true : false;
+	}
+	
+	public static Integer parseInt(String value) {
+		try {
+			return Integer.parseInt(value);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }

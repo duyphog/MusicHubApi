@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -17,6 +16,7 @@ import com.aptech.constant.AppError;
 import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.MetaData;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
@@ -30,6 +30,7 @@ import com.aptech.entity.Track;
 import com.aptech.handle.exception.NotAnAudioFileException;
 import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.provider.FileManager;
+import com.aptech.provider.JaudiotaggerParser;
 import com.aptech.repository.AlbumRepository;
 import com.aptech.repository.AppStatusRepository;
 import com.aptech.repository.AppUserRepository;
@@ -38,6 +39,7 @@ import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
 import com.aptech.service.IAlbumService;
 import com.aptech.util.AppUtils;
+import com.aptech.util.FileUtil;
 
 @Service
 public class AlbumServiceIpml implements IAlbumService {
@@ -175,7 +177,7 @@ public class AlbumServiceIpml implements IAlbumService {
 				track.setGenre(newAlbum.getGenres());
 				
 				track.setAlbum(newAlbum);
-				track.setActive(false);
+				track.setIsActive(Boolean.FALSE);
 				
 				newAlbum.getTracks().add(track);
 			}
@@ -267,7 +269,7 @@ public class AlbumServiceIpml implements IAlbumService {
 			}
 
 			album.setAppStatus(appStatus);
-			album.setActive(appStatus.isSetActive());
+			album.setIsActive(appStatus.getSetActive());
 
 			albumRepository.save(album);
 
@@ -307,7 +309,7 @@ public class AlbumServiceIpml implements IAlbumService {
 		}
 
 		newAlbum.setCategory(category);
-		newAlbum.setActive(false);
+		newAlbum.setIsActive(Boolean.FALSE);
 
 		for (Long singerId : album.getSingerIds()) {
 			Artist singer = artistRepository.findSingerById(singerId);
@@ -352,10 +354,14 @@ public class AlbumServiceIpml implements IAlbumService {
 	
 	private Track AttachTrackFileInfomation(MultipartFile trackFile) throws IOException, NotAnAudioFileException {
 		Track track = new Track();
-		track.setName("new name" + new Date().toString());
-		track.setLyric("new lyric");
-		track.setMusicProduction("musicProduction");
-		track.setMusicYear(2021);
+		
+		MetaData metaData =  JaudiotaggerParser.getRawMetaData(FileUtil.convert(trackFile));
+		
+		track.setName(metaData.getTitle());
+		track.setLyric(metaData.getLyric());
+		track.setMusicYear(metaData.getYear());
+		track.setLiked(0L);
+		track.setListened(0L);
 		
 		Path songFolder = Paths.get(FileConstant.TRACK_FOLDER).toAbsolutePath().normalize();
 
