@@ -29,8 +29,13 @@ import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
 import com.aptech.handle.exception.NotAnAudioFileException;
 import com.aptech.handle.exception.NotAnImageFileException;
+import com.aptech.infrastructure.JaudiotaggerParser;
 import com.aptech.provider.FileManager;
-import com.aptech.provider.JaudiotaggerParser;
+import com.aptech.provider.file.FileServiceFactory;
+import com.aptech.provider.file.FileType;
+import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.MediaFile;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AlbumRepository;
 import com.aptech.repository.AppStatusRepository;
 import com.aptech.repository.AppUserRepository;
@@ -55,6 +60,8 @@ public class AlbumServiceIpml implements IAlbumService {
 	private AppStatusRepository appStatusRepository;
 
 	private FileManager fileManager;
+	private IFileService imageFileService;
+	private IFileService trackFileService;
 
 	@Autowired
 	public AlbumServiceIpml(AppUserRepository appUserRepository, AlbumRepository albumRepository,
@@ -67,6 +74,9 @@ public class AlbumServiceIpml implements IAlbumService {
 		this.genreRepository = genreRepository;
 		this.appStatusRepository = appStatusRepository;
 		this.fileManager = fileManager;
+		
+		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
+		this.trackFileService = FileServiceFactory.getFileService(FileType.TRACK);
 	}
 
 	@Override
@@ -286,7 +296,7 @@ public class AlbumServiceIpml implements IAlbumService {
 	}
 
 	private Album InitializeAlbumFromDto(AlbumCreate album)
-			throws IOException, NotAnImageFileException, IllegalArgumentException {
+			throws IOException, NotAnImageFileException, IllegalArgumentException, UnsupportedFileTypeException {
 		Long countExistAlbumName = albumRepository.findContainsName(album.getName());
 
 		if (countExistAlbumName > 0) {
@@ -336,15 +346,10 @@ public class AlbumServiceIpml implements IAlbumService {
 		newAlbum.setAppUser(userLogedIn);
 		newAlbum.setUserNew(userLogedIn.getUsername());
 
-		if (album.getImgFile() != null) {
-
-			Path userFolder = Paths.get(FileConstant.ALBUM_IMGAGE_FOLDER + StringUtil.normalizeUri(newAlbum.getName()))
-					.toAbsolutePath().normalize();
-
-			String imageUrl = fileManager.uploadAlbumImage(userFolder, StringUtil.normalizeUri(newAlbum.getName()),
-					album.getImgFile());
-
-			newAlbum.setImgUrl(imageUrl);
+		if (album.getImgFile() != null) {				
+			MediaFile mediaFile = imageFileService.upload(newAlbum.getName(), album.getImgFile());
+			newAlbum.setImgUrl(mediaFile.getPathUrl());
+			newAlbum.setImgPath(mediaFile.getPathFolder());
 		}
 
 		AppStatus defaultStatus = appStatusRepository.getDefaultAppStatus();

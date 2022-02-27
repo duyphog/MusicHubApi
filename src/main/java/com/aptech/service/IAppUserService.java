@@ -13,7 +13,7 @@ import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
-import com.aptech.handle.exception.NotAnImageFileException;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface IAppUserService {
 	AppBaseResult register(UserRegister userRegister);
@@ -30,7 +30,7 @@ public interface IAppUserService {
 	
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 	
-	AppServiceResult<String> uploadImage(MultipartFile file) throws NotAnImageFileException;
+	AppServiceResult<String> uploadImage(MultipartFile file) throws UnsupportedFileTypeException;
 	
 	AppBaseResult updateWhiteList(UserWhiteList dto);
 }

@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.aptech.constant.AppError;
 import com.aptech.constant.BeanIdConstant;
@@ -37,8 +38,12 @@ import com.aptech.entity.AppUser;
 import com.aptech.entity.Track;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
-import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.provider.FileManager;
+import com.aptech.provider.file.FileServiceFactory;
+import com.aptech.provider.file.FileType;
+import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.MediaFile;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.TrackRepository;
@@ -69,8 +74,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	private TrackRepository trackRepository;
 
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
-	private FileManager fileManager;
+	
+	private IFileService imageFileService;
 
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
@@ -82,7 +87,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 		this.appMailService = appMailService;
 		this.trackRepository = trackRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-		this.fileManager = fileManager;
+		
+		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
 	}
 
 	@Override
@@ -302,7 +308,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	}
 
 	@Override
-	public AppServiceResult<String> uploadImage(MultipartFile file) throws NotAnImageFileException {
+	public AppServiceResult<String> uploadImage(MultipartFile file) throws UnsupportedFileTypeException {
 		try {
 			if (file != null) {
 
@@ -314,17 +320,13 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 							null);
 				}
 
-				Path userFolder = Paths.get(FileConstant.USER_IMAGE_FOLDER + AppUtils.getCurrentUsername())
-						.toAbsolutePath().normalize();
-
-				String imageUrl = fileManager.uploadUserImage(userFolder, user.getUsername(), file);
-
-				user.getUserInfo().setAvatarImg(imageUrl);
+				MediaFile mediaFile = imageFileService.upload(user.getUsername(), file);
+				user.getUserInfo().setAvatarImg(mediaFile.getPathUrl());
 				user.getUserInfo().setUserEdit(AppUtils.getCurrentUsername());
 
 				appUserRepository.save(user);
 
-				return new AppServiceResult<String>(true, 0, "Succeed!", imageUrl);
+				return new AppServiceResult<String>(true, 0, "Succeed!", ServletUriComponentsBuilder.fromCurrentContextPath().path(mediaFile.getPathUrl()).toUriString());
 			} else {
 				logger.warn("Image file is not null, Cannot further process!");
 
@@ -336,10 +338,6 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 			return new AppServiceResult<String>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
 					null);
-		} catch (NotAnImageFileException e) {
-
-			e.printStackTrace();
-			throw e;
 		}
 	}
 

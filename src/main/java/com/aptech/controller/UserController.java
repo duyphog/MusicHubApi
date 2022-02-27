@@ -40,8 +40,8 @@ import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
-import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.infrastructure.AppJwtTokenProvider;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.IAppUserService;
 
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
@@ -129,11 +129,11 @@ public class UserController {
 
 	@PostMapping("/upload-profile-image")
 	public ResponseEntity<HttpResponse> uploadImage(@RequestParam("profileImage") MultipartFile file)
-			throws NotAnImageFileException {
+			throws UnsupportedFileTypeException {
 
-		AppBaseResult result = appUserService.uploadImage(file);
+		AppServiceResult<String> result = appUserService.uploadImage(file);
 
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>(result.getMessage()))
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 

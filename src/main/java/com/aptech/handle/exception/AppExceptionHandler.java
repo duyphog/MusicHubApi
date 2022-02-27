@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -29,7 +30,7 @@ import java.util.Objects;
 
 @RestControllerAdvice
 public class AppExceptionHandler {
-	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private static final String ACCOUNT_LOCKED = "Your account has been locked. Please contact administration";
     private static final String METHOD_IS_NOT_ALLOWED = "This request method is not allowed on this endpoint. Please send a '%s' request";
@@ -75,7 +76,7 @@ public class AppExceptionHandler {
 		try {
 			jsonErrors = new ObjectMapper().writeValueAsString(errors);
 		} catch (JsonProcessingException e) {
-			LOGGER.error(e.getMessage());
+			logger.error(e.getMessage());
 			
 			jsonErrors = "Invalid data";
 		}
@@ -90,25 +91,25 @@ public class AppExceptionHandler {
     
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HttpResponse> internalServerErrorException(Exception exception) {
-        LOGGER.error(exception.getMessage());
+        logger.error(exception.getMessage());
         return createHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR_MSG);
     }
 
     @ExceptionHandler(IOException.class)
     public ResponseEntity<HttpResponse> iOException(IOException exception) {
-        LOGGER.error(exception.getMessage());
+        logger.error(exception.getMessage());
         return createHttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_PROCESSING_FILE);
     }
     
-    @ExceptionHandler(NotAnImageFileException.class)
-    public ResponseEntity<HttpResponse> notAnImageFileException(NotAnImageFileException exception) {
-        LOGGER.error(exception.getMessage());
+    @ExceptionHandler(UnsupportedFileTypeException.class)
+    public ResponseEntity<HttpResponse> unsupportFileException(UnsupportedFileTypeException exception) {
+        logger.error(exception.getMessage());
         return createHttpResponse(HttpStatus.BAD_REQUEST, exception.getMessage());
     }
     
     @ExceptionHandler(NoSuchFileException.class)
     public ResponseEntity<HttpResponse> noSuchFileException(NoSuchFileException exception) {
-        LOGGER.error(exception.getMessage());
+        logger.error(exception.getMessage());
         return createHttpResponse(HttpStatus.BAD_REQUEST, "File not found!");
     }
     

@@ -3,6 +3,9 @@ package com.aptech.dto.album;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.aptech.constant.FileConstant;
 import com.aptech.dto.appsatus.AppStatusDto;
 import com.aptech.dto.artist.ArtistDto;
 import com.aptech.dto.category.CategoryDto;
@@ -53,7 +56,7 @@ public class AlbumDto {
 		dest.name = src.getName();
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
-		dest.imgUrl = src.getImgUrl();
+		dest.imgUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(src.getImgUrl()).toUriString();
 		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
 		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
 		dest.isActive = src.getIsActive();

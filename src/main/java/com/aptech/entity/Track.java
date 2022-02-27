@@ -82,6 +82,9 @@ public class Track implements Serializable {
 
 	@Column(name = "track_url")
 	private String trackUrl;
+	
+	@Column(name = "track_path")
+	private String trackPath;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	@JoinTable(name = "track_singer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {

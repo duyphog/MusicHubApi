@@ -23,8 +23,6 @@ public final class DateUtil {
 		return null;
 	}
 
-	public static Long GetCurrentTimeMillis() {
-		return System.currentTimeMillis();
-	}
+
 
 }

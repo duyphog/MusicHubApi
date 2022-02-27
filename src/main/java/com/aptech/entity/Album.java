@@ -53,6 +53,9 @@ public class Album implements Serializable {
 	@Column(name = "img_url")
 	private String imgUrl;
 
+	@Column(name = "img_path")
+	private String imgPath;
+	
 	@ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
