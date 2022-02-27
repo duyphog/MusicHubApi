@@ -64,11 +64,11 @@ public class CommonService implements ICommonService {
 	@Override
 	public AppServiceResult<List<ComposerDto>> searchComposer(String searchString) {
 		try {
-			List<Artist> singers = artistRepository.findSingerByNickNameContaining(searchString);
+			List<Artist> composers = artistRepository.findComposerByNickNameContaining(searchString);
 
 			List<ComposerDto> result = new ArrayList<ComposerDto>();
 
-			singers.forEach(item -> {
+			composers.forEach(item -> {
 				result.add(ComposerDto.CreateFromEntity(item));
 			});
 
