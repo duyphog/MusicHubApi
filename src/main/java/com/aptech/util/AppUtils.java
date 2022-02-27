@@ -1,11 +1,8 @@
 package com.aptech.util;
 
 import java.text.DateFormat;
-import java.text.Normalizer;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,67 +24,5 @@ public final class AppUtils {
 			currentUser = authentication.getName();
 
 		return currentUser;
-	}
-
-	public static String RandomString(int length) {
-		int leftLimit = 97; // letter 'a'
-		int rightLimit = 122; // letter 'z'
-		Random random = new Random();
-
-		String generatedString = random.ints(leftLimit, rightLimit + 1).limit(length)
-				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-
-		return generatedString;
-	}
-
-	public static Date ParseDateString(final String dateStr) {
-
-		if (dateStr == null) {
-			return null;
-		}
-
-		SimpleDateFormat format = (dateStr.charAt(4) == '/') ? new SimpleDateFormat("yyyy/MM/dd")
-				: new SimpleDateFormat("yyyy-MM-dd");
-
-		try {
-			return format.parse(dateStr);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public static String stripAccents(String s) 
-	{
-	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
-	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
-	    return s;
-	}
-	
-	public static String normalizeUri(String input) {
-		input = input.replaceAll("đ", "d").replace("Đ", "D");
-		
-		input = stripAccents(input);
-		
-		return input.trim().replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
-	}
-	
-	public static String trimOrNull(String value) {
-		if(value == null || value.trim().isEmpty())
-			return null;
-		
-		return value.trim();
-	}
-	
-	public static boolean isBlank(String value) {
-			return value == null || value.trim().isEmpty() ? true : false;
-	}
-	
-	public static Integer parseInt(String value) {
-		try {
-			return Integer.parseInt(value);
-		} catch (Exception e) {
-			return null;
-		}
 	}
 }

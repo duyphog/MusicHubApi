@@ -46,6 +46,7 @@ import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.IAppUserService;
 import com.aptech.service.IAppMailService;
 import com.aptech.util.AppUtils;
+import com.aptech.util.StringUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -354,7 +355,7 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Email is not exist: " + email);
 			}
 
-			String newPassword = AppUtils.RandomString(15);
+			String newPassword = StringUtil.RandomString(15);
 			String encodedPassword = bCryptPasswordEncoder.encode(newPassword);
 			user.setPassword(encodedPassword);
 

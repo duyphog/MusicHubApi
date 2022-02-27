@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.aptech.domain.MediaFile;
 import com.aptech.domain.MetaData;
-import com.aptech.util.AppUtils;
+import com.aptech.util.StringUtil;
 
 public final class JaudiotaggerParser {
 	private final static Logger logger = LoggerFactory.getLogger(JaudiotaggerParser.class);
@@ -43,10 +43,10 @@ public final class JaudiotaggerParser {
 				metaData.setTrackNumber(parseIntegerPattern(getTagField(tag, FieldKey.TRACK), TRACK_NUMBER_PATTERN));
 				metaData.setYear(parseIntegerPattern(getTagField(tag, FieldKey.YEAR), YEAR_NUMBER_PATTERN));
 
-				if (AppUtils.isBlank(metaData.getArtist())) {
+				if (StringUtil.isBlank(metaData.getArtist())) {
 					metaData.setArtist(metaData.getAlbumArtist());
 				}
-				if (AppUtils.isBlank(metaData.getAlbumArtist())) {
+				if (StringUtil.isBlank(metaData.getAlbumArtist())) {
 					metaData.setAlbumArtist(metaData.getArtist());
 				}
 			}
@@ -116,6 +116,6 @@ public final class JaudiotaggerParser {
 	}
 
 	private static Integer parseInteger(String s) {
-		return parseIntegerPattern(AppUtils.trimOrNull(s), null);
+		return parseIntegerPattern(StringUtil.trimOrNull(s), null);
 	}
 }

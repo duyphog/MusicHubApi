@@ -40,6 +40,7 @@ import com.aptech.repository.GenreRepository;
 import com.aptech.service.IAlbumService;
 import com.aptech.util.AppUtils;
 import com.aptech.util.FileUtil;
+import com.aptech.util.StringUtil;
 
 @Service
 public class AlbumServiceIpml implements IAlbumService {
@@ -337,10 +338,10 @@ public class AlbumServiceIpml implements IAlbumService {
 
 		if (album.getImgFile() != null) {
 
-			Path userFolder = Paths.get(FileConstant.ALBUM_IMGAGE_FOLDER + AppUtils.normalizeUri(newAlbum.getName()))
+			Path userFolder = Paths.get(FileConstant.ALBUM_IMGAGE_FOLDER + StringUtil.normalizeUri(newAlbum.getName()))
 					.toAbsolutePath().normalize();
 
-			String imageUrl = fileManager.uploadAlbumImage(userFolder, AppUtils.normalizeUri(newAlbum.getName()),
+			String imageUrl = fileManager.uploadAlbumImage(userFolder, StringUtil.normalizeUri(newAlbum.getName()),
 					album.getImgFile());
 
 			newAlbum.setImgUrl(imageUrl);
@@ -366,7 +367,7 @@ public class AlbumServiceIpml implements IAlbumService {
 		Path songFolder = Paths.get(FileConstant.TRACK_FOLDER).toAbsolutePath().normalize();
 
 		String trackUrl = fileManager.uploadAudioFile(songFolder, AppUtils.getCurrentUsername(),
-				AppUtils.normalizeUri(track.getName()), trackFile);
+				StringUtil.normalizeUri(track.getName()), trackFile);
 		
 		track.setTrackUrl(trackUrl);
 		

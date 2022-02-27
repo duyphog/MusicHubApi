@@ -7,6 +7,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.*;
+import java.text.Normalizer.Form;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,4 +179,49 @@ public final class StringUtil {
         }
         return s.replaceAll("<.*?>", "");
     }
+
+	public static String stripAccents(String s) 
+	{
+	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
+	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+	    return s;
+	}
+
+	public static String normalizeUri(String input) {
+		input = input.replaceAll("đ", "d").replace("Đ", "D");
+		
+		input = stripAccents(input);
+		
+		return input.trim().replaceAll("[^a-zA-Z0-9]+", "-").toLowerCase();
+	}
+
+	public static String trimOrNull(String value) {
+		if(value == null || value.trim().isEmpty())
+			return null;
+		
+		return value.trim();
+	}
+
+	public static boolean isBlank(String value) {
+			return value == null || value.trim().isEmpty() ? true : false;
+	}
+
+	public static Integer parseInt(String value) {
+		try {
+			return Integer.parseInt(value);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static String RandomString(int length) {
+		int leftLimit = 97; // letter 'a'
+		int rightLimit = 122; // letter 'z'
+		Random random = new Random();
+
+		String generatedString = random.ints(leftLimit, rightLimit + 1).limit(length)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
+
+		return generatedString;
+	}
 }

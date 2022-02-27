@@ -34,6 +34,7 @@ import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.TrackRepository;
 import com.aptech.service.ITrackService;
 import com.aptech.util.AppUtils;
+import com.aptech.util.StringUtil;
 
 @Service
 public class TrackServiceImpl implements ITrackService {
@@ -150,7 +151,7 @@ public class TrackServiceImpl implements ITrackService {
 				Path songFolder = Paths.get(FileConstant.TRACK_FOLDER).toAbsolutePath().normalize();
 
 				String trackUrl = fileManager.uploadAudioFile(songFolder, AppUtils.getCurrentUsername(),
-						AppUtils.normalizeUri(track.getName()), track.getTrackFile());
+						StringUtil.normalizeUri(track.getName()), track.getTrackFile());
 
 				newTrack.setTrackUrl(trackUrl);
 			}
