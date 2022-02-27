@@ -93,7 +93,9 @@ public class TrackServiceImpl implements ITrackService {
 			newTrack.setMusicYear(track.getMusicYear());
 			newTrack.setLyric(track.getLyric());
 			newTrack.setDescription(track.getDescription());
-
+			newTrack.setLiked(0L);
+			newTrack.setListened(0L);
+			
 			AppUser appUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 			newTrack.setAppUser(appUser);
 
@@ -109,7 +111,7 @@ public class TrackServiceImpl implements ITrackService {
 			AppStatus defaultStatus = appStatusRepository.getDefaultAppStatus();
 			newTrack.setAppStatus(defaultStatus);
 
-			newTrack.setActive(false);
+			newTrack.setIsActive(Boolean.FALSE);
 
 			for (Long singerId : track.getSingerIds()) {
 				Artist singer = artistRepository.findSingerById(singerId);
@@ -287,7 +289,7 @@ public class TrackServiceImpl implements ITrackService {
 			}
 
 			track.setAppStatus(appStatus);
-			track.setActive(appStatus.isSetActive());
+			track.setIsActive(appStatus.getSetActive());
 
 			trackRepository.save(track);
 

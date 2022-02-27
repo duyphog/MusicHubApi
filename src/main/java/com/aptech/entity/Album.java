@@ -48,7 +48,7 @@ public class Album implements Serializable {
 	private String musicProduction;
 
 	@Column(name = "music_year")
-	private int musicYear;
+	private Integer musicYear;
 
 	@Column(name = "img_url")
 	private String imgUrl;
@@ -79,7 +79,7 @@ public class Album implements Serializable {
 	private Set<Track> tracks = new HashSet<>();
 	
 	@Column(name = "is_active")
-	private boolean isActive;
+	private Boolean isActive;
 
 	@CreationTimestamp
 	@Column(name = "date_new")

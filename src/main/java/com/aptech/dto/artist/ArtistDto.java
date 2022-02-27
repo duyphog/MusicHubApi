@@ -21,29 +21,29 @@ public class ArtistDto {
 
 	private Date birthday;
 
-	private boolean gender;
+	private Boolean gender;
 
 	private String avatarImgUrl;
-	
-	private String coverImgUrl;
-	
-	private boolean isComposer;
 
-	private boolean isSinger;
-	
-	private boolean isActive;
-	
+	private String coverImgUrl;
+
+	private Boolean isComposer;
+
+	private Boolean isSinger;
+
+	private Boolean isActive;
+
 	public static ArtistDto CreateFromEntity(Artist src) {
 		ArtistDto dest = new ArtistDto();
 
 		dest.id = src.getId();
 		dest.nickName = src.getNickName();
 		dest.birthday = src.getBirthday();
-		dest.gender = src.isGender();
+		dest.gender = src.getGender();
 		dest.avatarImgUrl = src.getAvatarImgUrl();
 		dest.coverImgUrl = src.getCoverImgUrl();
-		dest.isComposer = src.isComposer();
-		dest.isSinger = src.isSinger();
+		dest.isComposer = src.getIsComposer();
+		dest.isSinger = src.getIsSinger();
 
 		return dest;
 	}

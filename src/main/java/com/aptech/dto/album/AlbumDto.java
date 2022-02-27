@@ -30,7 +30,7 @@ public class AlbumDto {
 
 	private String musicProduction;
 
-	private int musicYear;
+	private Integer musicYear;
 
 	private String imgUrl;
 
@@ -38,7 +38,7 @@ public class AlbumDto {
 
 	private AppStatusDto appStatus;
 
-	private boolean isActive;
+	private Boolean isActive;
 
 	private List<ArtistDto> singers = new ArrayList<ArtistDto>();
 
@@ -56,7 +56,7 @@ public class AlbumDto {
 		dest.imgUrl = src.getImgUrl();
 		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
 		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
-		dest.isActive = src.isActive();
+		dest.isActive = src.getIsActive();
 
 		if (src.getSingers() != null)
 			for (Artist singer : src.getSingers()) {

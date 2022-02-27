@@ -45,13 +45,13 @@ public class VerificationToken implements Serializable {
 	private Date dateNew;
 
 	@Column(name = "is_send")
-	private boolean isSend;
+	private Boolean isSend;
 
 	@Column(name = "last_send")
 	private Date lastTime;
 
 	@Column(name = "is_verify")
-	private boolean isVerify;
+	private Boolean isVerify;
 
 	@Column(name = "verify_date")
 	private Date verifyDate;

@@ -51,7 +51,7 @@ public class AppUserDomain implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return this.appUser.isAccountNonLocked();
+		return this.appUser.getAccountNonLocked();
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class AppUserDomain implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return this.appUser.isEnabled();
+		return this.appUser.getEnabled();
 	}
 	
 	public String getEmail() {

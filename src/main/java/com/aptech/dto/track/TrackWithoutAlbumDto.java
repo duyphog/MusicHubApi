@@ -28,7 +28,7 @@ public class TrackWithoutAlbumDto {
 
 	private String musicProduction;
 
-	private int musicYear;
+	private Integer musicYear;
 
 	private String lyric;
 
@@ -38,11 +38,11 @@ public class TrackWithoutAlbumDto {
 
 	private AppStatusDto appStatus;
 
-	private boolean isActive;
+	private Boolean isActive;
 
-	private long liked;
+	private Long liked;
 
-	private long listened;
+	private Long listened;
 
 	private String trackUrl;
 
@@ -71,7 +71,7 @@ public class TrackWithoutAlbumDto {
 		dest.description = src.getDescription();
 		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
 		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
-		dest.isActive = src.isActive();
+		dest.isActive = src.getIsActive();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
 		dest.trackUrl = src.getTrackUrl();

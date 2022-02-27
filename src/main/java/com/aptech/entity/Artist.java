@@ -35,7 +35,7 @@ public class Artist implements Serializable {
 	private Date birthday;
 
 	@Column(name = "gender")
-	private boolean gender;
+	private Boolean gender;
 
 	@Column(name = "avatar_img_url")
 	private String avatarImgUrl;
@@ -44,11 +44,11 @@ public class Artist implements Serializable {
 	private String coverImgUrl;
 
 	@Column(name = "is_composer")
-	private boolean isComposer;
+	private Boolean isComposer;
 
 	@Column(name = "is_singer")
-	private boolean isSinger;
+	private Boolean isSinger;
 
 	@Column(name = "is_active")
-	private boolean isActive;
+	private Boolean isActive;
 }

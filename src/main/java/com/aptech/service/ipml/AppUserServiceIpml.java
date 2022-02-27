@@ -152,10 +152,10 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Token verified!");
 			}
 
-			vToken.setVerify(true);
+			vToken.setIsVerify(Boolean.TRUE);
 			vToken.setVerifyDate(AppUtils.getNow());
 
-			vToken.getAppUser().setEnabled(true);
+			vToken.getAppUser().setEnabled(Boolean.TRUE);
 
 			verificationTokenRepository.save(vToken);
 

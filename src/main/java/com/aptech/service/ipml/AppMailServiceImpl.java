@@ -57,14 +57,14 @@ public class AppMailServiceImpl implements IAppMailService {
 		vToken.setToken(UUID.randomUUID());
 		vToken.setAppUser(appUser);
 		vToken.setDateNew(AppUtils.getNow());
-		vToken.setVerify(false);
-		vToken.setSend(false);
+		vToken.setIsVerify(Boolean.FALSE);
+		vToken.setIsSend(Boolean.FALSE);
 
 		verificationTokenRepository.save(vToken);
 
 		boolean isSuccess = sendVerifyEmailRegister(appUser.getEmail(), vToken.getToken().toString());
 
-		vToken.setSend(isSuccess);
+		vToken.setIsSend(isSuccess);
 		vToken.setLastTime(AppUtils.getNow());
 
 		verificationTokenRepository.save(vToken);

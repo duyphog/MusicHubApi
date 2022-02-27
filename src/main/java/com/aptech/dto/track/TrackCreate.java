@@ -22,7 +22,7 @@ public class TrackCreate {
 
 	private String musicProduction;
 
-	private int musicYear;
+	private Integer musicYear;
 	
 	private String lyric;
 	

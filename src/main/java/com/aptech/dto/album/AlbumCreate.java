@@ -1,6 +1,7 @@
 package com.aptech.dto.album;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +21,8 @@ public class AlbumCreate {
 
 	private String musicProduction;
 
-	@NotEmpty
-	private int musicYear;
+	@NotNull
+	private Integer musicYear;
 
 	@NotEmpty
 	private MultipartFile imgFile;

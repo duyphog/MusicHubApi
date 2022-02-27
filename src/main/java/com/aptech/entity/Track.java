@@ -51,7 +51,7 @@ public class Track implements Serializable {
 	private String musicProduction;
 
 	@Column(name = "music_year")
-	private int musicYear;
+	private Integer musicYear;
 
 	@Column(name = "lyric")
 	private String lyric;
@@ -72,13 +72,13 @@ public class Track implements Serializable {
 	private AppStatus appStatus;
 
 	@Column(name = "is_active")
-	private boolean isActive;
+	private Boolean isActive;
 
 	@Column(name = "liked")
-	private long liked;
+	private Long liked;
 
 	@Column(name = "listened")
-	private long listened;
+	private Long listened;
 
 	@Column(name = "track_url")
 	private String trackUrl;

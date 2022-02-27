@@ -52,10 +52,10 @@ public class AppUser implements Serializable {
 	private String email;
 	
 	@Column(name = "enabled")
-	private boolean enabled;
+	private Boolean enabled;
 	
 	@Column(name = "account_non_locked")
-	private boolean accountNonLocked;
+	private Boolean accountNonLocked;
 
 	@JsonIgnoreProperties("appUsers")
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
