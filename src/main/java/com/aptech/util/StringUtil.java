@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public final class StringUtil {
 	public static final String ENCODING_UTF8 = "UTF-8";
 
@@ -223,5 +225,12 @@ public final class StringUtil {
 				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 
 		return generatedString;
+	}
+	
+	public static String getFileNameWithoutExtension(String fullname) {
+		if(fullname == null)
+			return null;
+		
+		return fullname.replaceFirst("[.][^.]+$", "");
 	}
 }

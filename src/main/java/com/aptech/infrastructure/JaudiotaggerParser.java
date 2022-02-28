@@ -34,6 +34,8 @@ public final class JaudiotaggerParser {
 				metaData.setAlbumArtist(getTagField(tag, FieldKey.ALBUM_ARTIST));
 				metaData.setAlbumName(getTagField(tag, FieldKey.ALBUM));
 				metaData.setArtist(getTagField(tag, FieldKey.ARTIST));
+				metaData.setComposer(getTagField(tag, FieldKey.COMPOSER));
+				metaData.setProducer(getTagField(tag, FieldKey.PRODUCER));
 				metaData.setDiscNumber(parseInteger(getTagField(tag, FieldKey.DISC_NO)));
 				metaData.setGenre(getTagField(tag, FieldKey.GENRE));
 				metaData.setLyric(getTagField(tag, FieldKey.LYRICS));

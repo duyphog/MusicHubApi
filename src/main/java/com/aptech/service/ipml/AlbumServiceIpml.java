@@ -1,8 +1,6 @@
 package com.aptech.service.ipml;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.constant.AppError;
-import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.MetaData;
@@ -27,10 +24,7 @@ import com.aptech.entity.Artist;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
-import com.aptech.handle.exception.NotAnAudioFileException;
-import com.aptech.handle.exception.NotAnImageFileException;
 import com.aptech.infrastructure.JaudiotaggerParser;
-import com.aptech.provider.FileManager;
 import com.aptech.provider.file.FileServiceFactory;
 import com.aptech.provider.file.FileType;
 import com.aptech.provider.file.IFileService;
@@ -44,7 +38,6 @@ import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
 import com.aptech.service.IAlbumService;
 import com.aptech.util.AppUtils;
-import com.aptech.util.FileUtil;
 import com.aptech.util.StringUtil;
 
 @Service
@@ -59,22 +52,20 @@ public class AlbumServiceIpml implements IAlbumService {
 	private GenreRepository genreRepository;
 	private AppStatusRepository appStatusRepository;
 
-	private FileManager fileManager;
 	private IFileService imageFileService;
 	private IFileService trackFileService;
 
 	@Autowired
 	public AlbumServiceIpml(AppUserRepository appUserRepository, AlbumRepository albumRepository,
 			CategoryRepository categoryRepository, ArtistRepository artistRepository, GenreRepository genreRepository,
-			AppStatusRepository appStatusRepository, FileManager fileManager) {
+			AppStatusRepository appStatusRepository) {
 		this.appUserRepository = appUserRepository;
 		this.albumRepository = albumRepository;
 		this.categoryRepository = categoryRepository;
 		this.artistRepository = artistRepository;
 		this.genreRepository = genreRepository;
 		this.appStatusRepository = appStatusRepository;
-		this.fileManager = fileManager;
-		
+
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
 		this.trackFileService = FileServiceFactory.getFileService(FileType.TRACK);
 	}
@@ -141,7 +132,7 @@ public class AlbumServiceIpml implements IAlbumService {
 	}
 
 	@Override
-	public AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws NotAnImageFileException {
+	public AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws UnsupportedFileTypeException {
 		try {
 
 			Album newAlbum = InitializeAlbumFromDto(album);
@@ -151,7 +142,7 @@ public class AlbumServiceIpml implements IAlbumService {
 			final AlbumDto dto = AlbumDto.CreateFromEntity(newAlbum);
 
 			return new AppServiceResult<AlbumDto>(true, 0, "Succeed!", dto);
-		} catch (NotAnImageFileException e) {
+		} catch (UnsupportedFileTypeException e) {
 			e.printStackTrace();
 
 			throw e;
@@ -170,36 +161,42 @@ public class AlbumServiceIpml implements IAlbumService {
 
 	@Override
 	public AppServiceResult<AlbumDto> createAlbumWithTracks(AlbumCreate album, MultipartFile[] files)
-			throws NotAnImageFileException, NotAnAudioFileException {
+			throws UnsupportedFileTypeException {
+		List<String> trackPaths = new ArrayList<String>();
 		try {
-
 			Album newAlbum = InitializeAlbumFromDto(album);
+			trackPaths.add(newAlbum.getImgPath());
 
 			for (MultipartFile trackFile : files) {
 				Track track = AttachTrackFileInfomation(trackFile);
-				
-//				track.setMusicProduction(newAlbum.getMusicProduction());
-//				track.setMusicYear(newAlbum.getMusicYear());
+
+				trackPaths.add(track.getTrackPath());
 				track.setCategory(newAlbum.getCategory());
 				track.setAppUser(newAlbum.getAppUser());
 				track.setUserNew(newAlbum.getUserNew());
 				track.setAppStatus(newAlbum.getAppStatus());
-				track.setSingers(newAlbum.getSingers());
-				track.setGenre(newAlbum.getGenres());
-				
+
+				if (track.getSingers().isEmpty())
+					track.setSingers(newAlbum.getSingers());
+
+				if (track.getGenres().isEmpty())
+					track.setGenres(newAlbum.getGenres());
+
 				track.setAlbum(newAlbum);
 				track.setIsActive(Boolean.FALSE);
-				
+
 				newAlbum.getTracks().add(track);
 			}
-			
+
 			albumRepository.save(newAlbum);
 
 			final AlbumDto dto = AlbumDto.CreateFromEntity(newAlbum);
 
 			return new AppServiceResult<AlbumDto>(true, 0, "Succeed!", dto);
-		} catch (NotAnImageFileException e) {
+		} catch (UnsupportedFileTypeException e) {
 			e.printStackTrace();
+
+			this.removeListFile(trackPaths);
 
 			throw e;
 		} catch (IllegalArgumentException e) {
@@ -210,6 +207,7 @@ public class AlbumServiceIpml implements IAlbumService {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 
+			this.removeListFile(trackPaths);
 			return new AppServiceResult<AlbumDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
 					null);
 		}
@@ -224,12 +222,14 @@ public class AlbumServiceIpml implements IAlbumService {
 				return new AppServiceResult<AlbumDto>(false, AppError.Validattion.errorCode(),
 						"Album id is not exist: " + id, null);
 			} else {
-				if(album.getTracks() != null)
+				if (album.getTracks() != null)
 					for (Track track : album.getTracks()) {
 						track.setAlbum(null);
-					};
-				
+					}
+				;
+
 				albumRepository.delete(album);
+				imageFileService.remove(album.getImgPath());
 			}
 
 			return AppBaseResult.GenarateIsSucceed();
@@ -296,7 +296,7 @@ public class AlbumServiceIpml implements IAlbumService {
 	}
 
 	private Album InitializeAlbumFromDto(AlbumCreate album)
-			throws IOException, NotAnImageFileException, IllegalArgumentException, UnsupportedFileTypeException {
+			throws IOException, IllegalArgumentException, UnsupportedFileTypeException {
 		Long countExistAlbumName = albumRepository.findContainsName(album.getName());
 
 		if (countExistAlbumName > 0) {
@@ -346,7 +346,7 @@ public class AlbumServiceIpml implements IAlbumService {
 		newAlbum.setAppUser(userLogedIn);
 		newAlbum.setUserNew(userLogedIn.getUsername());
 
-		if (album.getImgFile() != null) {				
+		if (album.getImgFile() != null) {
 			MediaFile mediaFile = imageFileService.upload(newAlbum.getName(), album.getImgFile());
 			newAlbum.setImgUrl(mediaFile.getPathUrl());
 			newAlbum.setImgPath(mediaFile.getPathFolder());
@@ -357,25 +357,78 @@ public class AlbumServiceIpml implements IAlbumService {
 
 		return newAlbum;
 	}
-	
-	private Track AttachTrackFileInfomation(MultipartFile trackFile) throws IOException, NotAnAudioFileException {
+
+	private Track AttachTrackFileInfomation(MultipartFile trackFile) throws IOException, UnsupportedFileTypeException {
 		Track track = new Track();
-		
-		MetaData metaData =  JaudiotaggerParser.getRawMetaData(FileUtil.convert(trackFile));
-		
+
+		MediaFile mediaFile = trackFileService
+				.upload(StringUtil.getFileNameWithoutExtension(trackFile.getOriginalFilename()), trackFile);
+
+		track.setTrackUrl(mediaFile.getPathUrl());
+		track.setTrackPath(mediaFile.getPathFolder());
+
+		MetaData metaData = JaudiotaggerParser.getRawMetaData(mediaFile.getFile());
+
 		track.setName(metaData.getTitle());
+		track.setMusicProduction(metaData.getProducer());
 		track.setLyric(metaData.getLyric());
 		track.setMusicYear(metaData.getYear());
 		track.setLiked(0L);
 		track.setListened(0L);
-		
-		Path songFolder = Paths.get(FileConstant.TRACK_FOLDER).toAbsolutePath().normalize();
 
-		String trackUrl = fileManager.uploadAudioFile(songFolder, AppUtils.getCurrentUsername(),
-				StringUtil.normalizeUri(track.getName()), trackFile);
-		
-		track.setTrackUrl(trackUrl);
+		TrySetComposerByName(track, metaData.getComposer());
+		TrySetSingerByName(track, metaData.getArtist());
+		TrySetGenreByName(track, metaData.getGenre());
 		
 		return track;
 	}
+
+	private void removeListFile(List<String> paths) {
+		if (paths == null || paths.isEmpty())
+			return;
+
+		paths.forEach(path -> {
+			trackFileService.remove(path);
+		});
+	}
+
+	private void TrySetComposerByName(Track track, String composerName) {
+		try {
+			if (!StringUtil.isBlank(composerName)) {
+				Artist composer = artistRepository.findComposerByNickName(composerName);
+				if (composer != null)
+					track.getComposers().add(composer);
+			}
+		} catch (Exception e) {
+			// nothing
+		}
+	}
+
+	private void TrySetSingerByName(Track track, String singerName) {
+		try {
+			if (!StringUtil.isBlank(singerName)) {
+				Artist singer = artistRepository.findSingerByNickName(singerName);
+				if (singer != null)
+					track.getSingers().add(singer);
+			}
+		} catch (Exception e) {
+			// nothing
+		}
+	}
+
+	private void TrySetGenreByName(Track track, String genreName) {
+		try {
+			if (!StringUtil.isBlank(genreName)) {
+				List<Genre> genres = genreRepository.findByName(genreName);
+				
+				if(genres != null) 
+					genres.forEach(genre -> {
+						track.getGenres().add(genre);
+					});
+			}
+		} catch (Exception e) {
+			// nothing
+		}
+	}
+
 }

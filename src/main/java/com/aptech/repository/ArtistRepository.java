@@ -23,4 +23,10 @@ public interface ArtistRepository extends JpaRepository<Artist, Long> {
 	
 	@Query("SELECT a FROM Artist a WHERE a.isActive = 1 and a.isComposer = 1 and a.id = :id")
 	public Artist findComposerById(@Param("id") Long id);
+	
+	@Query("SELECT a FROM Artist a WHERE a.isActive = 1 and a.isComposer = 1 and a.nickName = :nickName")
+	public Artist findComposerByNickName(@Param("nickName") String nickName); 
+	
+	@Query("SELECT a FROM Artist a WHERE a.isActive = 1 and a.isSinger = 1 and a.nickName = :nickName")
+	public Artist findSingerByNickName(@Param("nickName") String nickName); 
 }

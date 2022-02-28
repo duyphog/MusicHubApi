@@ -22,7 +22,7 @@ public class SecurityConstant {
 	public final static String[] PUBLIC_GET_URLS = {
 			"/genre",
 			"/myfile/images/**",
-			"/myfile/songs/**",
+			"/myfile/tracks/**",
 			"/common/**",
 			"/track/listened/**"
 	};

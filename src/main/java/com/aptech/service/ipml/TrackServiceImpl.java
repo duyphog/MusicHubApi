@@ -1,7 +1,5 @@
 package com.aptech.service.ipml;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.aptech.constant.AppError;
-import com.aptech.constant.FileConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.track.TrackCreate;
@@ -23,8 +20,11 @@ import com.aptech.entity.Artist;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
-import com.aptech.handle.exception.NotAnAudioFileException;
-import com.aptech.provider.FileManager;
+import com.aptech.provider.file.FileServiceFactory;
+import com.aptech.provider.file.FileType;
+import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.MediaFile;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AlbumRepository;
 import com.aptech.repository.AppStatusRepository;
 import com.aptech.repository.AppUserRepository;
@@ -34,7 +34,6 @@ import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.TrackRepository;
 import com.aptech.service.ITrackService;
 import com.aptech.util.AppUtils;
-import com.aptech.util.StringUtil;
 
 @Service
 public class TrackServiceImpl implements ITrackService {
@@ -48,22 +47,21 @@ public class TrackServiceImpl implements ITrackService {
 	private AppStatusRepository appStatusRepository;
 	private CategoryRepository categoryRepository;
 	private ArtistRepository artistRepository;
-
-	private FileManager fileManager;
+	private IFileService trackFileService;
 
 	@Autowired
 	public TrackServiceImpl(TrackRepository trackRepository, AppUserRepository appUserRepository,
-			FileManager fileManager, AlbumRepository albumRepository, GenreRepository genreRepository,
-			AppStatusRepository appStatusRepository, CategoryRepository categoryRepository,
-			ArtistRepository artistRepository) {
+			AlbumRepository albumRepository, GenreRepository genreRepository, AppStatusRepository appStatusRepository,
+			CategoryRepository categoryRepository, ArtistRepository artistRepository) {
 		this.trackRepository = trackRepository;
 		this.appUserRepository = appUserRepository;
-		this.fileManager = fileManager;
 		this.albumRepository = albumRepository;
 		this.genreRepository = genreRepository;
 		this.appStatusRepository = appStatusRepository;
 		this.categoryRepository = categoryRepository;
 		this.artistRepository = artistRepository;
+
+		this.trackFileService = FileServiceFactory.getFileService(FileType.TRACK);
 	}
 
 	@Override
@@ -73,7 +71,7 @@ public class TrackServiceImpl implements ITrackService {
 	}
 
 	@Override
-	public AppServiceResult<TrackDto> addTrack(TrackCreate track) throws NotAnAudioFileException {
+	public AppServiceResult<TrackDto> addTrack(TrackCreate track) throws UnsupportedFileTypeException {
 		try {
 			Track newTrack = new Track();
 			newTrack.setName(track.getName());
@@ -96,9 +94,10 @@ public class TrackServiceImpl implements ITrackService {
 			newTrack.setDescription(track.getDescription());
 			newTrack.setLiked(0L);
 			newTrack.setListened(0L);
-			
+
 			AppUser appUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 			newTrack.setAppUser(appUser);
+			newTrack.setUserNew(appUser.getUsername());
 
 			Category cat = categoryRepository.findById(track.getCategoryId()).orElse(null);
 			if (cat == null) {
@@ -144,16 +143,14 @@ public class TrackServiceImpl implements ITrackService {
 					return new AppServiceResult<TrackDto>(false, AppError.Validattion.errorCode(),
 							"GenreId: " + genreId + " is not exist!", null);
 				} else
-					newTrack.getGenre().add(genre);
+					newTrack.getGenres().add(genre);
 			}
 
 			if (track.getTrackFile() != null) {
-				Path songFolder = Paths.get(FileConstant.TRACK_FOLDER).toAbsolutePath().normalize();
+				MediaFile mediaFile = trackFileService.upload(track.getName(), track.getTrackFile());
 
-				String trackUrl = fileManager.uploadAudioFile(songFolder, AppUtils.getCurrentUsername(),
-						StringUtil.normalizeUri(track.getName()), track.getTrackFile());
-
-				newTrack.setTrackUrl(trackUrl);
+				newTrack.setTrackPath(mediaFile.getPathFolder());
+				newTrack.setTrackUrl(mediaFile.getPathUrl());
 			}
 
 			trackRepository.save(newTrack);
@@ -178,10 +175,10 @@ public class TrackServiceImpl implements ITrackService {
 	public AppBaseResult removeTrack(Long trackId) {
 		try {
 
-			Track track = trackRepository.getById(trackId);
+			Track track = trackRepository.findById(trackId).orElse(null);
 			if (track != null) {
 				trackRepository.delete(track);
-
+				trackFileService.remove(track.getTrackPath());
 				return AppBaseResult.GenarateIsSucceed();
 			} else {
 				logger.warn("Track is not exist: " + String.valueOf(trackId) + ", Cannot further process!");
@@ -233,12 +230,12 @@ public class TrackServiceImpl implements ITrackService {
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
-	
+
 	@Override
 	public AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId) {
 		try {
 			List<Track> tracks = trackRepository.findAllByAppStatusId(statusId);
-			
+
 			List<TrackDto> result = new ArrayList<TrackDto>();
 
 			tracks.forEach(item -> {
@@ -254,7 +251,7 @@ public class TrackServiceImpl implements ITrackService {
 					AppError.Unknown.errorMessage(), null);
 		}
 	}
-	
+
 	@Override
 	public AppBaseResult listenedTrack(Long trackId) {
 		try {

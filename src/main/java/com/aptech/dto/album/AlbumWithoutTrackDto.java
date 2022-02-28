@@ -10,6 +10,7 @@ import com.aptech.dto.genre.GenreDto;
 import com.aptech.entity.Album;
 import com.aptech.entity.Artist;
 import com.aptech.entity.Genre;
+import com.aptech.util.AppUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -49,7 +50,7 @@ public class AlbumWithoutTrackDto {
 		dest.name = src.getName();
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
-		dest.imgUrl = src.getImgUrl();
+		dest.imgUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImgUrl());
 		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
 		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
 		dest.isActive = src.getIsActive();

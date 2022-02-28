@@ -1,5 +1,7 @@
 package com.aptech.provider.file;
 
+import java.io.File;
+
 public class MediaFile {
 	String pathFolder;
 	String pathUrl;
@@ -26,5 +28,9 @@ public class MediaFile {
 
 	public void setPathUrl(String pathUrl) {
 		this.pathUrl = pathUrl;
+	}
+	
+	public File getFile() {
+		return new File(pathFolder);
 	}
 }

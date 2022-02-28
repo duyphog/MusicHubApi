@@ -3,6 +3,9 @@ package com.aptech.dto.track;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 import com.aptech.dto.appsatus.AppStatusDto;
 import com.aptech.dto.artist.ComposerDto;
 import com.aptech.dto.artist.SingerDto;
@@ -74,7 +77,7 @@ public class TrackWithoutAlbumDto {
 		dest.isActive = src.getIsActive();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
-		dest.trackUrl = src.getTrackUrl();
+		dest.trackUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(src.getTrackUrl()).toUriString();
 
 		dest.dateNew = src.getDateNew();
 		dest.dateEdit = src.getDateEdit();
@@ -91,8 +94,8 @@ public class TrackWithoutAlbumDto {
 				dest.composers.add(ComposerDto.CreateFromEntity(composer));
 			}
 
-		if (src.getGenre() != null)
-			for (Genre genre : src.getGenre()) {
+		if (src.getGenres() != null)
+			for (Genre genre : src.getGenres()) {
 				dest.genres.add(GenreDto.CreateFromEntity(genre));
 			}
 

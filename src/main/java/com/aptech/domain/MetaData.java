@@ -13,6 +13,8 @@ public class MetaData {
 	private Integer discNumber;
 	private Integer trackNumber;
 	private String title;
+	private String composer;
+	private String producer;
 	private String artist;
 	private String albumArtist;
 	private String albumName;

@@ -20,7 +20,7 @@ import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
-import com.aptech.handle.exception.NotAnAudioFileException;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.ITrackService;
 
 @RestController
@@ -55,7 +55,7 @@ public class TrackController {
 			@RequestParam(value = "composerIds", required = false) Long[] composerIds,
 			@RequestParam(value = "genreIds", required = false) Long[] genreIds,
 			@RequestParam(value = "trackFile", required = true) MultipartFile trackFile)
-			throws NotAnAudioFileException {
+			throws UnsupportedFileTypeException {
 
 		TrackCreate track = new TrackCreate(name, albumId, musicProduction, musicYear, lyric, description, categoryId,
 				singerIds, composerIds, genreIds, trackFile);

@@ -9,6 +9,6 @@ public class FileConstant {
 	public static final String TEMP_PROFILE_IMAGE_BASE_URL = "https://robohash.org/";
 
 	// Path
-	public static final String USER_IMAGE_PATH = "/myfile/images/";
-	public static final String TRACK_IMAGE_PATH = "/myfile/tracks/";
+	public static final String USER_URL_PATH = "/myfile/images/";
+	public static final String TRACK_URL_PATH = "/myfile/tracks/";
 }
