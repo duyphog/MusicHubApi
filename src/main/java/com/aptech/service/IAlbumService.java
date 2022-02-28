@@ -6,9 +6,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.SearchAlbumWithPagingParam;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumShort;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
+import com.aptech.dto.pagingation.PageDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface IAlbumService {
@@ -29,4 +32,6 @@ public interface IAlbumService {
 	AppServiceResult<List<AlbumDto>> getAlbumByAppStatus(Long statusId);
 
 	AppServiceResult<AlbumWithoutTrackDto> updateAppStatus(Long albumId, Long appStatusId);
+	
+	AppServiceResult<PageDto<AlbumShort>> searchAlbumWithPaging(SearchAlbumWithPagingParam params);
 }

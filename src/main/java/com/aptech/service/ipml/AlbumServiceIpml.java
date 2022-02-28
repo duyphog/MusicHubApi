@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +15,12 @@ import com.aptech.constant.AppError;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.MetaData;
+import com.aptech.domain.SearchAlbumWithPagingParam;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumShort;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
+import com.aptech.dto.pagingation.PageDto;
 import com.aptech.entity.Album;
 import com.aptech.entity.AppStatus;
 import com.aptech.entity.AppUser;
@@ -295,6 +299,43 @@ public class AlbumServiceIpml implements IAlbumService {
 		}
 	}
 
+	@Override
+	public AppServiceResult<PageDto<AlbumShort>> searchAlbumWithPaging(SearchAlbumWithPagingParam params) {
+		try {
+			Category category = categoryRepository.findById(params.getCategoryId()).orElse(null);
+			
+			Genre genre = params.getGenreId() == null ? null : genreRepository.findById(params.getGenreId()).orElse(null);
+			
+			if(category == null) {
+				logger.warn("CategoryId is not exist: " + params.getCategoryId());
+				
+				return new AppServiceResult<PageDto<AlbumShort>>(false, AppError.Validattion.errorCode(),
+						"CategoryId is not exist: " + params.getCategoryId(), null);
+			}
+			
+			if(params.getGenreId() != null && genre == null) {
+				logger.warn("GenreId is not exist: " + params.getGenreId());
+				
+				return new AppServiceResult<PageDto<AlbumShort>>(false, AppError.Validattion.errorCode(),
+						"GenreId is not exist: " + params.getGenreId(), null);
+			}
+				
+			Page<Album> results = params.getGenreId() == null
+					? albumRepository.findAllByIsActiveTrueAndCategory(category, params.getPageParam().getPageable())
+					: albumRepository.findAllByIsActiveTrueAndCategoryAndGenres(category, genre, params.getPageParam().getPageable());
+		
+			Page<AlbumShort> dtoPage = results.map(item -> AlbumShort.CreateFromEntity(item));
+			
+			return new AppServiceResult<PageDto<AlbumShort>>(true, 0, "Succeed!", new PageDto<AlbumShort>(dtoPage));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<PageDto<AlbumShort>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+
 	private Album InitializeAlbumFromDto(AlbumCreate album)
 			throws IOException, IllegalArgumentException, UnsupportedFileTypeException {
 		Long countExistAlbumName = albumRepository.findContainsName(album.getName());
@@ -379,7 +420,7 @@ public class AlbumServiceIpml implements IAlbumService {
 		TrySetComposerByName(track, metaData.getComposer());
 		TrySetSingerByName(track, metaData.getArtist());
 		TrySetGenreByName(track, metaData.getGenre());
-		
+
 		return track;
 	}
 
@@ -420,8 +461,8 @@ public class AlbumServiceIpml implements IAlbumService {
 		try {
 			if (!StringUtil.isBlank(genreName)) {
 				List<Genre> genres = genreRepository.findByName(genreName);
-				
-				if(genres != null) 
+
+				if (genres != null)
 					genres.forEach(genre -> {
 						track.getGenres().add(genre);
 					});
@@ -430,5 +471,4 @@ public class AlbumServiceIpml implements IAlbumService {
 			// nothing
 		}
 	}
-
 }

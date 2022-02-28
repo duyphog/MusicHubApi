@@ -75,7 +75,7 @@ public class AppUser implements Serializable {
 	private UserInfo userInfo;
 	
 	@JsonIgnoreProperties("appUser")
-	@OneToMany(mappedBy = "appUser")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "appUser")
 	private Set<VerificationToken> verificationTokens;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
