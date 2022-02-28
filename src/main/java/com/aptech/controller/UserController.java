@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
 
+import com.aptech.entity.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -98,6 +100,15 @@ public class UserController {
 		UserLoginRes res = new UserLoginRes(appUserDetails.getUserId(), appUserDetails.getUsername(), userToken);
 
 		return ResponseEntity.ok(new HttpResponseSuccess<UserLoginRes>(res));
+	}
+
+	@GetMapping
+	public ResponseEntity<HttpResponse> getUsers() {
+
+		AppServiceResult<List<AppUser>> result = appUserService.getUsers();
+		System.out.println(result.getData());
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AppUser>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 
 	@GetMapping("/profiles")

@@ -1,7 +1,9 @@
  package com.aptech.service;
 
+import java.util.List;
 import java.util.UUID;
 
+import com.aptech.entity.AppUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +21,8 @@ public interface IAppUserService {
 	AppBaseResult register(UserRegister userRegister);
 
 	AppBaseResult verifyEmail(UUID token);
+
+	AppServiceResult<List<AppUser>> getUsers();
 	
 	AppServiceResult<UserInfoDtoRes> getProfile(Long userId);
 	

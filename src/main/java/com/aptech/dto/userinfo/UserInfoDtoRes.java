@@ -1,5 +1,6 @@
 package com.aptech.dto.userinfo;
 
+import com.aptech.entity.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
