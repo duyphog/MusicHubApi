@@ -1,7 +1,9 @@
 package com.aptech.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.aptech.dto.album.AlbumDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,16 +45,25 @@ public class TrackController {
 //				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 //	}
 
+	@GetMapping
+	public ResponseEntity<HttpResponse> getTracks() {
+
+		AppServiceResult<List<TrackDto>> result = trackService.getTracks();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<TrackDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+
 	@PostMapping
 	public ResponseEntity<HttpResponse> addTrack(@RequestParam(value = "name", required = true) String name,
 			@RequestParam(value = "albumId", required = false) Long albumId,
 			@RequestParam(value = "musicProduction", required = false) String musicProduction,
 			@RequestParam(value = "musicYear", required = false) int musicYear,
-			@RequestParam(value = "lyric") String lyric,
+			@RequestParam(value = "lyric", required = false) String lyric,
 			@RequestParam(value = "description", required = false) String description,
 			@RequestParam(value = "categoryId", required = false) Long categoryId,
 			@RequestParam(value = "singerIds", required = true) Long[] singerIds,
-			@RequestParam(value = "composerIds", required = false) Long[] composerIds,
+			@RequestParam(value = "composerIds", required = false, defaultValue = "") Long[] composerIds,
 			@RequestParam(value = "genreIds", required = false) Long[] genreIds,
 			@RequestParam(value = "trackFile", required = true) MultipartFile trackFile)
 			throws NotAnAudioFileException {

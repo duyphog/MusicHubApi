@@ -1,8 +1,8 @@
 package com.aptech.constant;
 
 public class FileConstant {
-    private static final String IMAGE_FOLDER = System.getProperty("user.home") + "/Documents/MyDoc/Aptech/Aptech/springboot/e-project/static-file/images/";
-    public static final String TRACK_FOLDER = System.getProperty("user.home") + "/Documents/MyDoc/Aptech/Aptech/springboot/e-project/static-file/songs/";
+    private static final String IMAGE_FOLDER = "E:/APTECH/Study/Project/4/Documents/images/";
+    public static final String TRACK_FOLDER = "E:/APTECH/Study/Project/4/Documents/songs/";
     
     public static String IMAGE_FOLDER_DEFAULT = IMAGE_FOLDER;
     public static final String USER_IMAGE_FOLDER = IMAGE_FOLDER + "users/";

@@ -5,6 +5,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.aptech.dto.album.AlbumDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,26 @@ public class TrackServiceImpl implements ITrackService {
 		this.appStatusRepository = appStatusRepository;
 		this.categoryRepository = categoryRepository;
 		this.artistRepository = artistRepository;
+	}
+
+	@Override
+	public AppServiceResult<List<TrackDto>> getTracks() {
+		try {
+			List<Track> entities = trackRepository.findAll();
+
+			List<TrackDto> result = new ArrayList<TrackDto>();
+
+			entities.forEach(item -> {
+				result.add(TrackDto.CreateFromEntity(item));
+			});
+
+			return new AppServiceResult<List<TrackDto>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<TrackDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
 	}
 
 	@Override

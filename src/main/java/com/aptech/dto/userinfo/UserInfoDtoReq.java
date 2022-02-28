@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserInfoDtoReq {
 
-	@NotEmpty
 	private Long userId;
 
 	@NotEmpty

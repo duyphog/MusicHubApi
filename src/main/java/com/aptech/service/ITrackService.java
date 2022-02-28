@@ -9,6 +9,8 @@ import com.aptech.dto.track.TrackDto;
 import com.aptech.handle.exception.NotAnAudioFileException;
 
 public interface ITrackService {
+
+	AppServiceResult<List<TrackDto>> getTracks();
 	
 	AppServiceResult<TrackDto> getTrack();
 	
