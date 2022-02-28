@@ -24,6 +24,7 @@ public class SecurityConstant {
 			"/myfile/images/**",
 			"/myfile/tracks/**",
 			"/common/**",
-			"/track/listened/**"
+			"/track/listened/**",
+			"/album/search/**"
 	};
 }
