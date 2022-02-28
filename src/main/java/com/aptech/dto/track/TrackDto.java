@@ -3,7 +3,8 @@ package com.aptech.dto.track;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import com.aptech.dto.album.AlbumDto;
+
+import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.dto.appsatus.AppStatusDto;
 import com.aptech.dto.artist.ComposerDto;
 import com.aptech.dto.artist.SingerDto;
@@ -12,6 +13,7 @@ import com.aptech.dto.genre.GenreDto;
 import com.aptech.entity.Artist;
 import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
+import com.aptech.util.AppUtils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +29,7 @@ public class TrackDto {
 
 	private String name;
 
-	private AlbumDto album;
+	private AlbumWithoutTrackDto album;
 
 	private String musicProduction;
 
@@ -68,7 +70,7 @@ public class TrackDto {
 
 		dest.id = src.getId();
 		dest.name = src.getName();
-		dest.album = AlbumDto.CreateFromEntity(src.getAlbum());
+		dest.album = AlbumWithoutTrackDto.CreateFromEntity(src.getAlbum());
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
 		dest.lyric = src.getLyric();
@@ -78,7 +80,7 @@ public class TrackDto {
 		dest.isActive = src.getIsActive();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
-		dest.trackUrl = src.getTrackUrl();
+		dest.trackUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getTrackUrl());
 
 		dest.dateNew = src.getDateNew();
 		dest.dateEdit = src.getDateEdit();
@@ -95,8 +97,8 @@ public class TrackDto {
 				dest.composers.add(ComposerDto.CreateFromEntity(composer));
 			}
 
-		if (src.getGenre() != null)
-			for (Genre genre : src.getGenre()) {
+		if (src.getGenres() != null)
+			for (Genre genre : src.getGenres()) {
 				dest.genres.add(GenreDto.CreateFromEntity(genre));
 			}
 

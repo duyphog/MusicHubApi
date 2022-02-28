@@ -9,8 +9,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
-import com.aptech.handle.exception.NotAnAudioFileException;
-import com.aptech.handle.exception.NotAnImageFileException;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface IAlbumService {
 
@@ -20,10 +19,10 @@ public interface IAlbumService {
 
 	AppServiceResult<List<AlbumDto>> getAlbumForArtistId(Long userId);
 
-	AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws NotAnImageFileException;
+	AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws UnsupportedFileTypeException;
 
 	AppServiceResult<AlbumDto> createAlbumWithTracks(AlbumCreate album, MultipartFile[] files)
-			throws NotAnImageFileException, NotAnAudioFileException;
+			throws UnsupportedFileTypeException;
 
 	AppBaseResult deleteAlbum(Long id);
 

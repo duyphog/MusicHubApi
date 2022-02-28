@@ -1,8 +1,6 @@
 package com.aptech.service.ipml;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,7 +36,6 @@ import com.aptech.entity.AppUser;
 import com.aptech.entity.Track;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
-import com.aptech.provider.FileManager;
 import com.aptech.provider.file.FileServiceFactory;
 import com.aptech.provider.file.FileType;
 import com.aptech.provider.file.IFileService;
@@ -74,20 +71,20 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 	private TrackRepository trackRepository;
 
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-	
+
 	private IFileService imageFileService;
 
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
 			VerificationTokenRepository verificationTokenRepository, IAppMailService appMailService,
-			TrackRepository trackRepository, BCryptPasswordEncoder bCryptPasswordEncoder, FileManager fileManager) {
+			TrackRepository trackRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.appUserRepository = appUserRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
 		this.appRoleRepository = appRoleRepository;
 		this.appMailService = appMailService;
 		this.trackRepository = trackRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-		
+
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
 	}
 
@@ -212,7 +209,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 				// TODO: Implement mapping
 				userInfoDto.setFirstName(user.getUserInfo().getFirstName());
 				userInfoDto.setLastName(user.getUserInfo().getLastName());
-				userInfoDto.setAvatarImg(user.getUserInfo().getAvatarImg());
+				userInfoDto.setAvatarImg(
+						AppUtils.createLinkOnCurrentHttpServletRequest(user.getUserInfo().getAvatarImg()));
 				userInfoDto.setStory(user.getUserInfo().getStory());
 			}
 
@@ -326,7 +324,8 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 				appUserRepository.save(user);
 
-				return new AppServiceResult<String>(true, 0, "Succeed!", ServletUriComponentsBuilder.fromCurrentContextPath().path(mediaFile.getPathUrl()).toUriString());
+				return new AppServiceResult<String>(true, 0, "Succeed!", ServletUriComponentsBuilder
+						.fromCurrentContextPath().path(mediaFile.getPathUrl()).toUriString());
 			} else {
 				logger.warn("Image file is not null, Cannot further process!");
 
@@ -379,20 +378,21 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 
 			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
-			
-			if(track == null) {
+
+			if (track == null) {
 				logger.warn("TrackId is not exist: " + dto.getTrackId() + ", Cannot further process!");
 
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "TrackId is not exist: " + dto.getTrackId());
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"TrackId is not exist: " + dto.getTrackId());
 			}
 
-			if(dto.getIsAdd())
+			if (dto.getIsAdd())
 				user.getWhiteList().add(track);
 			else
 				user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
-			
+
 			appUserRepository.save(user);
-			
+
 			return AppBaseResult.GenarateIsSucceed();
 		} catch (Exception e) {
 			e.printStackTrace();

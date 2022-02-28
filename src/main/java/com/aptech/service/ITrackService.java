@@ -6,7 +6,7 @@ import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
-import com.aptech.handle.exception.NotAnAudioFileException;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface ITrackService {
 
@@ -14,7 +14,7 @@ public interface ITrackService {
 	
 	AppServiceResult<TrackDto> getTrack();
 	
-	AppServiceResult<TrackDto> addTrack(TrackCreate track) throws NotAnAudioFileException;
+	AppServiceResult<TrackDto> addTrack(TrackCreate track) throws UnsupportedFileTypeException;
 	
 	AppServiceResult<TrackDto> updateTrack();
 	

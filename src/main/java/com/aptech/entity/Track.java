@@ -99,7 +99,7 @@ public class Track implements Serializable {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	@JoinTable(name = "track_genre", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "genre_id") })
-	private Set<Genre> genre = new HashSet<>();
+	private Set<Genre> genres = new HashSet<>();
 
 	@CreationTimestamp
 	@Column(name = "date_new")

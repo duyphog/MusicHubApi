@@ -8,8 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
@@ -20,12 +18,11 @@ import com.aptech.provider.file.IFileService;
 import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.provider.file.util.DateUtil;
+import com.aptech.provider.file.util.FileUtil;
 import com.aptech.util.StringUtil;
 
 @Service
 public final class ImageFileService implements IFileService {
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-
 	private final String imageExtensionSave = ".jpg";
 
 	private final String[] mimeTypeSupport = { MimeTypeUtils.IMAGE_JPEG_VALUE, MimeTypeUtils.IMAGE_GIF_VALUE,
@@ -55,19 +52,11 @@ public final class ImageFileService implements IFileService {
 		Files.deleteIfExists(Paths.get(imageFolder + fileName));
 		Files.copy(file.getInputStream(), imageFolder.resolve(fileName), REPLACE_EXISTING);
 
-		return new MediaFile(imageFolder + fileName, FileConstant.USER_IMAGE_PATH + fileName);
+		return new MediaFile(imageFolder + "/" + fileName, FileConstant.USER_URL_PATH + fileName);
 	}
 
 	@Override
 	public Boolean remove(String pathFile) {
-		try {
-			Files.deleteIfExists(Paths.get(pathFile));
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-
-			return false;
-		}
+		return FileUtil.deleteFile(pathFile);
 	}
 }

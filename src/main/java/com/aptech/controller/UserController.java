@@ -101,7 +101,7 @@ public class UserController {
 	}
 
 	@GetMapping("/profiles")
-	public ResponseEntity<HttpResponse> getProfiles(@Valid @RequestParam Long userId) {
+	public ResponseEntity<HttpResponse> getProfiles(@Valid @RequestParam(value = "id") Long userId) {
 
 		AppServiceResult<UserInfoDtoRes> result = appUserService.getProfile(userId);
 

@@ -20,8 +20,7 @@ import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
-import com.aptech.handle.exception.NotAnAudioFileException;
-import com.aptech.handle.exception.NotAnImageFileException;
+import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.IAlbumService;
 
 @RestController
@@ -71,7 +70,7 @@ public class AlbumController {
 			@RequestParam(value = "singerIds", required = true) Long[] singerIds,
 			@RequestParam(value = "genreIds", required = true) Long[] genreIds,
 			@RequestParam(value = "trackFiles", required = false) MultipartFile[] trackFiles)
-			throws NotAnImageFileException, NotAnAudioFileException {
+			throws UnsupportedFileTypeException {
 
 		AlbumCreate newAlbum = new AlbumCreate(name, musicProduction, musicYear, imgFile, categoryId, singerIds,
 				genreIds);
