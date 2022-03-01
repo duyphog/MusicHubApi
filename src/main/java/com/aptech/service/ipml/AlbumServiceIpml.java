@@ -15,7 +15,7 @@ import com.aptech.constant.AppError;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.MetaData;
-import com.aptech.domain.SearchAlbumWithPagingParam;
+import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.album.AlbumShort;
@@ -300,7 +300,7 @@ public class AlbumServiceIpml implements AlbumService {
 	}
 
 	@Override
-	public AppServiceResult<PageDto<AlbumShort>> searchAlbumWithPaging(SearchAlbumWithPagingParam params) {
+	public AppServiceResult<PageDto<AlbumShort>> searchAlbumWithPaging(SearchWithPagingParam params) {
 		try {
 			Category category = categoryRepository.findById(params.getCategoryId()).orElse(null);
 			

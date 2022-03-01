@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.domain.SearchAlbumWithPagingParam;
+import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
@@ -52,7 +52,7 @@ public class AlbumController {
 			@RequestParam(name = "page-number", required = false, defaultValue = "0") int pageNumber,
 			@RequestParam(name = "page-size", required = false, defaultValue = "30") int pageSize) {
 
-		SearchAlbumWithPagingParam params = new SearchAlbumWithPagingParam();
+		SearchWithPagingParam params = new SearchWithPagingParam();
 		params.setCategoryId(categoryId);
 		params.setGenreId(genreId == 0 ? null : genreId);
 		params.getPageParam().setPageIndex(pageNumber);

@@ -7,13 +7,17 @@ import com.aptech.dto.album.AlbumDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.aptech.constant.AppError;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.SearchWithPagingParam;
+import com.aptech.dto.pagingation.PageDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.entity.Album;
 import com.aptech.entity.AppStatus;
 import com.aptech.entity.AppUser;
@@ -319,6 +323,60 @@ public class TrackServiceImpl implements TrackService {
 
 			return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
 					null);
+		}
+	}
+
+	@Override
+	public AppServiceResult<TrackDto> getTrack(Long trackId) {
+		try {
+			Track track = trackRepository.findById(trackId).orElse(null);
+
+			return track == null
+					? new AppServiceResult<TrackDto>(false, AppError.Validattion.errorCode(), "Track id is not exist: " + trackId, null)
+					: new AppServiceResult<TrackDto>(true, 0, "Succeed!", TrackDto.CreateFromEntity(track));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+					null);
+		}
+	}
+
+	@Override
+	public AppServiceResult<PageDto<TrackShort>> searchByCategoryAndGenre(SearchWithPagingParam params) {
+		try {
+			Category category = categoryRepository.findById(params.getCategoryId()).orElse(null);
+			
+			Genre genre = params.getGenreId() == null ? null : genreRepository.findById(params.getGenreId()).orElse(null);
+			
+			if(category == null) {
+				logger.warn("CategoryId is not exist: " + params.getCategoryId());
+				
+				return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Validattion.errorCode(),
+						"CategoryId is not exist: " + params.getCategoryId(), null);
+			}
+			
+			if(params.getGenreId() != null && genre == null) {
+				logger.warn("GenreId is not exist: " + params.getGenreId());
+				
+				return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Validattion.errorCode(),
+						"GenreId is not exist: " + params.getGenreId(), null);
+			}
+				
+			Page<Track> results = params.getGenreId() == null
+					? trackRepository.findAllByIsActiveTrueAndCategory(category, params.getPageParam().getPageable())
+					: trackRepository.findAllByIsActiveTrueAndCategoryAndGenres(category, genre, params.getPageParam().getPageable());
+		
+			Page<TrackShort> dtoPage = results.map(item -> TrackShort.CreateFromEntity(item));
+			
+			return new AppServiceResult<PageDto<TrackShort>>(true, 0, "Succeed!", new PageDto<TrackShort>(dtoPage));
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
 		}
 	}
 

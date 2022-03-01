@@ -25,6 +25,8 @@ public class SecurityConstant {
 			"/myfile/tracks/**",
 			"/common/**",
 			"/track/listened/**",
+			"/track/single/**",
+			"/track/search/**",
 			"/album/search/**",
 			"/myfile/dowload/**",
 	};
