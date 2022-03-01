@@ -123,7 +123,7 @@ public class TrackController {
 	}
 	
 	@GetMapping(path = "/search")
-	public ResponseEntity<HttpResponse> getAlbumsByParam(@RequestParam(name = "category-id") long categoryId,
+	public ResponseEntity<HttpResponse> getTracksByParam(@RequestParam(name = "category-id") long categoryId,
 			@RequestParam(name = "genre-id", required = false, defaultValue = "0") long genreId,
 			@RequestParam(name = "page-number", required = false, defaultValue = "0") int pageNumber,
 			@RequestParam(name = "page-size", required = false, defaultValue = "30") int pageSize) {
