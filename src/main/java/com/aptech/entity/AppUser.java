@@ -70,7 +70,7 @@ public class AppUser implements Serializable {
     private Set<AppAuthority> authorities;
 
 	@JsonIgnoreProperties("appUser")
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "userinfo_id", referencedColumnName = "id")
 	private UserInfo userInfo;
 	

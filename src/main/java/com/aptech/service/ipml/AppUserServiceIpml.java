@@ -28,6 +28,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.user.UserStatus;
 import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
@@ -391,6 +392,28 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 			else
 				user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
 
+			appUserRepository.save(user);
+
+			return AppBaseResult.GenarateIsSucceed();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
+	}
+
+	@Override
+	public AppBaseResult updateActive(UserStatus userStatus) {
+		try {
+			AppUser user = appUserRepository.findById(userStatus.getUserId()).orElse(null);
+			if(user == null) {
+				logger.warn("UserId is not exist: " + userStatus.getUserId() + ", Cannot further process!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"UserId is not exist: " + userStatus.getUserId());
+			}
+			
+			user.setEnabled(userStatus.getIsActive());
 			appUserRepository.save(user);
 
 			return AppBaseResult.GenarateIsSucceed();
