@@ -225,8 +225,7 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 				// TODO: Implement mapping
 				userInfoDto.setFirstName(user.getUserInfo().getFirstName());
 				userInfoDto.setLastName(user.getUserInfo().getLastName());
-				userInfoDto.setAvatarImg(
-						AppUtils.createLinkOnCurrentHttpServletRequest(user.getUserInfo().getAvatarImg()));
+				userInfoDto.setAvatarImg(user.getUserInfo().getAvatarImg());
 				userInfoDto.setStory(user.getUserInfo().getStory());
 			}
 

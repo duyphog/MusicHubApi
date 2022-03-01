@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -107,7 +108,6 @@ public class UserController {
 	public ResponseEntity<HttpResponse> getUsers() {
 
 		AppServiceResult<List<AppUser>> result = appUserService.getUsers();
-		System.out.println(result.getData());
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AppUser>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}

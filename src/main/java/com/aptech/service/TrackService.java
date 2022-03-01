@@ -8,7 +8,7 @@ import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
-public interface ITrackService {
+public interface TrackService {
 
 	AppServiceResult<List<TrackDto>> getTracks();
 	
