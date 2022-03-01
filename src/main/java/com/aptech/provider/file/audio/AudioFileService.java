@@ -11,7 +11,7 @@ import java.util.Arrays;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.aptech.provider.file.FileConstant;
-import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.FileService;
 import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.provider.file.util.DateUtil;
@@ -19,7 +19,7 @@ import com.aptech.provider.file.util.FileUtil;
 import com.aptech.provider.file.util.StringUtil;
 
 @Service
-public class AudioFileService implements IFileService {
+public class AudioFileService implements FileService {
 
 	private final String[] mimeTypeSupport = { "mp3", "wav", "m4a", "audio/mpeg" };
 

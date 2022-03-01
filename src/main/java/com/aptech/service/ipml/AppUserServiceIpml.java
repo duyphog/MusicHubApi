@@ -31,6 +31,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.user.UserStatus;
 import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
@@ -41,15 +42,15 @@ import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
 import com.aptech.provider.file.FileServiceFactory;
 import com.aptech.provider.file.FileType;
-import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.FileService;
 import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.TrackRepository;
 import com.aptech.repository.VerificationTokenRepository;
-import com.aptech.service.IAppUserService;
-import com.aptech.service.IAppMailService;
+import com.aptech.service.AppUserService;
+import com.aptech.service.AppMailService;
 import com.aptech.util.AppUtils;
 import com.aptech.util.StringUtil;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -59,7 +60,7 @@ import lombok.SneakyThrows;
 
 @Service
 @Qualifier(BeanIdConstant.USER_DETAIL_SERVICE)
-public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
+public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 
 	private final Logger logger = LoggerFactory.getLogger(AppUserServiceIpml.class);
 
@@ -69,17 +70,17 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 
 	private AppRoleRepository appRoleRepository;
 
-	private IAppMailService appMailService;
+	private AppMailService appMailService;
 
 	private TrackRepository trackRepository;
 
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	private IFileService imageFileService;
+	private FileService imageFileService;
 
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
-			VerificationTokenRepository verificationTokenRepository, IAppMailService appMailService,
+			VerificationTokenRepository verificationTokenRepository, AppMailService appMailService,
 			TrackRepository trackRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.appUserRepository = appUserRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
@@ -406,6 +407,28 @@ public class AppUserServiceIpml implements IAppUserService, UserDetailsService {
 			else
 				user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
 
+			appUserRepository.save(user);
+
+			return AppBaseResult.GenarateIsSucceed();
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
+	}
+
+	@Override
+	public AppBaseResult updateActive(UserStatus userStatus) {
+		try {
+			AppUser user = appUserRepository.findById(userStatus.getUserId()).orElse(null);
+			if(user == null) {
+				logger.warn("UserId is not exist: " + userStatus.getUserId() + ", Cannot further process!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"UserId is not exist: " + userStatus.getUserId());
+			}
+			
+			user.setEnabled(userStatus.getIsActive());
 			appUserRepository.save(user);
 
 			return AppBaseResult.GenarateIsSucceed();

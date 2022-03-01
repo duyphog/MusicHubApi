@@ -39,12 +39,13 @@ import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserLogin;
 import com.aptech.dto.user.UserLoginRes;
 import com.aptech.dto.user.UserRegister;
+import com.aptech.dto.user.UserStatus;
 import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.infrastructure.AppJwtTokenProvider;
 import com.aptech.provider.file.UnsupportedFileTypeException;
-import com.aptech.service.IAppUserService;
+import com.aptech.service.AppUserService;
 
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
@@ -52,7 +53,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 @RequestMapping("/user")
 public class UserController {
 
-	private IAppUserService appUserService;
+	private AppUserService appUserService;
 
 	private AuthenticationManager authenticationManager;
 
@@ -62,7 +63,7 @@ public class UserController {
 	private String urlLoginApp;
 
 	@Autowired
-	public UserController(IAppUserService appUserService, AuthenticationManager authenticationManager,
+	public UserController(AppUserService appUserService, AuthenticationManager authenticationManager,
 			AppJwtTokenProvider appJwtTokenProvider) {
 		this.appJwtTokenProvider = appJwtTokenProvider;
 		this.authenticationManager = authenticationManager;
@@ -177,6 +178,15 @@ public class UserController {
 	public ResponseEntity<HttpResponse> updateWhiteList(@Valid @RequestBody UserWhiteList dto) {
 
 		AppBaseResult result = appUserService.updateWhiteList(dto);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@PostMapping("/update-status")
+	public ResponseEntity<HttpResponse> updateStatus(@Valid @RequestBody UserStatus userStatus) {
+
+		AppBaseResult result = appUserService.updateActive(userStatus);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));

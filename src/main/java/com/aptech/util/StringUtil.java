@@ -1,19 +1,12 @@
 package com.aptech.util;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.*;
-import java.text.Normalizer.Form;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
-import org.springframework.web.multipart.MultipartFile;
 
 public final class StringUtil {
 	public static final String ENCODING_UTF8 = "UTF-8";

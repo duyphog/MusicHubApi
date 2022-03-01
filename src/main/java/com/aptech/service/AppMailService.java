@@ -2,7 +2,7 @@ package com.aptech.service;
 
 import com.aptech.entity.AppUser;
 
-public interface IAppMailService {
+public interface AppMailService {
 
 	void sendMailVerify(AppUser appUser);
 	

@@ -9,7 +9,7 @@ import com.aptech.dto.artist.SingerDto;
 import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
 
-public interface ICommonService {
+public interface CommonService {
 	AppServiceResult<List<SingerDto>> searchSinger(String searchString);
 
 	AppServiceResult<List<ComposerDto>> searchComposer(String searchString);

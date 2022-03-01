@@ -14,7 +14,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.provider.file.FileConstant;
-import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.FileService;
 import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.provider.file.util.DateUtil;
@@ -22,7 +22,7 @@ import com.aptech.provider.file.util.FileUtil;
 import com.aptech.util.StringUtil;
 
 @Service
-public final class ImageFileService implements IFileService {
+public final class ImageFileService implements FileService {
 	private final String imageExtensionSave = ".jpg";
 
 	private final String[] mimeTypeSupport = { MimeTypeUtils.IMAGE_JPEG_VALUE, MimeTypeUtils.IMAGE_GIF_VALUE,

@@ -11,7 +11,7 @@ public class FileServiceFactory {
 
 	}
 
-	public final static IFileService getFileService(FileType fileType) {
+	public final static FileService getFileService(FileType fileType) {
 		switch (fileType) {
 		case IMAGE:
 			return new ImageFileService();

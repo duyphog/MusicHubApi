@@ -1,6 +1,6 @@
 package com.aptech.service.ipml;
 
-import com.aptech.service.ILoginAttemptService;
+import com.aptech.service.LoginAttemptService;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Service;
 
 @Service 
-public class LoginAttemptServiceIpml implements ILoginAttemptService {
+public class LoginAttemptServiceIpml implements LoginAttemptService {
     private LoadingCache<String, Integer> loginAttemptCache;
 
     private static final int ATTEMPTS_INCREMENT = 1;

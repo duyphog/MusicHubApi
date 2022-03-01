@@ -24,16 +24,16 @@ import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.album.AlbumShort;
 import com.aptech.dto.pagingation.PageDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
-import com.aptech.service.IAlbumService;
+import com.aptech.service.AlbumService;
 
 @RestController
 @RequestMapping("/album")
 public class AlbumController {
 
-	private IAlbumService albumservice;
+	private AlbumService albumservice;
 
 	@Autowired
-	public AlbumController(IAlbumService albumservice) {
+	public AlbumController(AlbumService albumservice) {
 		this.albumservice = albumservice;
 	}
 

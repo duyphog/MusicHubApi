@@ -13,10 +13,10 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.genre.GenreDto;
 import com.aptech.entity.Genre;
 import com.aptech.repository.GenreRepository;
-import com.aptech.service.IGenreService;
+import com.aptech.service.GenreService;
 
 @Service
-public class GenreServiceImpl implements IGenreService {
+public class GenreServiceImpl implements GenreService {
 
 	private final Logger logger = LoggerFactory.getLogger(GenreServiceImpl.class);
 

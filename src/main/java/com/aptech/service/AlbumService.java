@@ -14,7 +14,7 @@ import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.dto.pagingation.PageDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
-public interface IAlbumService {
+public interface AlbumService {
 
 	AppServiceResult<List<AlbumDto>> getAlbums();
 
