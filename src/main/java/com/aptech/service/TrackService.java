@@ -4,8 +4,11 @@ import java.util.List;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.SearchWithPagingParam;
+import com.aptech.dto.pagingation.PageDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface TrackService {
@@ -29,4 +32,6 @@ public interface TrackService {
 	AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId);
 	
 	AppServiceResult<TrackDto> updateAppStatus(Long trackId, Long statusId);
+	
+	AppServiceResult<PageDto<TrackShort>> searchByCategoryAndGenre(SearchWithPagingParam params);
 }

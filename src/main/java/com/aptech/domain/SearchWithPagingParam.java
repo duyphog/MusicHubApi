@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchAlbumWithPagingParam {
+public class SearchWithPagingParam {
 	private Long categoryId;
 	private Long genreId;
 	private PageParam pageParam = new PageParam();

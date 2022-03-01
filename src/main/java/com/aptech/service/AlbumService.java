@@ -6,7 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
-import com.aptech.domain.SearchAlbumWithPagingParam;
+import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
 import com.aptech.dto.album.AlbumShort;
@@ -33,5 +33,7 @@ public interface AlbumService {
 
 	AppServiceResult<AlbumWithoutTrackDto> updateAppStatus(Long albumId, Long appStatusId);
 	
-	AppServiceResult<PageDto<AlbumShort>> searchAlbumWithPaging(SearchAlbumWithPagingParam params);
+	AppServiceResult<PageDto<AlbumShort>> searchAlbumWithPaging(SearchWithPagingParam params);
+	
+	
 }

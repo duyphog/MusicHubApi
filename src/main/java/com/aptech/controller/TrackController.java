@@ -15,11 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.pagingation.PageDto;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.TrackService;
 
@@ -116,6 +119,25 @@ public class TrackController {
 		AppServiceResult<List<TrackDto>> result = trackService.getTrackByAppStatus(statusId);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<TrackDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/search")
+	public ResponseEntity<HttpResponse> getAlbumsByParam(@RequestParam(name = "category-id") long categoryId,
+			@RequestParam(name = "genre-id", required = false, defaultValue = "0") long genreId,
+			@RequestParam(name = "page-number", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(name = "page-size", required = false, defaultValue = "30") int pageSize) {
+
+		SearchWithPagingParam params = new SearchWithPagingParam();
+		params.setCategoryId(categoryId);
+		params.setGenreId(genreId == 0 ? null : genreId);
+		params.getPageParam().setPageIndex(pageNumber);
+		params.getPageParam().setPageSize(pageSize);
+		params.getPageParam().setSortBy("dateNew");
+
+		AppServiceResult<PageDto<TrackShort>> result = trackService.searchByCategoryAndGenre(params);
+	
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<TrackShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
