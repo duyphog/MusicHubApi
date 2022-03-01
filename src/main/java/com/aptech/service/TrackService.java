@@ -12,6 +12,8 @@ public interface TrackService {
 	
 	AppServiceResult<TrackDto> getTrack();
 	
+	AppServiceResult<TrackDto> getTrack(Long id);
+	
 	AppServiceResult<TrackDto> addTrack(TrackCreate track) throws UnsupportedFileTypeException;
 	
 	AppServiceResult<TrackDto> updateTrack();

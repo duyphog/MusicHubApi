@@ -301,4 +301,21 @@ public class TrackServiceImpl implements TrackService {
 		}
 	}
 
+	@Override
+	public AppServiceResult<TrackDto> getTrack(Long trackId) {
+		try {
+			Track track = trackRepository.findById(trackId).orElse(null);
+
+			return track == null
+					? new AppServiceResult<TrackDto>(false, AppError.Validattion.errorCode(), "Track id is not exist: " + trackId, null)
+					: new AppServiceResult<TrackDto>(true, 0, "Succeed!", TrackDto.CreateFromEntity(track));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<TrackDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
+					null);
+		}
+	}
+
 }

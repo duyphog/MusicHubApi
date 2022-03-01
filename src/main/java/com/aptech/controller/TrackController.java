@@ -34,14 +34,14 @@ public class TrackController {
 		this.trackService = trackService;
 	}
 
-//	@GetMapping
-//	public ResponseEntity<HttpResponse> getAlbum() {
-//
-//		AppServiceResult<Iterable<GenreDto>> result = albumservice.getAlbum(1L);
-//
-//		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<GenreDto>>(result.getData()))
-//				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
-//	}
+	@RequestMapping(path = "/single/{trackId}", method = RequestMethod.GET)
+	public ResponseEntity<HttpResponse> getTrack(@PathVariable(value = "trackId", required = true) Long trackId) {
+
+		AppServiceResult<TrackDto> result = trackService.getTrack(trackId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<TrackDto>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
 
 	@PostMapping
 	public ResponseEntity<HttpResponse> addTrack(@RequestParam(value = "name", required = true) String name,
