@@ -11,16 +11,16 @@ import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.genre.GenreDto;
-import com.aptech.service.IGenreService;
+import com.aptech.service.GenreService;
 
 @RestController
 @RequestMapping("/genre")
 public class GenreController {
 	
-	private IGenreService genreService;
+	private GenreService genreService;
 	
 	@Autowired
-	public GenreController(IGenreService genreService) {
+	public GenreController(GenreService genreService) {
 		this.genreService = genreService;
 	}
 	

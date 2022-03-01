@@ -42,7 +42,7 @@ import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.infrastructure.AppJwtTokenProvider;
 import com.aptech.provider.file.UnsupportedFileTypeException;
-import com.aptech.service.IAppUserService;
+import com.aptech.service.AppUserService;
 
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
@@ -50,7 +50,7 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 @RequestMapping("/user")
 public class UserController {
 
-	private IAppUserService appUserService;
+	private AppUserService appUserService;
 
 	private AuthenticationManager authenticationManager;
 
@@ -60,7 +60,7 @@ public class UserController {
 	private String urlLoginApp;
 
 	@Autowired
-	public UserController(IAppUserService appUserService, AuthenticationManager authenticationManager,
+	public UserController(AppUserService appUserService, AuthenticationManager authenticationManager,
 			AppJwtTokenProvider appJwtTokenProvider) {
 		this.appJwtTokenProvider = appJwtTokenProvider;
 		this.authenticationManager = authenticationManager;

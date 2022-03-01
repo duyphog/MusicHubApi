@@ -16,11 +16,11 @@ import com.aptech.entity.AppUser;
 import com.aptech.entity.VerificationToken;
 import com.aptech.infrastructure.AppMailSender;
 import com.aptech.repository.VerificationTokenRepository;
-import com.aptech.service.IAppMailService;
+import com.aptech.service.AppMailService;
 import com.aptech.util.AppUtils;
 
 @Service
-public class AppMailServiceImpl implements IAppMailService {
+public class AppMailServiceImpl implements AppMailService {
 
 	private final Logger logger = LoggerFactory.getLogger(AppMailServiceImpl.class);
 

@@ -21,16 +21,16 @@ import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
-import com.aptech.service.ITrackService;
+import com.aptech.service.TrackService;
 
 @RestController
 @RequestMapping("/track")
 public class TrackController {
 
-	private ITrackService trackService;
+	private TrackService trackService;
 
 	@Autowired
-	public TrackController(ITrackService trackService) {
+	public TrackController(TrackService trackService) {
 		this.trackService = trackService;
 	}
 

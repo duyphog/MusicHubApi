@@ -12,8 +12,8 @@ import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.dto.appsatus.UpdateAppStatus;
 import com.aptech.dto.track.TrackDto;
-import com.aptech.service.IAlbumService;
-import com.aptech.service.ITrackService;
+import com.aptech.service.AlbumService;
+import com.aptech.service.TrackService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -21,11 +21,11 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @RequestMapping("/app-status")
 public class AppStatusController {
 
-	private IAlbumService albumservice;
-	private ITrackService trackService;
+	private AlbumService albumservice;
+	private TrackService trackService;
 
 	@Autowired
-	public AppStatusController(IAlbumService albumservice, ITrackService trackService) {
+	public AppStatusController(AlbumService albumservice, TrackService trackService) {
 		this.albumservice = albumservice;
 		this.trackService = trackService;
 	}

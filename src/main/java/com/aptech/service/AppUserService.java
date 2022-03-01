@@ -15,7 +15,7 @@ import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
-public interface IAppUserService {
+public interface AppUserService {
 	AppBaseResult register(UserRegister userRegister);
 
 	AppBaseResult verifyEmail(UUID token);

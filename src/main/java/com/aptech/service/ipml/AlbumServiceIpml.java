@@ -31,7 +31,7 @@ import com.aptech.entity.Track;
 import com.aptech.infrastructure.JaudiotaggerParser;
 import com.aptech.provider.file.FileServiceFactory;
 import com.aptech.provider.file.FileType;
-import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.FileService;
 import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AlbumRepository;
@@ -40,12 +40,12 @@ import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.ArtistRepository;
 import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
-import com.aptech.service.IAlbumService;
+import com.aptech.service.AlbumService;
 import com.aptech.util.AppUtils;
 import com.aptech.util.StringUtil;
 
 @Service
-public class AlbumServiceIpml implements IAlbumService {
+public class AlbumServiceIpml implements AlbumService {
 
 	private final Logger logger = LoggerFactory.getLogger(AlbumServiceIpml.class);
 
@@ -56,8 +56,8 @@ public class AlbumServiceIpml implements IAlbumService {
 	private GenreRepository genreRepository;
 	private AppStatusRepository appStatusRepository;
 
-	private IFileService imageFileService;
-	private IFileService trackFileService;
+	private FileService imageFileService;
+	private FileService trackFileService;
 
 	@Autowired
 	public AlbumServiceIpml(AppUserRepository appUserRepository, AlbumRepository albumRepository,

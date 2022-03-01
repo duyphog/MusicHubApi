@@ -22,7 +22,7 @@ import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
 import com.aptech.provider.file.FileServiceFactory;
 import com.aptech.provider.file.FileType;
-import com.aptech.provider.file.IFileService;
+import com.aptech.provider.file.FileService;
 import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AlbumRepository;
@@ -32,11 +32,11 @@ import com.aptech.repository.GenreRepository;
 import com.aptech.repository.ArtistRepository;
 import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.TrackRepository;
-import com.aptech.service.ITrackService;
+import com.aptech.service.TrackService;
 import com.aptech.util.AppUtils;
 
 @Service
-public class TrackServiceImpl implements ITrackService {
+public class TrackServiceImpl implements TrackService {
 
 	private final Logger logger = LoggerFactory.getLogger(TrackServiceImpl.class);
 
@@ -47,7 +47,7 @@ public class TrackServiceImpl implements ITrackService {
 	private AppStatusRepository appStatusRepository;
 	private CategoryRepository categoryRepository;
 	private ArtistRepository artistRepository;
-	private IFileService trackFileService;
+	private FileService trackFileService;
 
 	@Autowired
 	public TrackServiceImpl(TrackRepository trackRepository, AppUserRepository appUserRepository,

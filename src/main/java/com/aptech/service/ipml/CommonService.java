@@ -21,10 +21,9 @@ import com.aptech.repository.AppStatusRepository;
 import com.aptech.repository.ArtistRepository;
 import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
-import com.aptech.service.ICommonService;
 
 @Service
-public class CommonService implements ICommonService {
+public class CommonService implements com.aptech.service.CommonService {
 
 	private ArtistRepository artistRepository;
 	private CategoryRepository categoryRepository;

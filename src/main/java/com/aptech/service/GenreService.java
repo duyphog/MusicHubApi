@@ -3,7 +3,7 @@
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.genre.GenreDto;
 
-public interface IGenreService {
+public interface GenreService {
 	
 	AppServiceResult<Iterable<GenreDto>> getGenres();
 }

@@ -6,14 +6,14 @@ import org.springframework.security.authentication.event.AuthenticationSuccessEv
 import org.springframework.stereotype.Component;
 
 import com.aptech.domain.AppUserDomain;
-import com.aptech.service.ILoginAttemptService;
+import com.aptech.service.LoginAttemptService;
 
 @Component
 public class AuthenticationSuccessListener {
-    private ILoginAttemptService loginAttemptService;
+    private LoginAttemptService loginAttemptService;
 
     @Autowired
-    public AuthenticationSuccessListener(ILoginAttemptService loginAttemptService) {
+    public AuthenticationSuccessListener(LoginAttemptService loginAttemptService) {
         this.loginAttemptService = loginAttemptService;
     }
 

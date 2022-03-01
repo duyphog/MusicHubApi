@@ -17,16 +17,16 @@ import com.aptech.dto.artist.ComposerDto;
 import com.aptech.dto.artist.SingerDto;
 import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
-import com.aptech.service.ICommonService;
+import com.aptech.service.CommonService;
 
 @RestController
 @RequestMapping("/common")
 public class CommonController {
 
-	private ICommonService commonService;
+	private CommonService commonService;
 
 	@Autowired
-	public CommonController(ICommonService commonService) {
+	public CommonController(CommonService commonService) {
 		this.commonService = commonService;
 	}
 
