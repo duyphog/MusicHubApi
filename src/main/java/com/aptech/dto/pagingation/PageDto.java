@@ -31,5 +31,6 @@ public class PageDto<T> {
 		this.pageInfo.setIsFirst(page.isFirst());
 		this.pageInfo.setIsLast(page.isLast());
 		this.pageInfo.setNumberOfElement(page.getNumberOfElements());
+		this.pageInfo.setTotalElements(page.getTotalElements());
 	}
 }

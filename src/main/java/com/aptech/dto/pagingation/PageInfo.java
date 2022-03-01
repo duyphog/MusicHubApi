@@ -10,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageInfo {
+	private Long totalElements;
 	private Integer numberOfElement;
 	private Integer currentPage;
 	private Integer pageSize;
