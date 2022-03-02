@@ -2,6 +2,7 @@ package com.aptech.provider.file.image;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,8 @@ public final class ImageFileService implements FileService {
 		Files.deleteIfExists(Paths.get(imageFolder + fileName));
 		Files.copy(file.getInputStream(), imageFolder.resolve(fileName), REPLACE_EXISTING);
 
-		return new MediaFile(imageFolder + "/" + fileName, FileConstant.USER_URL_PATH + fileName);
+		return new MediaFile(Paths.get(imageFolder.toString(), File.separator, fileName).toString(), 
+				Paths.get(FileConstant.USER_URL_PATH, fileName).toString());
 	}
 
 	@Override
