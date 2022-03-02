@@ -47,6 +47,9 @@ public class Playlist implements Serializable {
 
 	@Column(name = "img_url")
 	private String imageUrl;
+	
+	@Column(name = "img_path")
+	private String imagePath;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })

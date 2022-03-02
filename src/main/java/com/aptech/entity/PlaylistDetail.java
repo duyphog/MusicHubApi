@@ -1,6 +1,7 @@
 package com.aptech.entity;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -12,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,6 +43,7 @@ public class PlaylistDetail implements Serializable {
 	@JoinColumn(name = "track_id", nullable = false)
 	private Track track;
 	
-	@Column(name = "row_numbers")
-	private Long rowNumber;
+	@CreationTimestamp
+	@Column(name = "date_new")
+	private Date dateNew;
 }
