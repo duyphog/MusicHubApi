@@ -54,7 +54,7 @@ public final class ImageFileService implements FileService {
 		Files.copy(file.getInputStream(), imageFolder.resolve(fileName), REPLACE_EXISTING);
 
 		return new MediaFile(Paths.get(imageFolder.toString(), File.separator, fileName).toString(), 
-				Paths.get(FileConstant.USER_URL_PATH, fileName).toString());
+				FileConstant.USER_URL_PATH + fileName);
 	}
 
 	@Override
