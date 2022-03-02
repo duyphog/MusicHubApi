@@ -414,6 +414,8 @@ public class AlbumServiceIpml implements AlbumService {
 		track.setMusicProduction(metaData.getProducer());
 		track.setLyric(metaData.getLyric());
 		track.setMusicYear(metaData.getYear());
+		track.setDurationSeconds(metaData.getDurationSeconds());
+		track.setBitRate(metaData.getBitRate());
 		track.setLiked(0L);
 		track.setListened(0L);
 

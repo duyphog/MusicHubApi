@@ -8,6 +8,7 @@ import com.aptech.dto.artist.ComposerDto;
 import com.aptech.dto.artist.SingerDto;
 import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
+import com.aptech.dto.playlist.PlaylistTypeDto;
 
 public interface CommonService {
 	AppServiceResult<List<SingerDto>> searchSinger(String searchString);
@@ -19,4 +20,6 @@ public interface CommonService {
 	AppServiceResult<List<GenreDto>> getGenres();
 	
 	AppServiceResult<List<AppStatusDto>> getAppStatus();
+	
+	AppServiceResult<List<PlaylistTypeDto>> getPlaylistTypes();
 }

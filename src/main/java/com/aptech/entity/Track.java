@@ -85,6 +85,12 @@ public class Track implements Serializable {
 	
 	@Column(name = "track_path")
 	private String trackPath;
+	
+	@Column(name = "duration_seconds", nullable = false)
+	private Integer durationSeconds;
+	
+	@Column(name = "bit_rate", nullable = false)
+	private Integer bitRate;
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	@JoinTable(name = "track_singer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {

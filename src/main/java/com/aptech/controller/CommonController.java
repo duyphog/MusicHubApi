@@ -17,6 +17,7 @@ import com.aptech.dto.artist.ComposerDto;
 import com.aptech.dto.artist.SingerDto;
 import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
+import com.aptech.dto.playlist.PlaylistTypeDto;
 import com.aptech.service.CommonService;
 
 @RestController
@@ -72,6 +73,15 @@ public class CommonController {
 		AppServiceResult<List<AppStatusDto>> result = commonService.getAppStatus();
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AppStatusDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/playlist-type")
+	public ResponseEntity<HttpResponse> getPlaylistType() {
+
+		AppServiceResult<List<PlaylistTypeDto>> result = commonService.getPlaylistTypes();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<PlaylistTypeDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
