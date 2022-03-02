@@ -50,6 +50,10 @@ public class TrackDto {
 	private Long listened;
 
 	private String trackUrl;
+	
+	private Integer durationSeconds;
+	
+	private Integer bitRate;
 
 	private List<SingerDto> singers = new ArrayList<SingerDto>();
 
@@ -81,7 +85,8 @@ public class TrackDto {
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
 		dest.trackUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getTrackUrl());
-
+		dest.durationSeconds = src.getDurationSeconds();
+		dest.bitRate = src.getBitRate();
 		dest.dateNew = src.getDateNew();
 		dest.dateEdit = src.getDateEdit();
 		dest.userNew = src.getUserNew();

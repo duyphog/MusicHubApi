@@ -48,6 +48,10 @@ public class TrackWithoutAlbumDto {
 	private Long listened;
 
 	private String trackUrl;
+	
+	private Integer durationSeconds;
+	
+	private Integer bitRate;
 
 	private List<SingerDto> singers = new ArrayList<SingerDto>();
 
@@ -78,7 +82,8 @@ public class TrackWithoutAlbumDto {
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
 		dest.trackUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(src.getTrackUrl()).toUriString();
-
+		dest.durationSeconds = src.getDurationSeconds();
+		dest.bitRate = src.getBitRate();
 		dest.dateNew = src.getDateNew();
 		dest.dateEdit = src.getDateEdit();
 		dest.userNew = src.getUserNew();

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.aptech.constant.AppError;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.MetaData;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.pagingation.PageDto;
 import com.aptech.dto.track.TrackCreate;
@@ -24,6 +25,7 @@ import com.aptech.entity.Artist;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
+import com.aptech.infrastructure.JaudiotaggerParser;
 import com.aptech.provider.file.FileServiceFactory;
 import com.aptech.provider.file.FileType;
 import com.aptech.provider.file.FileService;
@@ -155,8 +157,18 @@ public class TrackServiceImpl implements TrackService {
 
 				newTrack.setTrackPath(mediaFile.getPathFolder());
 				newTrack.setTrackUrl(mediaFile.getPathUrl());
-			}
+				
+				MetaData metaData = JaudiotaggerParser.getRawMetaData(mediaFile.getFile());
+				newTrack.setDurationSeconds(metaData.getDurationSeconds());
+				newTrack.setBitRate(metaData.getBitRate());
+				
+			} else {
+				logger.warn("Required audio file!");
 
+				return new AppServiceResult<TrackDto>(false, AppError.Validattion.errorCode(),
+						"Required audio file!", null);
+			}
+				
 			trackRepository.save(newTrack);
 
 			return new AppServiceResult<TrackDto>(true, 0, "Success", TrackDto.CreateFromEntity(newTrack));
