@@ -2,6 +2,9 @@ package com.aptech.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,7 +30,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "track")
+@Table(name = "playlist")
 public class Playlist implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -56,7 +60,7 @@ public class Playlist implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })
-	@JoinColumn(name = "playlist_typr_id", nullable = false)
+	@JoinColumn(name = "playlist_type_id", nullable = false)
 	private PlaylistType playlistType;
 
 	@Column(name = "is_public")
@@ -72,6 +76,9 @@ public class Playlist implements Serializable {
 			CascadeType.REFRESH })
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "playlist", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	private Set<PlaylistDetail> playlistDetails = new HashSet<>();
 
 	@CreationTimestamp
 	@Column(name = "date_new")
