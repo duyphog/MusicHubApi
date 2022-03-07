@@ -1,5 +1,7 @@
 package com.aptech.service.ipml;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -60,6 +62,24 @@ public class PlaylistServiceImpl implements PlaylistService {
 		this.trackRepository = trackRepository;
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
+	}
+
+	@Override
+	public AppServiceResult<List<PlaylistDto>> getPlaylists() {
+		List<Playlist> entities;
+		List<PlaylistDto> result = new ArrayList<>();
+		try {
+			entities = playlistRepository.findAll();
+			entities.forEach(playlist -> {
+				result.add(PlaylistDto.CreateFromEntity(playlist));
+			});
+
+			return new AppServiceResult<List<PlaylistDto>>(true, 0, "Succeed!", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<PlaylistDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
 	}
 
 	@Override
@@ -162,7 +182,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 			playlistRepository.save(newPlaylist);
 
-			return new AppServiceResult<PlaylistDto>(true, 0, "Succeed!", PlaylistDto.CreateFromEntity(playlist));
+			return new AppServiceResult<PlaylistDto>(true, 0, "Succeed!", PlaylistDto.CreateFromEntity(newPlaylist));
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -186,7 +206,13 @@ public class PlaylistServiceImpl implements PlaylistService {
 			}
 
 			if (dto.getIsRemove() == Boolean.TRUE) {
-				playlist.getPlaylistDetails().removeIf(item -> item.getTrack().getId() == dto.getTrackId());
+				System.out.println(playlist.getPlaylistDetails().size());
+				playlist.getPlaylistDetails().removeIf(item -> {
+					System.out.println(item.getTrack().getId() == dto.getTrackId());
+//					(item.getTrack().getId() == dto.getTrackId();)
+					return false;
+				});
+				System.out.println(playlist.getPlaylistDetails().size());
 			} else {
 				Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
 				if (track == null) {
@@ -217,9 +243,18 @@ public class PlaylistServiceImpl implements PlaylistService {
 	@Override
 	public AppBaseResult removePlaylist(Long playlistId) {
 		try {
-			playlistRepository.deleteById(playlistId);
-
-			return AppBaseResult.GenarateIsSucceed();
+			Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
+			if (playlist != null) {
+				playlistRepository.delete(playlist);
+				if (playlist.getImagePath() != null) {
+					imageFileService.remove(playlist.getImagePath());
+				}
+				return AppBaseResult.GenarateIsSucceed();
+			} else {
+				logger.warn("Playlist is not exist: " + String.valueOf(playlistId) + ", Cannot further process!");
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"Playlist is not exist: " + String.valueOf(playlistId));
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();

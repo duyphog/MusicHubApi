@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "playlist")
+@Table(name = "playlist_type")
 public class PlaylistType implements Serializable {
 
 	private static final long serialVersionUID = 1L;

@@ -13,6 +13,8 @@ import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.genre.GenreDto;
 import com.aptech.service.GenreService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/genre")
 public class GenreController {
@@ -27,7 +29,7 @@ public class GenreController {
 	@GetMapping
 	public ResponseEntity<HttpResponse> getGenres() {
 
-		AppServiceResult<Iterable<GenreDto>> result = genreService.getGenres();
+		AppServiceResult<List<GenreDto>> result = genreService.getGenres();
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<GenreDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));

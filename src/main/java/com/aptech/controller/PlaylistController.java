@@ -2,14 +2,10 @@ package com.aptech.controller;
 
 import javax.validation.Valid;
 
+import com.aptech.dto.track.TrackDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
@@ -25,6 +21,8 @@ import com.aptech.service.PlaylistService;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/playlist")
 public class PlaylistController {
@@ -36,8 +34,17 @@ public class PlaylistController {
 		this.playlistService = playlistService;
 	}
 
+	@GetMapping
+	public ResponseEntity<HttpResponse> getPlaylists() {
+
+		AppServiceResult<List<PlaylistDto>> result = playlistService.getPlaylists();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<PlaylistDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+
 	@RequestMapping(path = "/single/{playlistId}", method = RequestMethod.GET)
-	public ResponseEntity<HttpResponse> getTrack(@PathVariable(value = "playlistId", required = true) Long playlistId) {
+	public ResponseEntity<HttpResponse> getPlaylist(@PathVariable(value = "playlistId", required = true) Long playlistId) {
 
 		AppServiceResult<PlaylistDto> result = playlistService.getPlaylist(playlistId);
 

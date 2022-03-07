@@ -3,6 +3,7 @@ package com.aptech.dto.playlist;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import com.aptech.dto.genre.GenreDto;
 import com.aptech.entity.Category;
 import com.aptech.entity.Playlist;
@@ -56,6 +57,7 @@ public class PlaylistDto {
 		dest.name = src.getName();
 		dest.description = src.getDescription();
 		dest.imageUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImageUrl());
+		dest.category = src.getCategory();
 		dest.genre = GenreDto.CreateFromEntity(src.getGenre());
 		dest.playlistType = PlaylistTypeDto.CreateFromEntity(src.getPlaylistType());
 		dest.isPublic = src.getIsPublic();

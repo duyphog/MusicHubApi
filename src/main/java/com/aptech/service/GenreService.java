@@ -3,7 +3,9 @@
 import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.genre.GenreDto;
 
-public interface GenreService {
+import java.util.List;
+
+ public interface GenreService {
 	
-	AppServiceResult<Iterable<GenreDto>> getGenres();
+	AppServiceResult<List<GenreDto>> getGenres();
 }

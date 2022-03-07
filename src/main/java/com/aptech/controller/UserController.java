@@ -183,7 +183,7 @@ public class UserController {
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 	
-	@PostMapping("/update-status")
+	@PutMapping("/update-status")
 	public ResponseEntity<HttpResponse> updateStatus(@Valid @RequestBody UserStatus userStatus) {
 
 		AppBaseResult result = appUserService.updateActive(userStatus);

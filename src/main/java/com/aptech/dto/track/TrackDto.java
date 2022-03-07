@@ -74,7 +74,7 @@ public class TrackDto {
 
 		dest.id = src.getId();
 		dest.name = src.getName();
-		dest.album = AlbumWithoutTrackDto.CreateFromEntity(src.getAlbum());
+		dest.album = src.getAlbum() == null ? null : AlbumWithoutTrackDto.CreateFromEntity(src.getAlbum());
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
 		dest.lyric = src.getLyric();
