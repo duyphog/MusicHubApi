@@ -29,6 +29,7 @@ import com.aptech.provider.file.MediaFile;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
+import com.aptech.repository.PlaylistDetailRepository;
 import com.aptech.repository.PlaylistRepository;
 import com.aptech.repository.PlaylistTypeRepository;
 import com.aptech.repository.TrackRepository;
@@ -42,6 +43,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 	private PlaylistTypeRepository playlistTypeRepository;
 	private PlaylistRepository playlistRepository;
+	private PlaylistDetailRepository playlistDetailRepository;
 	private AppUserRepository appUserRepository;
 	private CategoryRepository categoryRepository;
 	private GenreRepository genreRepository;
@@ -50,10 +52,11 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 	@Autowired
 	public PlaylistServiceImpl(PlaylistTypeRepository playlistTypeRepository, PlaylistRepository playlistRepository,
-			AppUserRepository appUserRepository, CategoryRepository categoryRepository, GenreRepository genreRepository,
-			TrackRepository trackRepository) {
+			PlaylistDetailRepository playlistDetailRepository, AppUserRepository appUserRepository,
+			CategoryRepository categoryRepository, GenreRepository genreRepository, TrackRepository trackRepository) {
 		this.appUserRepository = appUserRepository;
 		this.playlistRepository = playlistRepository;
+		this.playlistDetailRepository = playlistDetailRepository;
 		this.playlistTypeRepository = playlistTypeRepository;
 		this.categoryRepository = categoryRepository;
 		this.genreRepository = genreRepository;
@@ -97,12 +100,12 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 			Playlist newPlaylist = new Playlist();
 			newPlaylist.setName(playlistNew.getName());
-			
+
 			newPlaylist.setDescription(playlistNew.getDescription());
 			newPlaylist.setLiked(0L);
 			newPlaylist.setListened(0L);
 
-			if(playlistNew.getPlaylistTypeId() != null) {
+			if (playlistNew.getPlaylistTypeId() != null) {
 				PlaylistType type = playlistTypeRepository.findById(playlistNew.getPlaylistTypeId()).orElse(null);
 				if (type == null) {
 					logger.warn("PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId());
@@ -110,10 +113,10 @@ public class PlaylistServiceImpl implements PlaylistService {
 					return new AppServiceResult<PlaylistDto>(false, AppError.Validattion.errorCode(),
 							"PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId(), null);
 				}
-				
+
 				newPlaylist.setPlaylistType(type);
 			}
-			
+
 			AppUser currentUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 			if (currentUser == null) {
 				logger.warn("Current user is null!");
@@ -189,25 +192,32 @@ public class PlaylistServiceImpl implements PlaylistService {
 						"PlaylistId is not exist!, " + dto.getPlaylistId());
 			}
 
-			if (dto.getIsRemove() == Boolean.TRUE) {
-				playlist.getPlaylistDetails().removeIf(item -> item.getTrack().getId() == dto.getTrackId());
-			} else {
-				Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
-				if (track == null) {
-					logger.warn("TrackId is not exist!, " + dto.getTrackId());
+			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
+			if (track == null) {
+				logger.warn("TrackId is not exist!, " + dto.getTrackId());
 
-					return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-							"TrackId is not exist!, " + dto.getTrackId());
-				}
-
-				PlaylistDetail detail = new PlaylistDetail();
-				detail.setPlaylist(playlist);
-				detail.setTrack(track);
-
-				playlist.getPlaylistDetails().add(detail);
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"TrackId is not exist!, " + dto.getTrackId());
 			}
 
-			playlistRepository.save(playlist);
+			if (dto.getIsRemove() == Boolean.TRUE) {
+				playlistDetailRepository.deleteByPlaylistAndTrack(playlist, track);
+			} else {
+				boolean existByPlaylistAndTrack = playlistDetailRepository.existByPlaylistAndTrack(playlist, track);
+
+				if (existByPlaylistAndTrack) {
+					logger.warn("TrackId is exist in playlist!, " + dto.getTrackId());
+
+					return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+							"TrackId is exist in playlist!, " + dto.getTrackId());
+				} else {
+					PlaylistDetail detail = new PlaylistDetail();
+					detail.setPlaylist(playlist);
+					detail.setTrack(track);
+
+					playlistDetailRepository.save(detail);
+				}
+			}
 
 			return AppBaseResult.GenarateIsSucceed();
 

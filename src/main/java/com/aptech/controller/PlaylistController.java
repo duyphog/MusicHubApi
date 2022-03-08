@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,8 +23,6 @@ import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.PlaylistService;
-
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/playlist")
@@ -61,10 +60,10 @@ public class PlaylistController {
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 
-	@PostMapping(path = "/details/update")
-	public ResponseEntity<HttpResponse> updateTrackToDetails(@Valid @RequestBody PlaylistDetailUpdate dto) {
+	@PostMapping("/details")
+	public ResponseEntity<HttpResponse> updateTrackToDetails(@Valid @RequestBody PlaylistDetailUpdate update) {
 
-		AppBaseResult result = playlistService.updateTrackToPlaylistDetail(dto);
+		AppBaseResult result = playlistService.updateTrackToPlaylistDetail(update);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
