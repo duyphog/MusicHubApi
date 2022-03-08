@@ -95,21 +95,25 @@ public class PlaylistServiceImpl implements PlaylistService {
 						"Playlist name is exist!, " + playlistNew.getName(), null);
 			}
 
-			PlaylistType type = playlistTypeRepository.findById(playlistNew.getPlaylistTypeId()).orElse(null);
-			if (type == null) {
-				logger.warn("PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId());
-
-				return new AppServiceResult<PlaylistDto>(false, AppError.Validattion.errorCode(),
-						"PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId(), null);
-			}
-
 			Playlist newPlaylist = new Playlist();
 			newPlaylist.setName(playlistNew.getName());
-			newPlaylist.setPlaylistType(type);
+			
 			newPlaylist.setDescription(playlistNew.getDescription());
 			newPlaylist.setLiked(0L);
 			newPlaylist.setListened(0L);
 
+			if(playlistNew.getPlaylistTypeId() != null) {
+				PlaylistType type = playlistTypeRepository.findById(playlistNew.getPlaylistTypeId()).orElse(null);
+				if (type == null) {
+					logger.warn("PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId());
+
+					return new AppServiceResult<PlaylistDto>(false, AppError.Validattion.errorCode(),
+							"PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId(), null);
+				}
+				
+				newPlaylist.setPlaylistType(type);
+			}
+			
 			AppUser currentUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 			if (currentUser == null) {
 				logger.warn("Current user is null!");
@@ -162,7 +166,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 			playlistRepository.save(newPlaylist);
 
-			return new AppServiceResult<PlaylistDto>(true, 0, "Succeed!", PlaylistDto.CreateFromEntity(playlist));
+			return new AppServiceResult<PlaylistDto>(true, 0, "Succeed!", PlaylistDto.CreateFromEntity(newPlaylist));
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -55,9 +55,16 @@ public class PlaylistDto {
 		dest.id = src.getId();
 		dest.name = src.getName();
 		dest.description = src.getDescription();
-		dest.imageUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImageUrl());
-		dest.genre = GenreDto.CreateFromEntity(src.getGenre());
-		dest.playlistType = PlaylistTypeDto.CreateFromEntity(src.getPlaylistType());
+		
+		if(src.getImageUrl() != null)
+			dest.imageUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImageUrl());
+		
+		if(src.getGenre() != null)
+			dest.genre = GenreDto.CreateFromEntity(src.getGenre());
+		
+		if(src.getPlaylistType() != null)
+			dest.playlistType = PlaylistTypeDto.CreateFromEntity(src.getPlaylistType());
+		
 		dest.isPublic = src.getIsPublic();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
