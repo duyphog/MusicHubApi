@@ -31,5 +31,7 @@ public class SecurityConstant {
 			"/track/top-hit",
 			"/album/search/**",
 			"/myfile/dowload/**",
+			"/playlist/category",
+			"/playlist/single/**",
 	};
 }

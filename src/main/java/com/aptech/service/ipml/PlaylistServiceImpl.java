@@ -1,5 +1,7 @@
 package com.aptech.service.ipml;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -14,6 +16,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistShort;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
 import com.aptech.entity.Category;
@@ -239,6 +242,33 @@ public class PlaylistServiceImpl implements PlaylistService {
 			e.printStackTrace();
 
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
+		}
+	}
+
+	@Override
+	public AppServiceResult<List<PlaylistShort>> getPlaylistByType(Long playlistTypeId) {
+		try {
+			PlaylistType type = playlistTypeRepository.findById(playlistTypeId).orElse(null);
+			if (type == null) {
+				logger.warn("PlaylistTypeId is not exist!, " + playlistTypeId);
+
+				return new AppServiceResult<List<PlaylistShort>>(false, AppError.Validattion.errorCode(),
+						"PlaylistTypeId is not exist!, " + playlistTypeId, null);
+			}
+
+			List<Playlist> playlists = playlistRepository.findAllByPlaylistType(type);
+			List<PlaylistShort> result = new ArrayList<PlaylistShort>();
+			
+			if(playlists != null)
+				playlists.forEach(item -> result.add(PlaylistShort.CreateFromEntity(item)));
+			
+			return new AppServiceResult<List<PlaylistShort>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<List<PlaylistShort>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
 		}
 	}
 

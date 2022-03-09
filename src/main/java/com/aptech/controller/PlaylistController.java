@@ -1,9 +1,12 @@
 package com.aptech.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +24,8 @@ import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistShort;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.PlaylistService;
 
@@ -74,6 +79,16 @@ public class PlaylistController {
 		AppBaseResult result = playlistService.removePlaylist(id);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/category")
+	public ResponseEntity<HttpResponse> getPlaylistByType(
+				@RequestParam(value = "playlistTypeId", required = true) Long playlistTypeId) {
+			
+		AppServiceResult<List<PlaylistShort>> result = playlistService.getPlaylistByType(playlistTypeId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<PlaylistShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
