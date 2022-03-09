@@ -26,6 +26,7 @@ import com.aptech.dto.track.TrackDto;
 import com.aptech.dto.track.TrackShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.TrackService;
+import com.aptech.util.StringUtil;
 
 @RestController
 @RequestMapping("/track")
@@ -143,9 +144,12 @@ public class TrackController {
 	}
 
 	@GetMapping(path = "/search-text")
-	public ResponseEntity<HttpResponse> searchText(@RequestParam(value = "text") String text, 
+	public ResponseEntity<HttpResponse> searchText(@RequestParam(value = "text", required = true) String text, 
 				@RequestParam(value = "pageIndex", required = false) Integer pageIndex) {
 		
+		if(StringUtil.isBlank(text))
+			return ResponseEntity.badRequest().body(new HttpResponseError(null, "Text search is not empty"));
+			
 		FullTextSearchWithPagingParam params = new FullTextSearchWithPagingParam();
 		params.getPageParam().setPageIndex(pageIndex == null ? 0 : pageIndex);
 		params.setText(text);
