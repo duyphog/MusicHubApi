@@ -39,4 +39,6 @@ public interface TrackService {
 	AppServiceResult<PageDto<TrackShort>> searchByCategoryAndGenre(SearchWithPagingParam params);
 	
 	AppServiceResult<PageDto<TrackShort>> searchByFTS(FullTextSearchWithPagingParam params);
+	
+	AppServiceResult<List<TrackShort>> getTopHitByCategory(Long categoryId);
 }
