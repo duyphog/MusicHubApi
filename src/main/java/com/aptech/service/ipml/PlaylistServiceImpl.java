@@ -1,7 +1,5 @@
 package com.aptech.service.ipml;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -31,6 +29,7 @@ import com.aptech.provider.file.MediaFile;
 import com.aptech.repository.AppUserRepository;
 import com.aptech.repository.CategoryRepository;
 import com.aptech.repository.GenreRepository;
+import com.aptech.repository.PlaylistDetailRepository;
 import com.aptech.repository.PlaylistRepository;
 import com.aptech.repository.PlaylistTypeRepository;
 import com.aptech.repository.TrackRepository;
@@ -44,6 +43,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 	private PlaylistTypeRepository playlistTypeRepository;
 	private PlaylistRepository playlistRepository;
+	private PlaylistDetailRepository playlistDetailRepository;
 	private AppUserRepository appUserRepository;
 	private CategoryRepository categoryRepository;
 	private GenreRepository genreRepository;
@@ -52,34 +52,17 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 	@Autowired
 	public PlaylistServiceImpl(PlaylistTypeRepository playlistTypeRepository, PlaylistRepository playlistRepository,
-			AppUserRepository appUserRepository, CategoryRepository categoryRepository, GenreRepository genreRepository,
-			TrackRepository trackRepository) {
+			PlaylistDetailRepository playlistDetailRepository, AppUserRepository appUserRepository,
+			CategoryRepository categoryRepository, GenreRepository genreRepository, TrackRepository trackRepository) {
 		this.appUserRepository = appUserRepository;
 		this.playlistRepository = playlistRepository;
+		this.playlistDetailRepository = playlistDetailRepository;
 		this.playlistTypeRepository = playlistTypeRepository;
 		this.categoryRepository = categoryRepository;
 		this.genreRepository = genreRepository;
 		this.trackRepository = trackRepository;
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
-	}
-
-	@Override
-	public AppServiceResult<List<PlaylistDto>> getPlaylists() {
-		List<Playlist> entities;
-		List<PlaylistDto> result = new ArrayList<>();
-		try {
-			entities = playlistRepository.findAll();
-			entities.forEach(playlist -> {
-				result.add(PlaylistDto.CreateFromEntity(playlist));
-			});
-
-			return new AppServiceResult<List<PlaylistDto>>(true, 0, "Succeed!", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new AppServiceResult<List<PlaylistDto>>(false, AppError.Unknown.errorCode(),
-					AppError.Unknown.errorMessage(), null);
-		}
 	}
 
 	@Override
@@ -115,20 +98,24 @@ public class PlaylistServiceImpl implements PlaylistService {
 						"Playlist name is exist!, " + playlistNew.getName(), null);
 			}
 
-			PlaylistType type = playlistTypeRepository.findById(playlistNew.getPlaylistTypeId()).orElse(null);
-			if (type == null) {
-				logger.warn("PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId());
-
-				return new AppServiceResult<PlaylistDto>(false, AppError.Validattion.errorCode(),
-						"PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId(), null);
-			}
-
 			Playlist newPlaylist = new Playlist();
 			newPlaylist.setName(playlistNew.getName());
-			newPlaylist.setPlaylistType(type);
+
 			newPlaylist.setDescription(playlistNew.getDescription());
 			newPlaylist.setLiked(0L);
 			newPlaylist.setListened(0L);
+
+			if (playlistNew.getPlaylistTypeId() != null) {
+				PlaylistType type = playlistTypeRepository.findById(playlistNew.getPlaylistTypeId()).orElse(null);
+				if (type == null) {
+					logger.warn("PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId());
+
+					return new AppServiceResult<PlaylistDto>(false, AppError.Validattion.errorCode(),
+							"PlaylistTypeId is not exist!, " + playlistNew.getPlaylistTypeId(), null);
+				}
+
+				newPlaylist.setPlaylistType(type);
+			}
 
 			AppUser currentUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
 			if (currentUser == null) {
@@ -205,31 +192,32 @@ public class PlaylistServiceImpl implements PlaylistService {
 						"PlaylistId is not exist!, " + dto.getPlaylistId());
 			}
 
-			if (dto.getIsRemove() == Boolean.TRUE) {
-				System.out.println(playlist.getPlaylistDetails().size());
-				playlist.getPlaylistDetails().removeIf(item -> {
-					System.out.println(item.getTrack().getId() == dto.getTrackId());
-//					(item.getTrack().getId() == dto.getTrackId();)
-					return false;
-				});
-				System.out.println(playlist.getPlaylistDetails().size());
-			} else {
-				Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
-				if (track == null) {
-					logger.warn("TrackId is not exist!, " + dto.getTrackId());
+			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
+			if (track == null) {
+				logger.warn("TrackId is not exist!, " + dto.getTrackId());
 
-					return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-							"TrackId is not exist!, " + dto.getTrackId());
-				}
-
-				PlaylistDetail detail = new PlaylistDetail();
-				detail.setPlaylist(playlist);
-				detail.setTrack(track);
-
-				playlist.getPlaylistDetails().add(detail);
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+						"TrackId is not exist!, " + dto.getTrackId());
 			}
 
-			playlistRepository.save(playlist);
+			if (dto.getIsRemove() == Boolean.TRUE) {
+				playlistDetailRepository.deleteByPlaylistAndTrack(playlist, track);
+			} else {
+				boolean existByPlaylistAndTrack = playlistDetailRepository.existByPlaylistAndTrack(playlist, track);
+
+				if (existByPlaylistAndTrack) {
+					logger.warn("TrackId is exist in playlist!, " + dto.getTrackId());
+
+					return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
+							"TrackId is exist in playlist!, " + dto.getTrackId());
+				} else {
+					PlaylistDetail detail = new PlaylistDetail();
+					detail.setPlaylist(playlist);
+					detail.setTrack(track);
+
+					playlistDetailRepository.save(detail);
+				}
+			}
 
 			return AppBaseResult.GenarateIsSucceed();
 
@@ -243,18 +231,9 @@ public class PlaylistServiceImpl implements PlaylistService {
 	@Override
 	public AppBaseResult removePlaylist(Long playlistId) {
 		try {
-			Playlist playlist = playlistRepository.findById(playlistId).orElse(null);
-			if (playlist != null) {
-				playlistRepository.delete(playlist);
-				if (playlist.getImagePath() != null) {
-					imageFileService.remove(playlist.getImagePath());
-				}
-				return AppBaseResult.GenarateIsSucceed();
-			} else {
-				logger.warn("Playlist is not exist: " + String.valueOf(playlistId) + ", Cannot further process!");
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						"Playlist is not exist: " + String.valueOf(playlistId));
-			}
+			playlistRepository.deleteById(playlistId);
+
+			return AppBaseResult.GenarateIsSucceed();
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -53,17 +53,17 @@ public class Playlist implements Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })
-	@JoinColumn(name = "category_id", nullable = false)
+	@JoinColumn(name = "category_id", nullable = true)
 	private Category category;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })
-	@JoinColumn(name = "genre_id", nullable = false)
+	@JoinColumn(name = "genre_id", nullable = true)
 	private Genre genre;
 
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST,
 			CascadeType.REFRESH })
-	@JoinColumn(name = "playlist_type_id", nullable = false)
+	@JoinColumn(name = "playlist_type_id", nullable = true)
 	private PlaylistType playlistType;
 
 	@Column(name = "is_public")
