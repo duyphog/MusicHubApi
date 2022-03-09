@@ -81,7 +81,7 @@ public class AppUser implements Serializable {
 	@ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	@JoinTable(name = "user_track", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = {
 			@JoinColumn(name = "track_id") })
-	private Set<Track> whiteList;
+	private Set<Track> whiteList = new HashSet<>();
 	
 	@CreationTimestamp
 	@Column(name = "date_new")

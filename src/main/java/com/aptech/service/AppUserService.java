@@ -8,6 +8,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserStatus;
@@ -36,4 +39,8 @@ public interface AppUserService {
 	AppBaseResult updateWhiteList(UserWhiteList dto);
 	
 	AppBaseResult updateActive(UserStatus userStatus);
+	
+	AppServiceResult<PageDto<TrackShort>> getAllTrackLiked(PageParam pageParam);
+	
+	AppServiceResult<Long[]> getTrackIdsLiked();
 }

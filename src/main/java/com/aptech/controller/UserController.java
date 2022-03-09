@@ -33,6 +33,9 @@ import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserLogin;
 import com.aptech.dto.user.UserLoginRes;
@@ -109,6 +112,17 @@ public class UserController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<UserInfoDtoRes>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
+	
+	@GetMapping("/white-list")
+	public ResponseEntity<HttpResponse> getWhiteList() {
+
+		PageParam pageParam = new PageParam();
+	
+		AppServiceResult<PageDto<TrackShort>> result = appUserService.getAllTrackLiked(pageParam);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<TrackShort>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
 
 	@PutMapping("/profiles")
 	public ResponseEntity<HttpResponse> saveProfiles(@Valid @RequestBody UserInfoDtoReq userInfo) {
@@ -178,6 +192,15 @@ public class UserController {
 		AppBaseResult result = appUserService.updateActive(userStatus);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/track-liked")
+	public ResponseEntity<HttpResponse> getTrackLiked() {
+
+		AppServiceResult<Long[]> result = appUserService.getTrackIdsLiked();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Long[]>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
