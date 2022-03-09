@@ -256,7 +256,7 @@ public class PlaylistServiceImpl implements PlaylistService {
 						"PlaylistTypeId is not exist!, " + playlistTypeId, null);
 			}
 
-			List<Playlist> playlists = playlistRepository.findAllByPlaylistType(type);
+			List<Playlist> playlists = playlistRepository.findAllByPlaylistTypeAndIsPublicTrue(type);
 			List<PlaylistShort> result = new ArrayList<PlaylistShort>();
 			
 			if(playlists != null)

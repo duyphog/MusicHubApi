@@ -12,5 +12,5 @@ import com.aptech.entity.PlaylistType;
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
 	Playlist findByName(String playlistName);
 	
-	List<Playlist> findAllByPlaylistType(PlaylistType playlistType);
+	List<Playlist> findAllByPlaylistTypeAndIsPublicTrue(PlaylistType playlistType);
 }
