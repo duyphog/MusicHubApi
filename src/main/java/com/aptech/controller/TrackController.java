@@ -159,4 +159,14 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<TrackShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
+	
+	@GetMapping(path = "/top-hit")
+	public ResponseEntity<HttpResponse> getTopHitByCategory(
+				@RequestParam(value = "categoryId", required = true) Long categoryId) {
+			
+		AppServiceResult<List<TrackShort>> result = trackService.getTopHitByCategory(categoryId);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<TrackShort>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
 }

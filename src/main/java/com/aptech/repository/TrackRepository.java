@@ -47,4 +47,6 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 	public Page<Track> findAllByIsActiveTrueAndCategory(Category category, Pageable pageable);
 	
 	public Page<Track> findAllByIsActiveTrueAndCategoryAndGenres(Category category, Genre genre, Pageable pageable);
+	
+	public List<Track> findTop20ByIsActiveTrueAndCategoryOrderByListenedDesc(Category category);
 }

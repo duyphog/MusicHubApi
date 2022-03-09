@@ -423,4 +423,34 @@ public class TrackServiceImpl implements TrackService {
 					AppError.Unknown.errorMessage(), null);
 		}
 	}
+
+	@Override
+	public AppServiceResult<List<TrackShort>> getTopHitByCategory(Long categoryId) {
+		try {
+			Category category = categoryRepository.findById(categoryId).orElse(null);
+			
+			if(category == null) {
+				logger.warn("CategoryId is not exist: " + categoryId);
+				
+				return new AppServiceResult<List<TrackShort>>(false, AppError.Validattion.errorCode(),
+						"CategoryId is not exist: " + categoryId, null);
+			}
+		
+			List<Track> tracks = trackRepository.findTop20ByIsActiveTrueAndCategoryOrderByListenedDesc(category);
+			List<TrackShort> result = new ArrayList<TrackShort>();
+
+			if(tracks != null)
+				tracks.forEach(item -> {
+					result.add(TrackShort.CreateFromEntity(item));
+				});
+			
+			return new AppServiceResult<List<TrackShort>>(true, 0, "Succeed!", result);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<List<TrackShort>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
 }
