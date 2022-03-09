@@ -2,7 +2,13 @@ package com.aptech.service.ipml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
+import org.hibernate.search.query.dsl.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +18,11 @@ import org.springframework.stereotype.Service;
 import com.aptech.constant.AppError;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.FullTextSearchWithPagingParam;
 import com.aptech.domain.MetaData;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageInfo;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.dto.track.TrackShort;
@@ -41,6 +49,7 @@ import com.aptech.repository.TrackRepository;
 import com.aptech.service.TrackService;
 import com.aptech.util.AppUtils;
 
+
 @Service
 public class TrackServiceImpl implements TrackService {
 
@@ -54,11 +63,12 @@ public class TrackServiceImpl implements TrackService {
 	private CategoryRepository categoryRepository;
 	private ArtistRepository artistRepository;
 	private FileService trackFileService;
+	private EntityManager entityManager;
 
 	@Autowired
 	public TrackServiceImpl(TrackRepository trackRepository, AppUserRepository appUserRepository,
 			AlbumRepository albumRepository, GenreRepository genreRepository, AppStatusRepository appStatusRepository,
-			CategoryRepository categoryRepository, ArtistRepository artistRepository) {
+			CategoryRepository categoryRepository, ArtistRepository artistRepository, EntityManager entityManager) {
 		this.trackRepository = trackRepository;
 		this.appUserRepository = appUserRepository;
 		this.albumRepository = albumRepository;
@@ -66,6 +76,7 @@ public class TrackServiceImpl implements TrackService {
 		this.appStatusRepository = appStatusRepository;
 		this.categoryRepository = categoryRepository;
 		this.artistRepository = artistRepository;
+		this.entityManager = entityManager;
 
 		this.trackFileService = FileServiceFactory.getFileService(FileType.TRACK);
 	}
@@ -371,4 +382,45 @@ public class TrackServiceImpl implements TrackService {
 		}
 	}
 
+	@Override
+	public AppServiceResult<PageDto<TrackShort>> searchByFTS(FullTextSearchWithPagingParam params) {
+		try {
+			FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+			
+			QueryBuilder queryBuilder = fullTextEntityManager.getSearchFactory() 
+					  .buildQueryBuilder()
+					  .forEntity(Track.class)
+					  .get();
+			
+			org.apache.lucene.search.Query combinedQuery = queryBuilder
+						.keyword()
+						.onFields("name", "album.name", "singers.nickName")
+						.matching(params.getText())
+					    .createQuery();
+			
+			org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(combinedQuery, Track.class);
+			jpaQuery.setFirstResult(params.getPageParam().getPageIndex() * params.getPageParam().getPageSize());
+			jpaQuery.setMaxResults(params.getPageParam().getPageSize());
+			
+			List<Track> tracks = jpaQuery.getResultList();
+
+			PageDto<TrackShort> result = new PageDto<TrackShort>();
+			result.setContent(tracks.stream().map(item -> TrackShort.CreateFromEntity(item)).collect(Collectors.toList()));
+			PageInfo pageInfo = new PageInfo();
+			pageInfo.setCurrentPage(params.getPageParam().getPageIndex());
+			pageInfo.setPageSize(params.getPageParam().getPageSize());
+			pageInfo.setTotalElements((long) jpaQuery.getResultSize());
+			
+			result.setPageInfo(pageInfo);
+			
+			
+			return new AppServiceResult<PageDto<TrackShort>>(true, 0, "Secceed!", result);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
 }

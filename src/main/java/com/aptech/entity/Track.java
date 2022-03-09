@@ -20,6 +20,13 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.annotations.TermVector;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,6 +38,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Indexed
 @Table(name = "track")
 public class Track implements Serializable {
 
@@ -39,20 +47,22 @@ public class Track implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
+	
+	@Field(index= Index.YES, analyze= Analyze.YES, store= Store.NO)
 	@Column(name = "name")
 	private String name;
 
+	@IndexedEmbedded
 	@ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	@JoinColumn(name = "album_id", nullable = true)
 	private Album album;
-
+	
 	@Column(name = "music_production")
 	private String musicProduction;
 
 	@Column(name = "music_year")
 	private Integer musicYear;
-
+	
 	@Column(name = "lyric")
 	private String lyric;
 
@@ -92,6 +102,7 @@ public class Track implements Serializable {
 	@Column(name = "bit_rate", nullable = false)
 	private Integer bitRate;
 
+	@IndexedEmbedded
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH })
 	@JoinTable(name = "track_singer", joinColumns = { @JoinColumn(name = "track_id") }, inverseJoinColumns = {
 			@JoinColumn(name = "artist_id") })

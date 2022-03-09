@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.FullTextSearchWithPagingParam;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.pagingation.PageDto;
 import com.aptech.dto.track.TrackCreate;
@@ -34,4 +35,6 @@ public interface TrackService {
 	AppServiceResult<TrackDto> updateAppStatus(Long trackId, Long statusId);
 	
 	AppServiceResult<PageDto<TrackShort>> searchByCategoryAndGenre(SearchWithPagingParam params);
+	
+	AppServiceResult<PageDto<TrackShort>> searchByFTS(FullTextSearchWithPagingParam params);
 }

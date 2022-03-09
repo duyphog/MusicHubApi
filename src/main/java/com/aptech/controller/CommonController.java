@@ -2,6 +2,10 @@ package com.aptech.controller;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +29,12 @@ import com.aptech.service.CommonService;
 public class CommonController {
 
 	private CommonService commonService;
+	private EntityManager entityManager;
 
 	@Autowired
-	public CommonController(CommonService commonService) {
+	public CommonController(CommonService commonService, EntityManager entityManager) {
 		this.commonService = commonService;
+		this.entityManager = entityManager;
 	}
 
 	@GetMapping(path = "/search-singer")
@@ -83,5 +89,22 @@ public class CommonController {
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<PlaylistTypeDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/update-fts")
+	public ResponseEntity<HttpResponse> updateFts() {
+		
+		FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
+		
+		try {
+			fullTextEntityManager.createIndexer().startAndWait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			
+			return ResponseEntity.ok(new HttpResponseSuccess<String>("Failed!"));
+		}
+		
+		return ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"));
 	}
 }

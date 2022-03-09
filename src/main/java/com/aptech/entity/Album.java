@@ -21,12 +21,19 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.ContainedIn;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Indexed
 @Entity
 @Getter
 @Setter
@@ -41,6 +48,7 @@ public class Album implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@Field(index= Index.YES, analyze= Analyze.YES, store= Store.NO)
 	@Column(name = "name")
 	private String name;
 
@@ -78,6 +86,7 @@ public class Album implements Serializable {
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
 	
+	@ContainedIn
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
 	private Set<Track> tracks = new HashSet<>();
 	

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.domain.FullTextSearchWithPagingParam;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
@@ -121,7 +122,7 @@ public class TrackController {
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<TrackDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-	
+
 	@GetMapping(path = "/search")
 	public ResponseEntity<HttpResponse> getTracksByParam(@RequestParam(name = "category-id") long categoryId,
 			@RequestParam(name = "genre-id", required = false, defaultValue = "0") long genreId,
@@ -137,6 +138,20 @@ public class TrackController {
 
 		AppServiceResult<PageDto<TrackShort>> result = trackService.searchByCategoryAndGenre(params);
 	
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<TrackShort>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+
+	@GetMapping(path = "/search-text")
+	public ResponseEntity<HttpResponse> searchText(@RequestParam(value = "text") String text, 
+				@RequestParam(value = "pageIndex", required = false) Integer pageIndex) {
+		
+		FullTextSearchWithPagingParam params = new FullTextSearchWithPagingParam();
+		params.getPageParam().setPageIndex(pageIndex == null ? 0 : pageIndex);
+		params.setText(text);
+		
+		AppServiceResult<PageDto<TrackShort>> result = trackService.searchByFTS(params);
+
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<TrackShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
