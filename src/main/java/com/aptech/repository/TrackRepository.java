@@ -24,22 +24,22 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 	@Transactional
 	@Modifying
 	@Query(value = "UPDATE Track t SET t.listened = t.listened + 1 WHERE t.id = :id")
-	public int AddListenedToId(@Param("id") Long id);
+	public int addListenedToId(@Param("id") Long id);
 
 	@Transactional
 	@Modifying
 	@Query(value = "UPDATE Track t SET t.liked = t.liked + 1 WHERE t.id = :id")
-	public int AddLikedToId(@Param("id") Long id);
+	public int addLikedToId(@Param("id") Long id);
 
 	@Transactional
 	@Modifying
 	@Query(value = "UPDATE Track t SET t.liked = t.liked - 1 WHERE t.id = :id")
-	public int RemoveLikedToId(@Param("id") Long id);
+	public int removeLikedToId(@Param("id") Long id);
 
 	@Transactional
 	@Modifying
 	@Query(value = "UPDATE Track t SET t.isActive = false WHERE t.id = :id")
-	public int DeactiveForId(@Param("id") Long id);
+	public int deactiveForId(@Param("id") Long id);
 
 	public List<Track> findAllByAppStatusId(Long statusId);
 	
