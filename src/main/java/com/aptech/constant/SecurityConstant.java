@@ -33,6 +33,7 @@ public class SecurityConstant {
 			"/myfile/dowload/**",
 			"/playlist/category",
 			"/playlist/single/**",
+			"/singer/**"
 	};
 	
 	public final static String[] REQUIRE_ADMIN_ROLE_URLS = {

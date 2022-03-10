@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import com.aptech.entity.Album;
 import com.aptech.entity.AppUser;
+import com.aptech.entity.Artist;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
@@ -56,4 +57,6 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 	
 	@Query("SELECT w.track.id FROM WhiteList w WHERE w.appUser =:appUser")
 	public List<Long> findAllTrackIdInWhiteListByUser(@Param("appUser") AppUser appUser);
+	
+	public Page<Track> findAllByIsActiveTrueAndSingersContaining(Artist singer, Pageable pageable);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aptech.entity.Album;
+import com.aptech.entity.Artist;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
 
@@ -24,4 +25,6 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
 	public Page<Album> findAllByIsActiveTrueAndCategory(Category category, Pageable pageable);
 	
 	public Page<Album> findAllByIsActiveTrueAndCategoryAndGenres(Category category, Genre genre, Pageable pageable);
+	
+	public Page<Album> findAllByIsActiveTrueAndSingersContaining(Artist singer, Pageable pageable);
 }
