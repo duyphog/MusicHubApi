@@ -74,13 +74,21 @@ public class TrackDto {
 
 		dest.id = src.getId();
 		dest.name = src.getName();
-		dest.album = AlbumWithoutTrackDto.CreateFromEntity(src.getAlbum());
+		
+		if(src.getAlbum() != null)
+			dest.album = AlbumWithoutTrackDto.CreateFromEntity(src.getAlbum());
+		
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
 		dest.lyric = src.getLyric();
 		dest.description = src.getDescription();
-		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
-		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
+		
+		if(src.getCategory() != null)
+			dest.category = CategoryDto.CreateFromEntity(src.getCategory());
+		
+		if(src.getAppStatus() != null)
+			dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
+		
 		dest.isActive = src.getIsActive();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
