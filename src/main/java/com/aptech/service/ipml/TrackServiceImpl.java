@@ -90,6 +90,26 @@ public class TrackServiceImpl implements TrackService {
 	}
 
 	@Override
+	public AppServiceResult<List<TrackDto>> getTracks() {
+		try {
+			List<Track> entities = trackRepository.findAll();
+
+			List<TrackDto> result = new ArrayList<TrackDto>();
+
+			entities.forEach(item -> {
+				result.add(TrackDto.CreateFromEntity(item));
+			});
+
+			return new AppServiceResult<List<TrackDto>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<TrackDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+
+	@Override
 	public AppServiceResult<TrackDto> getTrack() {
 		// TODO Auto-generated method stub
 		return null;

@@ -5,20 +5,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
+import javax.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.search.annotations.Analyze;
@@ -118,9 +105,12 @@ public class Track implements Serializable {
 			@JoinColumn(name = "genre_id") })
 	private Set<Genre> genres = new HashSet<>();
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "track", cascade = CascadeType.ALL)
+	private Set<PlaylistDetail> playlistDetails = new HashSet<>();
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "track")
 	private Set<WhiteList> whiteLists = new HashSet<>();
-	
+  
 	@CreationTimestamp
 	@Column(name = "date_new")
 	private Date dateNew;

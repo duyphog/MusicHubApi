@@ -9,8 +9,11 @@ import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
 import com.aptech.dto.playlist.PlaylistShort;
 
-public interface PlaylistService {
-	
+import java.util.List;
+
+ public interface PlaylistService {
+
+	AppServiceResult<List<PlaylistDto>> getPlaylists();
 	AppServiceResult<PlaylistDto> getPlaylist(Long playlistId);
 	
 	AppServiceResult<PlaylistDto> createPlaylist(PlaylistCreate playlist);

@@ -15,6 +15,8 @@ import com.aptech.dto.user.UserWhiteList;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface TrackService {
+
+	AppServiceResult<List<TrackDto>> getTracks();
 	
 	AppServiceResult<TrackDto> getTrack();
 	

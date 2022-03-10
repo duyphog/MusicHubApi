@@ -69,6 +69,26 @@ public class PlaylistServiceImpl implements PlaylistService {
 	}
 
 	@Override
+	public AppServiceResult<List<PlaylistDto>> getPlaylists() {
+		try {
+			List<Playlist> entities = playlistRepository.findAll();
+
+			List<PlaylistDto> result = new ArrayList<PlaylistDto>();
+
+			entities.forEach(entity -> {
+				result.add(PlaylistDto.CreateFromEntity(entity));
+			});
+
+			return new AppServiceResult<List<PlaylistDto>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<PlaylistDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+
+	@Override
 	public AppServiceResult<PlaylistDto> getPlaylist(Long playlistId) {
 		try {
 			Playlist playlist = playlistRepository.findById(playlistId).orElse(null);

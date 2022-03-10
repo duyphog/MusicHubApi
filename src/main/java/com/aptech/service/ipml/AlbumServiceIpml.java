@@ -233,7 +233,8 @@ public class AlbumServiceIpml implements AlbumService {
 				;
 
 				albumRepository.delete(album);
-				imageFileService.remove(album.getImgPath());
+				if (album.getImgPath() != null)
+					imageFileService.remove(album.getImgPath());
 			}
 
 			return AppBaseResult.GenarateIsSucceed();

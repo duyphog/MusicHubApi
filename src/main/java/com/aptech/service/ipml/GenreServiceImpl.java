@@ -28,21 +28,21 @@ public class GenreServiceImpl implements GenreService {
 	}
 
 	@Override
-	public AppServiceResult<Iterable<GenreDto>> getGenres() {
+	public AppServiceResult<List<GenreDto>> getGenres() {
 		try {
 			Iterable<Genre> genrers = genreRepository.findAll();
 
 			List<GenreDto> genrerDtos = new ArrayList<GenreDto>();
 			genrers.forEach((g) -> genrerDtos.add(new GenreDto(g.getId(), g.getName(), g.getDescription())));
 
-			return new AppServiceResult<Iterable<GenreDto>>(true, 0, "", (Iterable<GenreDto>) genrerDtos);
+			return new AppServiceResult<List<GenreDto>>(true, 0, "", genrerDtos);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 
 			logger.error(e.getMessage());
 
-			return new AppServiceResult<Iterable<GenreDto>>(false, AppError.Unknown.errorCode(),
+			return new AppServiceResult<List<GenreDto>>(false, AppError.Unknown.errorCode(),
 					AppError.Unknown.errorMessage(), null);
 		}
 	}

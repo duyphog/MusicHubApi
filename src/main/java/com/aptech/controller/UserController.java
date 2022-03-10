@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import com.aptech.entity.AppUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -108,6 +111,14 @@ public class UserController {
 		return ResponseEntity.ok(new HttpResponseSuccess<UserLoginRes>(res));
 	}
 
+	@GetMapping
+	public ResponseEntity<HttpResponse> getUsers() {
+
+		AppServiceResult<List<AppUser>> result = appUserService.getUsers();
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AppUser>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+
 	@GetMapping("/profiles")
 	public ResponseEntity<HttpResponse> getProfiles(@Valid @RequestParam(value = "id") Long userId) {
 
@@ -194,7 +205,7 @@ public class UserController {
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 	
-	@PostMapping("/update-status")
+	@PutMapping("/update-status")
 	public ResponseEntity<HttpResponse> updateStatus(@Valid @RequestBody UserStatus userStatus) {
 
 		AppBaseResult result = appUserService.updateActive(userStatus);

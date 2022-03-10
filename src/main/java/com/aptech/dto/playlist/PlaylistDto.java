@@ -55,6 +55,7 @@ public class PlaylistDto {
 		dest.id = src.getId();
 		dest.name = src.getName();
 		dest.description = src.getDescription();
+		dest.category = src.getCategory();
 		
 		if(src.getImageUrl() != null)
 			dest.imageUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImageUrl());
