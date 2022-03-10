@@ -20,6 +20,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import com.aptech.constant.BeanIdConstant;
+import com.aptech.constant.RoleConstant;
 import com.aptech.constant.SecurityConstant;
 import com.aptech.filter.JwtAccessDeniedHandler;
 import com.aptech.filter.JwtAuthenticationEntryPoint;
@@ -62,6 +63,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authorizeRequests()
                 .antMatchers(SecurityConstant.PUBLIC_URLS).permitAll()
                 .antMatchers(HttpMethod.GET, SecurityConstant.PUBLIC_GET_URLS).permitAll()
+                .antMatchers(SecurityConstant.REQUIRE_ADMIN_ROLE_URLS).hasRole(RoleConstant.BASE_ROLE_ADMIN_NAME)
                 .anyRequest().authenticated()
         .and()
             .exceptionHandling()

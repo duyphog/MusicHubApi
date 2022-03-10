@@ -13,7 +13,6 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserStatus;
-import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.provider.file.UnsupportedFileTypeException;
@@ -36,8 +35,6 @@ public interface AppUserService {
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 	
 	AppServiceResult<String> uploadImage(MultipartFile file) throws UnsupportedFileTypeException;
-	
-	AppBaseResult updateWhiteList(UserWhiteList dto);
 	
 	AppBaseResult updateActive(UserStatus userStatus);
 }

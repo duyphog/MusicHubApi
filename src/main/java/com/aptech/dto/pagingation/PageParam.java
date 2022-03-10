@@ -4,6 +4,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.aptech.constant.PaginationConstant;
 import com.aptech.util.StringUtil;
 
 import lombok.AllArgsConstructor;
@@ -16,8 +17,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageParam {
-	private Integer pageIndex = 0;
-	private Integer pageSize = 30;
+	private Integer pageIndex = PaginationConstant.DEFAULT_PAGE_INDEX;
+	private Integer pageSize = PaginationConstant.DEFAULT_PAGE_SIZE;
 	private String sortBy = null;
 	private Boolean isAcsending = true;
 
