@@ -32,12 +32,10 @@ import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserStatus;
-import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
-import com.aptech.entity.Track;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
 import com.aptech.provider.file.FileServiceFactory;
@@ -47,7 +45,6 @@ import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
-import com.aptech.repository.TrackRepository;
 import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.AppUserService;
 import com.aptech.service.AppMailService;
@@ -72,8 +69,6 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 
 	private AppMailService appMailService;
 
-	private TrackRepository trackRepository;
-
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private FileService imageFileService;
@@ -81,12 +76,11 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
 			VerificationTokenRepository verificationTokenRepository, AppMailService appMailService,
-			TrackRepository trackRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+			BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.appUserRepository = appUserRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
 		this.appRoleRepository = appRoleRepository;
 		this.appMailService = appMailService;
-		this.trackRepository = trackRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
@@ -392,45 +386,16 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 	}
 
 	@Override
-	public AppBaseResult updateWhiteList(UserWhiteList dto) {
-		try {
-			AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
-
-			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
-
-			if (track == null) {
-				logger.warn("TrackId is not exist: " + dto.getTrackId() + ", Cannot further process!");
-
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						"TrackId is not exist: " + dto.getTrackId());
-			}
-
-			if (dto.getIsAdd())
-				user.getWhiteList().add(track);
-			else
-				user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
-
-			appUserRepository.save(user);
-
-			return AppBaseResult.GenarateIsSucceed();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
-		}
-	}
-
-	@Override
 	public AppBaseResult updateActive(UserStatus userStatus) {
 		try {
 			AppUser user = appUserRepository.findById(userStatus.getUserId()).orElse(null);
-			if(user == null) {
+			if (user == null) {
 				logger.warn("UserId is not exist: " + userStatus.getUserId() + ", Cannot further process!");
 
 				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
 						"UserId is not exist: " + userStatus.getUserId());
 			}
-			
+
 			user.setEnabled(userStatus.getIsActive());
 			appUserRepository.save(user);
 
@@ -441,5 +406,4 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
 		}
 	}
-
 }

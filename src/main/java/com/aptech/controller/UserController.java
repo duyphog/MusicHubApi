@@ -36,6 +36,9 @@ import com.aptech.domain.AppUserDomain;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
+import com.aptech.dto.track.TrackShort;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserLogin;
 import com.aptech.dto.user.UserLoginRes;
@@ -47,6 +50,7 @@ import com.aptech.dto.userinfo.UserInfoDtoRes;
 import com.aptech.infrastructure.AppJwtTokenProvider;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.AppUserService;
+import com.aptech.service.TrackService;
 
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 
@@ -55,6 +59,8 @@ import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 public class UserController {
 
 	private AppUserService appUserService;
+	
+	private TrackService trackService;
 
 	private AuthenticationManager authenticationManager;
 
@@ -64,11 +70,12 @@ public class UserController {
 	private String urlLoginApp;
 
 	@Autowired
-	public UserController(AppUserService appUserService, AuthenticationManager authenticationManager,
+	public UserController(AppUserService appUserService, TrackService trackService,AuthenticationManager authenticationManager,
 			AppJwtTokenProvider appJwtTokenProvider) {
 		this.appJwtTokenProvider = appJwtTokenProvider;
 		this.authenticationManager = authenticationManager;
 		this.appUserService = appUserService;
+		this.trackService = trackService;
 	}
 
 	@PostMapping("/register")
@@ -118,6 +125,21 @@ public class UserController {
 		AppServiceResult<UserInfoDtoRes> result = appUserService.getProfile(userId);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<UserInfoDtoRes>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping("/white-list")
+	public ResponseEntity<HttpResponse> getWhiteList(
+			@RequestParam(name = "page-number", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(name = "page-size", required = false, defaultValue = "30") int pageSize) {
+
+		PageParam pageParam = new PageParam();
+		pageParam.setPageIndex(pageNumber);
+		pageParam.setPageSize(pageSize);
+		
+		AppServiceResult<PageDto<TrackShort>> result = trackService.getAllTrackLiked(pageParam);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<TrackShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 
@@ -177,7 +199,7 @@ public class UserController {
 	@PutMapping("/white-list")
 	public ResponseEntity<HttpResponse> updateWhiteList(@Valid @RequestBody UserWhiteList dto) {
 
-		AppBaseResult result = appUserService.updateWhiteList(dto);
+		AppBaseResult result = trackService.updateWhiteList(dto);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
@@ -189,6 +211,15 @@ public class UserController {
 		AppBaseResult result = appUserService.updateActive(userStatus);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Succeed!"))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/track-liked")
+	public ResponseEntity<HttpResponse> getTrackLiked() {
+
+		AppServiceResult<Long[]> result = trackService.getTrackIdsLiked();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Long[]>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
