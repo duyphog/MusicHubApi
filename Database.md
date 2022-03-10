@@ -1,13 +1,3 @@
-# MusicHubApi
-
--- DROP SCHEMA dbo;
-
---CREATE SCHEMA dbo;
--- MusicHub.dbo.app_role definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.app_role;
 
 CREATE TABLE MusicHub.dbo.app_role (
 	id bigint IDENTITY(1,1) NOT NULL,
@@ -15,25 +5,11 @@ CREATE TABLE MusicHub.dbo.app_role (
 	CONSTRAINT PK__app_role__3213E83F2F2D65E2 PRIMARY KEY (id)
 );
 
-
--- MusicHub.dbo.authority definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.authority;
-
 CREATE TABLE MusicHub.dbo.authority (
 	id bigint IDENTITY(1,1) NOT NULL,
 	privilege varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	CONSTRAINT PK__authorit__3213E83FA1385A9F PRIMARY KEY (id)
 );
-
-
--- MusicHub.dbo.user_info definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.user_info;
 
 CREATE TABLE MusicHub.dbo.user_info (
 	id bigint IDENTITY(1,1) NOT NULL,
@@ -47,13 +23,6 @@ CREATE TABLE MusicHub.dbo.user_info (
 	user_edit varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	CONSTRAINT PK__user_inf__3213E83F3B74399C PRIMARY KEY (id)
 );
-
-
--- MusicHub.dbo.app_user definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.app_user;
 
 CREATE TABLE MusicHub.dbo.app_user (
 	id bigint IDENTITY(1,1) NOT NULL,
@@ -74,12 +43,6 @@ CREATE TABLE MusicHub.dbo.app_user (
 CREATE INDEX index_app_username
 ON app_user (username);
 
--- MusicHub.dbo.app_user_authority definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.app_user_authority;
-
 CREATE TABLE MusicHub.dbo.app_user_authority (
 	user_id bigint NOT NULL,
 	authority_id bigint NOT NULL,
@@ -88,13 +51,6 @@ CREATE TABLE MusicHub.dbo.app_user_authority (
 	CONSTRAINT FKfocpjrj1tmhlu9vcfo47nqanp FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id)
 );
 
-
--- MusicHub.dbo.app_user_role definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.app_user_role;
-
 CREATE TABLE MusicHub.dbo.app_user_role (
 	user_id bigint NOT NULL,
 	role_id bigint NOT NULL,
@@ -102,13 +58,6 @@ CREATE TABLE MusicHub.dbo.app_user_role (
 	CONSTRAINT FK6hkq1uibwvjsusnnxrsm1gh83 FOREIGN KEY (role_id) REFERENCES MusicHub.dbo.app_role(id),
 	CONSTRAINT FKfnlxi1bmv5ao8u3nf30ymq7xa FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id)
 );
-
-
--- MusicHub.dbo.verication_token definition
-
--- Drop table
-
--- DROP TABLE MusicHub.dbo.verication_token;
 
 CREATE TABLE MusicHub.dbo.verication_token (
 	id bigint IDENTITY(1,1) NOT NULL,
@@ -129,6 +78,17 @@ CREATE TABLE MusicHub.dbo.genre (
 	description text NULL,
 )
 
+CREATE TABLE artist(
+	id bigint IDENTITY(1000,1) primary key,
+	nick_name nvarchar(100) not null,
+	birthday date null,
+	gender bit default 1 not null,
+	avatar_img_url text null,
+	cover_img_url text null,
+	is_composer bit,
+	is_singer bit,
+	is_active bit default 1 not null
+)
 
 CREATE TABLE MusicHub.dbo.album (
 	id bigint IDENTITY(1000,1) primary key,
@@ -144,17 +104,6 @@ CREATE TABLE MusicHub.dbo.album (
 	CONSTRAINT FK_album_user_id FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id),
 )
 
-/*
-CREATE TABLE MusicHub.dbo.user_album (
-	user_id bigint not null,
-	album_id bigint not null,
-	CONSTRAINT PK_user_id__album_id PRIMARY KEY (user_id, album_id),
-	CONSTRAINT FK_user_album__user_id FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id),
-	CONSTRAINT FK_user_album__album_id FOREIGN KEY (album_id) REFERENCES MusicHub.dbo.album(id)
-)
-*/
-
-
 CREATE TABLE MusicHub.dbo.artist_album (
 	user_id bigint not null,
 	album_id bigint not null,
@@ -163,29 +112,159 @@ CREATE TABLE MusicHub.dbo.artist_album (
 	CONSTRAINT FK_artist_album__album_id FOREIGN KEY (album_id) REFERENCES MusicHub.dbo.album(id)
 )
 
-CREATE TABLE MusicHub.dbo.track(
-	id bigint primary key,
-	name nvarchar(57) NOT NULL,
-	release_date datetime NOT NULL,
-	composer_id bigint null,
-	description text NOT NULL,
-	image_url nvarchar(255),
-	track_url nvarchar(255) NOT NULL,
+CREATE TABLE category(
+	id bigint IDENTITY(1000,1) primary key,
+	name nvarchar(70) NOT NULL,
+	description text null
+)
+
+CREATE TABLE app_status (
+	id bigint IDENTITY(1000,1) primary key,
+	name nvarchar(70) NOT NULL,
+	description text null,
+	is_default bit default 0,
+	set_active bit default 0
+)
+
+CREATE TABLE MusicHub.dbo.album (
+	id bigint IDENTITY(1000,1) primary key,
+	name nvarchar(70) NOT NULL,
+	music_production text NULL,
+	music_year int NOT NULL,
+	img_url text null,
+	img_path text null,
+	category_id bigint not null,
+	is_active bit default 1 not null,
+	status_id bigint not null,
 	user_id bigint not null,
-	album_id bigint null,
-	liked bigint default 0,
-	listened bigint default 0,
 	date_new datetime NULL,
 	date_edit datetime NULL,
 	user_new varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
 	user_edit varchar(255) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-	
-	CONSTRAINT FK_track__user_id FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id),
-	CONSTRAINT FK_track__user_id__composer FOREIGN KEY (composer_id) REFERENCES MusicHub.dbo.app_user(id),
-	CONSTRAINT FK_track__album_id FOREIGN KEY (album_id) REFERENCES MusicHub.dbo.album(id)
+	CONSTRAINT FK_album__category_id FOREIGN KEY (category_id) REFERENCES MusicHub.dbo.category(id),
+	CONSTRAINT FK_album__status FOREIGN KEY (status_id) REFERENCES MusicHub.dbo.app_status(id),
+	CONSTRAINT FK_album__app_user FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id),
 )
 
+CREATE TABLE MusicHub.dbo.album_genre (
+	genre_id bigint not null,
+	album_id bigint not null,
+	CONSTRAINT PK__album_genre__6EDEA1537E812C8D PRIMARY KEY (genre_id, album_id),
+	CONSTRAINT FK6hkq1uibwvjsusnnxrsm1gha1 FOREIGN KEY (genre_id) REFERENCES MusicHub.dbo.genre(id),
+	CONSTRAINT FKfnlxi1bmv5ao8u3nf3mq7xa12 FOREIGN KEY (album_id) REFERENCES MusicHub.dbo.album(id)
+)
 
+CREATE TABLE MusicHub.dbo.album_singer (
+	artist_id bigint not null,
+	album_id bigint not null,
+	CONSTRAINT PK_album_singer__album_id PRIMARY KEY (artist_id, album_id),
+	CONSTRAINT FK_album_singer__artist_id FOREIGN KEY (artist_id) REFERENCES MusicHub.dbo.artist(id),
+	CONSTRAINT FK_album_singer__album_id FOREIGN KEY (album_id) REFERENCES MusicHub.dbo.album(id)
+)
+
+CREATE TABLE MusicHub.dbo.track(
+	id bigint IDENTITY(1000,1) primary key,
+	name nvarchar(70) NOT NULL,
+	album_id bigint null,
+	music_production text NULL,
+	music_year int null,
+	lyric text null,
+	description text NULL,
+	user_id bigint not null,
+	category_id bigint not null,
+	status_id bigint not null,
+	is_active bit default 1 not null,
+	liked bigint default 0,
+	listened bigint default 0,
+	track_url nvarchar(255) NOT NULL,
+	track_path text NOT NULL,
+	duration_seconds int NOT NULL,
+	bit_rate int NOT NULL,
+	date_new datetime NULL,
+	date_edit datetime NULL,
+	user_new varchar(255) NULL,
+	user_edit varchar(255) NULL,
+	
+	CONSTRAINT FK_track__user_id FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id),
+	CONSTRAINT FK_track__category_id FOREIGN KEY (category_id) REFERENCES MusicHub.dbo.category(id),
+	CONSTRAINT FK_track__status FOREIGN KEY (status_id) REFERENCES MusicHub.dbo.app_status(id),
+	CONSTRAINT FK_track__album FOREIGN KEY (album_id) REFERENCES MusicHub.dbo.album(id),
+)
+
+CREATE TABLE MusicHub.dbo.track_singer(
+	track_id bigint not null,
+	artist_id bigint not null,
+	CONSTRAINT PK_track_singer PRIMARY KEY (track_id,artist_id),
+	CONSTRAINT FK_track_singer__track_id FOREIGN KEY (track_id) REFERENCES MusicHub.dbo.track(id),
+	CONSTRAINT FK_track_singer__artist_id FOREIGN KEY (artist_id) REFERENCES MusicHub.dbo.artist(id),
+)
+
+CREATE TABLE MusicHub.dbo.track_composer(
+	track_id bigint not null,
+	artist_id bigint not null,
+	CONSTRAINT PK_track_composer PRIMARY KEY (track_id,artist_id),
+	CONSTRAINT FK_track_composer__track_id FOREIGN KEY (track_id) REFERENCES MusicHub.dbo.track(id),
+	CONSTRAINT FK_track_composer__artist_id FOREIGN KEY (artist_id) REFERENCES MusicHub.dbo.artist(id),
+)
+
+CREATE TABLE MusicHub.dbo.track_genre (
+	track_id bigint not null,
+	genre_id bigint not null,
+	CONSTRAINT PK__track_genre PRIMARY KEY (track_id, genre_id),
+	CONSTRAINT PK_track_genre__track FOREIGN KEY (track_id) REFERENCES MusicHub.dbo.track(id),
+	CONSTRAINT PK_track_genre__genre FOREIGN KEY (genre_id) REFERENCES MusicHub.dbo.genre(id),
+)
+
+CREATE TABLE MusicHub.dbo.user_track (
+	user_id bigint not null,
+	track_id bigint not null,
+	date_new datetime null,
+	CONSTRAINT PK__user_track PRIMARY KEY (track_id, user_id),
+	CONSTRAINT PK_user_track__track FOREIGN KEY (track_id) REFERENCES MusicHub.dbo.track(id),
+	CONSTRAINT PK_user_track__user FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id)
+)
+
+alter table user_track add CONSTRAINT DF_getDateForDateNew DEFAULT GETDATE() FOR date_new
+
+CREATE TABLE playlist_type (
+	id bigint IDENTITY(1,1) primary key,
+	name nvarchar(70) NOT NULL
+)
+
+CREATE TABLE playlist (
+	id bigint IDENTITY(1,1) primary key,
+	name nvarchar(70) NOT NULL,
+	description text null,
+	img_url text null,
+	img_path text null,
+	category_id bigint null,
+	genre_id bigint null,
+	playlist_type_id bigint null,
+	is_public bit default 0,
+	liked bigint default 0,
+	listened bigint default 0,
+	user_id bigint not null,
+	date_new datetime NULL,
+	date_edit datetime NULL,
+	user_new varchar(255) NULL,
+	user_edit varchar(255) NULL,
+	
+	CONSTRAINT PK_playlist__playlist_type FOREIGN KEY (playlist_type_id) REFERENCES MusicHub.dbo.playlist_type(id),
+	CONSTRAINT PK_playlist__category FOREIGN KEY (category_id) REFERENCES MusicHub.dbo.category(id),
+	CONSTRAINT PK_playlist__genre FOREIGN KEY (genre_id) REFERENCES MusicHub.dbo.genre(id),
+	CONSTRAINT PK_playlist__appuser FOREIGN KEY (user_id) REFERENCES MusicHub.dbo.app_user(id),
+)
+
+create table playlist_detail (
+	id bigint IDENTITY(1,1) primary key,
+	playlist_id bigint not null,
+	track_id bigint not null,
+	date_new datetime null,
+	
+	CONSTRAINT PK_playlist_detail__playlist FOREIGN KEY (playlist_id) REFERENCES MusicHub.dbo.playlist(id),
+	CONSTRAINT PK_playlist_detail__track FOREIGN KEY (track_id) REFERENCES MusicHub.dbo.track(id),
+	CONSTRAINT UC_playlist_detail UNIQUE (playlist_id,track_id),
+)
 
 
 INSERT INTO app_role
@@ -193,6 +272,8 @@ VALUES('ROLE_ADMIN')
 
 INSERT INTO app_role
 VALUES('ROLE_MEMBER')
+
+INSERT INTO app_user 
 
 INSERT INTO genre
 VALUES
@@ -222,3 +303,17 @@ VALUES
 ('Traditional music','Musical forms that have origins many generations into the past, commonly without formal notation or description, commonly familiar to people in a given culture.'),
 ('Independent music','Music produced independent of major commercial record labels, possibly including a do-it-yourself approach to recording and publishing. The term indie is also used to describe music of this style regardless of actual production channel.')
 
+INSERT INTO category(name)
+VALUES('Beat, Playback'), (N'Nhạc Việt Nam'), (N'Nhạc US-UK'), (N'Nhạc Hoa'), (N'Nhạc Hàn'), (N'Nhạc Nhật'), (N'Nhạc Pháp'), (N'Nhạc nước khác')
+
+INSERT INTO app_status
+(name, description, is_default)
+VALUES(N'Chờ duyệt', NULL, 1), (N'Đã duyệt', NULL, 0)
+
+
+-- alter table track alter column name nvarchar(70) NOT NULL
+-- alter table track add duration_seconds int NOT NULL default 0
+-- alter table track alter column duration_seconds int NOT NULL
+-- alter table track add bit_rate int NOT NULL default 0
+-- alter table track alter column bit_rate int NOT NULL
+-- alter table playlist_detail add CONSTRAINT PK_playlist_detail__track FOREIGN KEY (track_id) REFERENCES MusicHub.dbo.track(id)
