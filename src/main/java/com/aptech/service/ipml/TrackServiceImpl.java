@@ -231,7 +231,7 @@ public class TrackServiceImpl implements TrackService {
 	@Override
 	public AppBaseResult deactiveTrack(Long trackId) {
 		try {
-			int recordChange = trackRepository.DeactiveForId(trackId);
+			int recordChange = trackRepository.deactiveForId(trackId);
 
 			if (recordChange > 0)
 				return AppBaseResult.GenarateIsSucceed();
@@ -250,9 +250,9 @@ public class TrackServiceImpl implements TrackService {
 		try {
 			int recordChange = 0;
 			if (state)
-				recordChange = trackRepository.AddLikedToId(trackId);
+				recordChange = trackRepository.addLikedToId(trackId);
 			else
-				recordChange = trackRepository.RemoveLikedToId(trackId);
+				recordChange = trackRepository.removeLikedToId(trackId);
 
 			if (recordChange > 0)
 				return AppBaseResult.GenarateIsSucceed();
@@ -290,7 +290,7 @@ public class TrackServiceImpl implements TrackService {
 	@Override
 	public AppBaseResult listenedTrack(Long trackId) {
 		try {
-			int recordChange = trackRepository.AddListenedToId(trackId);
+			int recordChange = trackRepository.addListenedToId(trackId);
 
 			if (recordChange > 0)
 				return AppBaseResult.GenarateIsSucceed();
@@ -547,13 +547,13 @@ public class TrackServiceImpl implements TrackService {
 					newWL.setWhiteListId(new WhiteListId(appUser.getId(), track.getId()));
 
 					whiteListRepository.save(newWL);
-					trackRepository.AddLikedToId(track.getId());
+					trackRepository.addLikedToId(track.getId());
 				}
 			} else {
 				if (existWhiteList) {
 					boolean removed = whiteListRepository.deleteByAppUserAndTrack(appUser, track) > 0;
 					if (removed)
-						trackRepository.RemoveLikedToId(track.getId());
+						trackRepository.removeLikedToId(track.getId());
 				} else {
 					logger.warn("WhiteList is not exist!, Cannot further process!");
 
