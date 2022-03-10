@@ -21,6 +21,8 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
@@ -88,6 +90,23 @@ public class PlaylistController {
 		AppServiceResult<List<PlaylistShort>> result = playlistService.getPlaylistByType(playlistTypeId);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<PlaylistShort>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/my-playlist")
+	public ResponseEntity<HttpResponse> getPlaylistByUserLoggedIn(
+			@RequestParam(name = "page-number", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(name = "page-size", required = false, defaultValue = "30") int pageSize) {
+
+		PageParam pageParam = new PageParam();
+		pageParam.setPageIndex(pageNumber);
+		pageParam.setPageSize(pageSize);
+		pageParam.setSortBy("dateNew");
+		pageParam.setIsAcsending(Boolean.FALSE);
+		
+		AppServiceResult<PageDto<PlaylistShort>> result = playlistService.getPlaylistByUserLoggedIn(pageParam);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<PlaylistShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }
