@@ -28,8 +28,6 @@ public interface TrackService {
 	
 	AppBaseResult deactiveTrack(Long trackId);
 	
-	AppBaseResult likedTrack(Long trackId, boolean state);
-	
 	AppBaseResult listenedTrack(Long trackId);
 	
 	AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId);

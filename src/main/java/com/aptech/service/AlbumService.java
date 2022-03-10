@@ -20,8 +20,6 @@ public interface AlbumService {
 
 	AppServiceResult<AlbumDto> getAlbum(Long id);
 
-	AppServiceResult<List<AlbumDto>> getAlbumForArtistId(Long userId);
-
 	AppServiceResult<AlbumDto> createAlbum(AlbumCreate album) throws UnsupportedFileTypeException;
 
 	AppServiceResult<AlbumDto> createAlbumWithTracks(AlbumCreate album, MultipartFile[] files)

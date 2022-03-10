@@ -246,27 +246,6 @@ public class TrackServiceImpl implements TrackService {
 	}
 
 	@Override
-	public AppBaseResult likedTrack(Long trackId, boolean state) {
-		try {
-			int recordChange = 0;
-			if (state)
-				recordChange = trackRepository.addLikedToId(trackId);
-			else
-				recordChange = trackRepository.removeLikedToId(trackId);
-
-			if (recordChange > 0)
-				return AppBaseResult.GenarateIsSucceed();
-			else
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						AppError.Validattion.errorMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
-		}
-	}
-
-	@Override
 	public AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId) {
 		try {
 			List<Track> tracks = trackRepository.findAllByAppStatusId(statusId);
@@ -295,8 +274,8 @@ public class TrackServiceImpl implements TrackService {
 			if (recordChange > 0)
 				return AppBaseResult.GenarateIsSucceed();
 			else
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						AppError.Validattion.errorMessage());
+				return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(),
+						AppError.Unknown.errorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 
