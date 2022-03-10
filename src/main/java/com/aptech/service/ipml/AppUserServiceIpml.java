@@ -384,9 +384,15 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 	}
 
 	@Override
+	@Transactional
 	public AppBaseResult updateWhiteList(UserWhiteList dto) {
 		try {
 			AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
+			if (user == null) {
+				logger.warn("Not logged in!");
+
+				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Not logged in!");
+			}
 
 			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
 
@@ -397,10 +403,15 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 						"TrackId is not exist: " + dto.getTrackId());
 			}
 
-			if (dto.getIsAdd())
-				user.getWhiteList().add(track);
-			else
-				user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
+			if (dto.getIsAdd()) {
+				boolean added = user.getWhiteList().add(track);
+				if (added)
+					trackRepository.AddLikedToId(track.getId());
+			} else {
+				boolean removed = user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
+				if (removed)
+					trackRepository.RemoveLikedToId(track.getId());
+			}
 
 			appUserRepository.save(user);
 

@@ -97,24 +97,6 @@ public class TrackController {
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 
-	@RequestMapping(path = "/liked/{trackId}", method = RequestMethod.GET)
-	public ResponseEntity<HttpResponse> likeTrack(@PathVariable("trackId") Long trackId) {
-
-		AppBaseResult result = trackService.likedTrack(trackId, true);
-
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
-				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
-	}
-
-	@RequestMapping(path = "/unliked/{trackId}", method = RequestMethod.GET)
-	public ResponseEntity<HttpResponse> unLikeTrack(@PathVariable("trackId") Long trackId) {
-
-		AppBaseResult result = trackService.likedTrack(trackId, false);
-
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<String>("Ok"))
-				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
-	}
-
 	@GetMapping(params = "statusid")
 	public ResponseEntity<HttpResponse> getTrackByStatus(@RequestParam(value = "statusid") Long statusId) {
 
