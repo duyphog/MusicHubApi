@@ -37,7 +37,7 @@ public class PlaylistController {
 	@GetMapping
 	public ResponseEntity<HttpResponse> getPlaylists() {
 
-		AppServiceResult<Iterable<PlaylistDto>> result = playlistService.getPlaylists();
+		AppServiceResult<List<PlaylistDto>> result = playlistService.getPlaylists();
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<PlaylistDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
