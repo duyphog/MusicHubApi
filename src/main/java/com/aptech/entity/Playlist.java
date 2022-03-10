@@ -80,7 +80,7 @@ public class Playlist implements Serializable {
 	@JoinColumn(name = "user_id", nullable = false)
 	private AppUser appUser;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "playlist", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "playlist", cascade = CascadeType.ALL)
 	private Set<PlaylistDetail> playlistDetails = new HashSet<>();
 
 	@CreationTimestamp

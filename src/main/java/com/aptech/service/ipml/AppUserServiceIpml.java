@@ -225,7 +225,11 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 				// TODO: Implement mapping
 				userInfoDto.setFirstName(user.getUserInfo().getFirstName());
 				userInfoDto.setLastName(user.getUserInfo().getLastName());
-				userInfoDto.setAvatarImg(user.getUserInfo().getAvatarImg());
+				if (user.getUserInfo().getAvatarImg().contains("https://robohash.org/")) {
+					userInfoDto.setAvatarImg(user.getUserInfo().getAvatarImg());
+				} else {
+					userInfoDto.setAvatarImg("http://localhost:8081/api" + user.getUserInfo().getAvatarImg());
+				}
 				userInfoDto.setStory(user.getUserInfo().getStory());
 			}
 

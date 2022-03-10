@@ -1,6 +1,7 @@
 package com.aptech.dto.album;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import com.aptech.dto.appsatus.AppStatusDto;
 import com.aptech.dto.artist.ArtistDto;
@@ -46,6 +47,14 @@ public class AlbumDto {
 
 	private List<TrackShort> tracks = new ArrayList<TrackShort>();
 
+	private Date dateNew;
+
+	private String userNew;
+
+	private Date dateEdit;
+
+	private String userEdit;
+
 	public static AlbumDto CreateFromEntity(Album src) {
 		AlbumDto dest = new AlbumDto();
 
@@ -57,6 +66,10 @@ public class AlbumDto {
 		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
 		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
 		dest.isActive = src.getIsActive();
+		dest.dateNew = src.getDateNew();
+		dest.dateEdit = src.getDateEdit();
+		dest.userNew = src.getUserNew();
+		dest.userEdit = src.getUserEdit();
 
 		if (src.getSingers() != null)
 			for (Artist singer : src.getSingers()) {

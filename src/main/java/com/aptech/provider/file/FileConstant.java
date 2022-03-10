@@ -2,7 +2,7 @@ package com.aptech.provider.file;
 
 public class FileConstant {
 	
-	private static final String BASE_FOLDER = System.getProperty("user.home") + "/Documents/MyDoc/Aptech/Aptech/springboot/e-project/static-file";
+	private static final String BASE_FOLDER = "E:/APTECH/Study/Project/4/Documents";
 	public static final String IMAGE_FOLDER = BASE_FOLDER + "/images/";
 	public static final String TRACK_FOLDER = BASE_FOLDER + "/tracks/";
 
