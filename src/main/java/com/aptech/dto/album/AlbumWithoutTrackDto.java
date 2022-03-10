@@ -51,8 +51,13 @@ public class AlbumWithoutTrackDto {
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
 		dest.imgUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImgUrl());
-		dest.category = CategoryDto.CreateFromEntity(src.getCategory());
-		dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
+
+		if (src.getCategory() != null)
+			dest.category = CategoryDto.CreateFromEntity(src.getCategory());
+
+		if (src.getAppStatus() != null)
+			dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
+
 		dest.isActive = src.getIsActive();
 
 		if (src.getSingers() != null)

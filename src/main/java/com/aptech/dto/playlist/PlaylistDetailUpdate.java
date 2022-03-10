@@ -18,7 +18,7 @@ public class PlaylistDetailUpdate {
 
 	@NotNull
 	private Long trackId;
-	
+
 	@NotNull
 	private Boolean isRemove;
 }

@@ -32,7 +32,7 @@ public class AlbumCreate {
 
 	@NotEmpty
 	private Long[] singerIds;
-	
+
 	@NotEmpty
 	private Long[] genreIds;
 }

@@ -23,18 +23,18 @@ public class TrackCreate {
 	private String musicProduction;
 
 	private Integer musicYear;
-	
+
 	private String lyric;
-	
+
 	private String description;
-	
+
 	private Long categoryId;
 
 	@NotEmpty
 	private Long[] singerIds;
-	
+
 	private Long[] composerIds;
-	
+
 	private Long[] genreIds;
 
 	private MultipartFile trackFile;

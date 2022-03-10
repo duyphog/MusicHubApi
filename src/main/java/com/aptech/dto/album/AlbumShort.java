@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AlbumShort {
-	
+
 	private Long id;
 
 	private String name;

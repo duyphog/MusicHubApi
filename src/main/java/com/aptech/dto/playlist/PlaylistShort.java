@@ -31,13 +31,13 @@ public class PlaylistShort {
 
 		dest.id = src.getId();
 		dest.name = src.getName();
-		
-		if(src.getImageUrl() != null)
+
+		if (src.getImageUrl() != null)
 			dest.imageUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImageUrl());
-		
+
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
-		
+
 		return dest;
 	}
 }

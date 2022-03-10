@@ -50,9 +50,9 @@ public class TrackDto {
 	private Long listened;
 
 	private String trackUrl;
-	
+
 	private Integer durationSeconds;
-	
+
 	private Integer bitRate;
 
 	private List<SingerDto> singers = new ArrayList<SingerDto>();
@@ -74,21 +74,21 @@ public class TrackDto {
 
 		dest.id = src.getId();
 		dest.name = src.getName();
-		
-		if(src.getAlbum() != null)
+
+		if (src.getAlbum() != null)
 			dest.album = AlbumWithoutTrackDto.CreateFromEntity(src.getAlbum());
-		
+
 		dest.musicProduction = src.getMusicProduction();
 		dest.musicYear = src.getMusicYear();
 		dest.lyric = src.getLyric();
 		dest.description = src.getDescription();
-		
-		if(src.getCategory() != null)
+
+		if (src.getCategory() != null)
 			dest.category = CategoryDto.CreateFromEntity(src.getCategory());
-		
-		if(src.getAppStatus() != null)
+
+		if (src.getAppStatus() != null)
 			dest.appStatus = AppStatusDto.CreateFromEntity(src.getAppStatus());
-		
+
 		dest.isActive = src.getIsActive();
 		dest.liked = src.getLiked();
 		dest.listened = src.getListened();
