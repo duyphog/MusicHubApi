@@ -1,9 +1,7 @@
 package com.aptech.service.ipml;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -13,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.domain.Page;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,22 +26,13 @@ import com.aptech.constant.RoleConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
-import com.aptech.dto.album.AlbumShort;
-import com.aptech.dto.pagingation.PageDto;
-import com.aptech.dto.pagingation.PageParam;
-import com.aptech.dto.track.TrackShort;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserStatus;
-import com.aptech.dto.user.UserWhiteList;
 import com.aptech.dto.userinfo.UserInfoDtoReq;
 import com.aptech.dto.userinfo.UserInfoDtoRes;
-import com.aptech.entity.Album;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
-import com.aptech.entity.Category;
-import com.aptech.entity.Genre;
-import com.aptech.entity.Track;
 import com.aptech.entity.UserInfo;
 import com.aptech.entity.VerificationToken;
 import com.aptech.provider.file.FileServiceFactory;
@@ -54,7 +42,6 @@ import com.aptech.provider.file.MediaFile;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.repository.AppRoleRepository;
 import com.aptech.repository.AppUserRepository;
-import com.aptech.repository.TrackRepository;
 import com.aptech.repository.VerificationTokenRepository;
 import com.aptech.service.AppUserService;
 import com.aptech.service.AppMailService;
@@ -79,8 +66,6 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 
 	private AppMailService appMailService;
 
-	private TrackRepository trackRepository;
-
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private FileService imageFileService;
@@ -88,12 +73,11 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 	@Autowired
 	public AppUserServiceIpml(AppUserRepository appUserRepository, AppRoleRepository appRoleRepository,
 			VerificationTokenRepository verificationTokenRepository, AppMailService appMailService,
-			TrackRepository trackRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+			BCryptPasswordEncoder bCryptPasswordEncoder) {
 		this.appUserRepository = appUserRepository;
 		this.verificationTokenRepository = verificationTokenRepository;
 		this.appRoleRepository = appRoleRepository;
 		this.appMailService = appMailService;
-		this.trackRepository = trackRepository;
 		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
@@ -384,56 +368,16 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 	}
 
 	@Override
-	@Transactional
-	public AppBaseResult updateWhiteList(UserWhiteList dto) {
-		try {
-			AppUser user = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
-			if (user == null) {
-				logger.warn("Not logged in!");
-
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(), "Not logged in!");
-			}
-
-			Track track = trackRepository.findById(dto.getTrackId()).orElse(null);
-
-			if (track == null) {
-				logger.warn("TrackId is not exist: " + dto.getTrackId() + ", Cannot further process!");
-
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						"TrackId is not exist: " + dto.getTrackId());
-			}
-
-			if (dto.getIsAdd()) {
-				boolean added = user.getWhiteList().add(track);
-				if (added)
-					trackRepository.AddLikedToId(track.getId());
-			} else {
-				boolean removed = user.getWhiteList().removeIf(item -> item.getId() == dto.getTrackId());
-				if (removed)
-					trackRepository.RemoveLikedToId(track.getId());
-			}
-
-			appUserRepository.save(user);
-
-			return AppBaseResult.GenarateIsSucceed();
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
-		}
-	}
-
-	@Override
 	public AppBaseResult updateActive(UserStatus userStatus) {
 		try {
 			AppUser user = appUserRepository.findById(userStatus.getUserId()).orElse(null);
-			if(user == null) {
+			if (user == null) {
 				logger.warn("UserId is not exist: " + userStatus.getUserId() + ", Cannot further process!");
 
 				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
 						"UserId is not exist: " + userStatus.getUserId());
 			}
-			
+
 			user.setEnabled(userStatus.getIsActive());
 			appUserRepository.save(user);
 
@@ -442,71 +386,6 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 			e.printStackTrace();
 
 			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
-		}
-	}
-
-	@Override
-	public AppServiceResult<PageDto<TrackShort>> getAllTrackLiked(PageParam pageParam) {
-		try {
-			AppUser appUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
-			
-			if(appUser == null) {
-				logger.warn("Not logged in!");
-				
-				return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Validattion.errorCode(),
-						"Not logged in!", null);
-			}
-			
-//			appUser.getWhiteList().
-			
-			Long offset = 2L;
-			Long pageSize = 5L;
-			
-			List<Track> results = appUserRepository.findWhiteList(offset, pageSize);
-					
-//			Page<TrackShort> dtoPage = results.map(item -> TrackShort.CreateFromEntity(item));
-			
-//			return new AppServiceResult<PageDto<TrackShort>>(true, 0, "Succeed!", new PageDto<TrackShort>(dtoPage));
-			
-			return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Unknown.errorCode(),
-					AppError.Unknown.errorMessage(), null);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return new AppServiceResult<PageDto<TrackShort>>(false, AppError.Unknown.errorCode(),
-					AppError.Unknown.errorMessage(), null);
-		}
-	}
-
-	@Override
-	public AppServiceResult<Long[]> getTrackIdsLiked() {
-		try {
-			AppUser appUser = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
-			
-			if(appUser == null) {
-				logger.warn("Not logged in!");
-				
-				return new AppServiceResult<Long[]>(false, AppError.Validattion.errorCode(),
-						"Not logged in!", null);
-			}
-			
-			Long[] results = new Long[appUser.getWhiteList().size()];
-			
-			if(appUser.getWhiteList() != null) {
-				int k = 0;
-				for (Track track: appUser.getWhiteList()) {
-					results[k++] = track.getId();
-				}
-			}
-					
-			return new AppServiceResult<Long[]>(true, 0, "Succeed", results);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return new AppServiceResult<Long[]>(false, AppError.Unknown.errorCode(),
-					AppError.Unknown.errorMessage(), null);
 		}
 	}
 }

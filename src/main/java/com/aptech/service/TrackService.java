@@ -7,9 +7,11 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.FullTextSearchWithPagingParam;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.track.TrackCreate;
 import com.aptech.dto.track.TrackDto;
 import com.aptech.dto.track.TrackShort;
+import com.aptech.dto.user.UserWhiteList;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface TrackService {
@@ -39,4 +41,10 @@ public interface TrackService {
 	AppServiceResult<PageDto<TrackShort>> searchByFTS(FullTextSearchWithPagingParam params);
 	
 	AppServiceResult<List<TrackShort>> getTopHitByCategory(Long categoryId);
+	
+	AppServiceResult<PageDto<TrackShort>> getAllTrackLiked(PageParam pageParam);
+	
+	AppServiceResult<Long[]> getTrackIdsLiked();
+	
+	AppBaseResult updateWhiteList(UserWhiteList dto);
 }

@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.aptech.entity.Album;
+import com.aptech.entity.AppUser;
 import com.aptech.entity.Category;
 import com.aptech.entity.Genre;
 import com.aptech.entity.Track;
@@ -49,4 +50,10 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 	public Page<Track> findAllByIsActiveTrueAndCategoryAndGenres(Category category, Genre genre, Pageable pageable);
 	
 	public List<Track> findTop20ByIsActiveTrueAndCategoryOrderByListenedDesc(Category category);
+	
+	@Query("SELECT w.track FROM WhiteList w WHERE w.appUser =:appUser ORDER BY w.dateNew DESC")
+	public Page<Track> findWhiteListByUser(@Param("appUser") AppUser appUser, Pageable pageable);
+	
+	@Query("SELECT w.track.id FROM WhiteList w WHERE w.appUser =:appUser")
+	public List<Long> findAllTrackIdInWhiteListByUser(@Param("appUser") AppUser appUser);
 }

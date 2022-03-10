@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -26,7 +27,6 @@ import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.search.annotations.Store;
-import org.hibernate.search.annotations.TermVector;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -118,6 +118,9 @@ public class Track implements Serializable {
 			@JoinColumn(name = "genre_id") })
 	private Set<Genre> genres = new HashSet<>();
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "track")
+	private Set<WhiteList> whiteLists = new HashSet<>();
+	
 	@CreationTimestamp
 	@Column(name = "date_new")
 	private Date dateNew;

@@ -25,7 +25,6 @@ import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
 import com.aptech.dto.playlist.PlaylistShort;
-import com.aptech.dto.track.TrackShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.PlaylistService;
 
