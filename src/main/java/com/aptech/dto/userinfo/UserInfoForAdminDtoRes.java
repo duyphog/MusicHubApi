@@ -14,8 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserInfoForAdminDtoRes {
 
-	private String username;
-
 	private String firstName;
 
 	private String lastName;
@@ -29,7 +27,6 @@ public class UserInfoForAdminDtoRes {
 	public static UserInfoForAdminDtoRes CreateFromEntity(UserInfo src) {
 		UserInfoForAdminDtoRes dest = new UserInfoForAdminDtoRes();
 
-		dest.username = src.getAppUser().getUsername();
 		dest.firstName = src.getFirstName();
 		dest.lastName = src.getLastName();
 		dest.avatarImg = AppUtils.createLinkOnCurrentHttpServletRequest(src.getAvatarImg());
