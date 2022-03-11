@@ -9,9 +9,12 @@ import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistForAdminDto;
 import com.aptech.dto.playlist.PlaylistShort;
 
 public interface PlaylistService {
+	
+	AppServiceResult<List<PlaylistForAdminDto>> getPlaylists();
 	
 	AppServiceResult<PlaylistDto> getPlaylist(Long playlistId);
 	

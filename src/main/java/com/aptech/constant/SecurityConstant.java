@@ -38,7 +38,10 @@ public class SecurityConstant {
 	
 	public final static String[] REQUIRE_ADMIN_ROLE_URLS = {
 			"/user/update-status",
+			"/user/admin/**",
+			"/album/admin/**",
+			"/playlist/admin/**",
 			"/track/deactive/**",
-			"/app-status/**"
+			"/app-status/**",
 	};
 }

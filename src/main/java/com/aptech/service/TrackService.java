@@ -16,7 +16,7 @@ import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface TrackService {
 	
-	AppServiceResult<TrackDto> getTrack();
+	AppServiceResult<List<TrackDto>> getTracks();
 	
 	AppServiceResult<TrackDto> getTrack(Long id);
 	

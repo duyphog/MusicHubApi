@@ -21,6 +21,7 @@ import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumForAdminDto;
 import com.aptech.dto.album.AlbumShort;
 import com.aptech.dto.pagingation.PageDto;
 import com.aptech.provider.file.UnsupportedFileTypeException;
@@ -37,15 +38,15 @@ public class AlbumController {
 		this.albumservice = albumservice;
 	}
 
-	@GetMapping
-	public ResponseEntity<HttpResponse> getAlbums() {
+	@GetMapping(path = "/admin/list")
+	public ResponseEntity<HttpResponse> getAlbumForAdminPage() {
 
-		AppServiceResult<List<AlbumDto>> result = albumservice.getAlbums();
+		AppServiceResult<List<AlbumForAdminDto>> result = albumservice.getAlbums();
 
-		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AlbumDto>>(result.getData()))
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AlbumForAdminDto>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
-
+	
 	@GetMapping(path = "/search")
 	public ResponseEntity<HttpResponse> getAlbumsByParam(@RequestParam(name = "category-id") long categoryId,
 			@RequestParam(name = "genre-id", required = false, defaultValue = "0") long genreId,

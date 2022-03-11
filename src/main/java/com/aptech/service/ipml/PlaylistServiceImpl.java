@@ -19,6 +19,7 @@ import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistForAdminDto;
 import com.aptech.dto.playlist.PlaylistShort;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
@@ -70,7 +71,26 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
 	}
+	
+	@Override
+	public AppServiceResult<List<PlaylistForAdminDto>> getPlaylists() {
+		try {
+			List<Playlist> entities = playlistRepository.findAll();
 
+			List<PlaylistForAdminDto> result = new ArrayList<PlaylistForAdminDto>();
+
+			if (entities != null)
+				entities.forEach(entity -> result.add(PlaylistForAdminDto.CreateFromEntity(entity)));
+
+			return new AppServiceResult<List<PlaylistForAdminDto>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<PlaylistForAdminDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+	
 	@Override
 	public AppServiceResult<PlaylistDto> getPlaylist(Long playlistId) {
 		try {

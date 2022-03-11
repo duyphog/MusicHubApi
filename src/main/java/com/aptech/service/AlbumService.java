@@ -9,6 +9,7 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumForAdminDto;
 import com.aptech.dto.album.AlbumShort;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.dto.pagingation.PageDto;
@@ -16,7 +17,7 @@ import com.aptech.provider.file.UnsupportedFileTypeException;
 
 public interface AlbumService {
 
-	AppServiceResult<List<AlbumDto>> getAlbums();
+	AppServiceResult<List<AlbumForAdminDto>> getAlbums();
 
 	AppServiceResult<AlbumDto> getAlbum(Long id);
 

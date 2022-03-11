@@ -38,6 +38,15 @@ public class TrackController {
 	public TrackController(TrackService trackService) {
 		this.trackService = trackService;
 	}
+	
+	@GetMapping(path = "/admin/list")
+	public ResponseEntity<HttpResponse> getTracks() {
+
+		AppServiceResult<List<TrackDto>> result = trackService.getTracks();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<TrackDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
 
 	@RequestMapping(path = "/single/{trackId}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> getTrack(@PathVariable(value = "trackId", required = true) Long trackId) {

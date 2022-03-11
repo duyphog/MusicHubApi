@@ -1,6 +1,8 @@
 package com.aptech.service.ipml;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,6 +28,7 @@ import com.aptech.constant.RoleConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
 import com.aptech.domain.AppUserDomain;
+import com.aptech.dto.user.AppUserForAdminDto;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserRegister;
 import com.aptech.dto.user.UserStatus;
@@ -82,7 +85,24 @@ public class AppUserServiceIpml implements AppUserService, UserDetailsService {
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
 	}
-
+	
+	@Override
+	public AppServiceResult<List<AppUserForAdminDto>> getUsers() {
+		try {
+			List<AppUser> users = appUserRepository.findAll();
+			List<AppUserForAdminDto> result = new ArrayList<AppUserForAdminDto>();
+			
+			if(users != null && users.size() > 0)
+				users.forEach(item -> result.add(AppUserForAdminDto.CreateFromEntity(item)));
+			
+			return new AppServiceResult<List<AppUserForAdminDto>>(true, 0, "Succeed!", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<AppUserForAdminDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+	
 	@Override
 	public AppBaseResult register(UserRegister userRegister) {
 		try {

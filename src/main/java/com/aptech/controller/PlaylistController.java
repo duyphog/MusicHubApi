@@ -26,6 +26,7 @@ import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistForAdminDto;
 import com.aptech.dto.playlist.PlaylistShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.PlaylistService;
@@ -41,6 +42,15 @@ public class PlaylistController {
 		this.playlistService = playlistService;
 	}
 
+	@GetMapping(path = "/admin/list")
+	public ResponseEntity<HttpResponse> getPlaylists() {
+
+		AppServiceResult<List<PlaylistForAdminDto>> result = playlistService.getPlaylists();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<PlaylistForAdminDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
 	@RequestMapping(path = "/single/{playlistId}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> getTrack(@PathVariable(value = "playlistId", required = true) Long playlistId) {
 
