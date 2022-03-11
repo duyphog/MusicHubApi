@@ -118,7 +118,7 @@ public class Track implements Serializable {
 			@JoinColumn(name = "genre_id") })
 	private Set<Genre> genres = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "track")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "track", cascade = CascadeType.ALL)
 	private Set<WhiteList> whiteLists = new HashSet<>();
 	
 	@CreationTimestamp
