@@ -18,8 +18,6 @@ public class UserInfoForAdminDtoRes {
 
 	private String lastName;
 
-	private String email;
-
 	private String avatarImg;
 
 	private String story;
@@ -31,7 +29,6 @@ public class UserInfoForAdminDtoRes {
 		dest.lastName = src.getLastName();
 		dest.avatarImg = AppUtils.createLinkOnCurrentHttpServletRequest(src.getAvatarImg());
 		dest.story = src.getStory();
-		dest.email = src.getAppUser().getEmail();
 
 		return dest;
 	}
