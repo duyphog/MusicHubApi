@@ -382,13 +382,13 @@ public class TrackServiceImpl implements TrackService {
 					.forEntity(Track.class).get();
 
 			org.apache.lucene.search.Query combinedQuery = queryBuilder.keyword()
-					.onFields("name", "album.name", "singers.nickName").matching(params.getText()).createQuery();
+					.onFields("name", "album.name", "singers.nickName").ignoreAnalyzer().matching(params.getText()).createQuery();
 
 			org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(combinedQuery,
 					Track.class);
 			jpaQuery.setFirstResult(params.getPageParam().getPageIndex() * params.getPageParam().getPageSize());
 			jpaQuery.setMaxResults(params.getPageParam().getPageSize());
-
+			
 			List<Track> tracks = jpaQuery.getResultList();
 
 			PageDto<TrackShort> result = new PageDto<TrackShort>();
