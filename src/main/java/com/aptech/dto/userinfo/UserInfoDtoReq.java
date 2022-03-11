@@ -2,6 +2,7 @@ package com.aptech.dto.userinfo;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +15,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserInfoDtoReq {
 
-	@NotEmpty
+	@NotNull
 	private Long userId;
 
 	@NotEmpty
