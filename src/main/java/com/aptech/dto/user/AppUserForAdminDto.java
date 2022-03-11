@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.aptech.dto.userinfo.UserInfoForAdminDtoRes;
 import com.aptech.entity.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class AppUserForAdminDto {
 	
 	private Boolean accountNonLocked;
 	
-	private UserInfoDto userInfo;
+	private UserInfoForAdminDtoRes userInfo;
 	
 	private Date dateNew;
 
@@ -51,7 +52,7 @@ public class AppUserForAdminDto {
 		dest.userEdit = src.getUserEdit();
 			
 		if (src.getUserInfo() != null)
-			dest.userInfo = UserInfoDto.CreateFromEntity(src.getUserInfo());
+			dest.userInfo = UserInfoForAdminDtoRes.CreateFromEntity(src.getUserInfo());
 
 		if (src.getAppRoles() != null)
 			src.getAppRoles().forEach(item -> dest.appRoles.add(AppRoleDto.CreateFromEntity(item)));
