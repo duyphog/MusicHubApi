@@ -15,17 +15,19 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PlaylistDetailDto {
 	private Long id;
-	
+
 	private TrackShort track;
-	
+
 	private Date dateNew;
-	
+
 	public static PlaylistDetailDto CreateFromEntity(PlaylistDetail src) {
 		PlaylistDetailDto dest = new PlaylistDetailDto();
 
 		dest.id = src.getId();
 		dest.dateNew = src.getDateNew();
-		dest.track = TrackShort.CreateFromEntity(src.getTrack());
+
+		if (src.getTrack() != null)
+			dest.track = TrackShort.CreateFromEntity(src.getTrack());
 
 		return dest;
 	}

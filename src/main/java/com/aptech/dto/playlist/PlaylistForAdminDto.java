@@ -3,8 +3,9 @@ package com.aptech.dto.playlist;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.aptech.dto.category.CategoryDto;
 import com.aptech.dto.genre.GenreDto;
-import com.aptech.entity.Category;
 import com.aptech.entity.Playlist;
 import com.aptech.entity.PlaylistDetail;
 import com.aptech.util.AppUtils;
@@ -18,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaylistDto {
+public class PlaylistForAdminDto {
 	private Long id;
 
 	private String name;
@@ -27,7 +28,7 @@ public class PlaylistDto {
 
 	private String imageUrl;
 
-	private Category category;
+	private CategoryDto category;
 
 	private GenreDto genre;
 
@@ -49,12 +50,15 @@ public class PlaylistDto {
 
 	private String userEdit;
 
-	public static PlaylistDto CreateFromEntity(Playlist src) {
-		PlaylistDto dest = new PlaylistDto();
+	public static PlaylistForAdminDto CreateFromEntity(Playlist src) {
+		PlaylistForAdminDto dest = new PlaylistForAdminDto();
 
 		dest.id = src.getId();
 		dest.name = src.getName();
 		dest.description = src.getDescription();
+
+		if (src.getCategory() != null)
+			dest.category = CategoryDto.CreateFromEntity(src.getCategory());
 
 		if (src.getImageUrl() != null)
 			dest.imageUrl = AppUtils.createLinkOnCurrentHttpServletRequest(src.getImageUrl());

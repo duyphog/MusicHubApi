@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -36,6 +37,7 @@ import com.aptech.dto.HttpResponseSuccess;
 import com.aptech.dto.pagingation.PageDto;
 import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.track.TrackShort;
+import com.aptech.dto.user.AppUserForAdminDto;
 import com.aptech.dto.user.ChangePassword;
 import com.aptech.dto.user.UserLogin;
 import com.aptech.dto.user.UserLoginRes;
@@ -74,7 +76,15 @@ public class UserController {
 		this.appUserService = appUserService;
 		this.trackService = trackService;
 	}
+	
+	@GetMapping(path = "/list")
+	public ResponseEntity<HttpResponse> getUsers() {
 
+		AppServiceResult<List<AppUserForAdminDto>> result = appUserService.getUsers();
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<AppUserForAdminDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
 	@PostMapping("/register")
 	public ResponseEntity<HttpResponse> register(@Valid @RequestBody UserRegister userRegister) {
 

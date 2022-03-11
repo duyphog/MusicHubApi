@@ -13,18 +13,18 @@ import lombok.Setter;
 @AllArgsConstructor
 public class GenreDto {
 	private Long id;
-	
+
 	private String name;
-	
+
 	private String description;
-	
+
 	public static GenreDto CreateFromEntity(Genre genre) {
-		GenreDto dto = new GenreDto(); 
-		
+		GenreDto dto = new GenreDto();
+
 		dto.id = genre.getId();
 		dto.name = genre.getName();
 		dto.description = genre.getDescription();
-		
+
 		return dto;
 	}
 }

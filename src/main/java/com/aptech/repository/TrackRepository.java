@@ -52,10 +52,10 @@ public interface TrackRepository extends JpaRepository<Track, Long> {
 	
 	public List<Track> findTop20ByIsActiveTrueAndCategoryOrderByListenedDesc(Category category);
 	
-	@Query("SELECT w.track FROM WhiteList w WHERE w.appUser =:appUser ORDER BY w.dateNew DESC")
+	@Query("SELECT w.track FROM WhiteList w WHERE w.track.isActive = 1 and w.appUser =:appUser ORDER BY w.dateNew DESC")
 	public Page<Track> findWhiteListByUser(@Param("appUser") AppUser appUser, Pageable pageable);
 	
-	@Query("SELECT w.track.id FROM WhiteList w WHERE w.appUser =:appUser")
+	@Query("SELECT w.track.id FROM WhiteList w WHERE w.track.isActive = 1 and w.appUser =:appUser")
 	public List<Long> findAllTrackIdInWhiteListByUser(@Param("appUser") AppUser appUser);
 	
 	public Page<Track> findAllByIsActiveTrueAndSingersContaining(Artist singer, Pageable pageable);

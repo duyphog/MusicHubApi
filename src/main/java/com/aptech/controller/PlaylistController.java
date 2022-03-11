@@ -21,9 +21,12 @@ import com.aptech.domain.AppServiceResult;
 import com.aptech.dto.HttpResponse;
 import com.aptech.dto.HttpResponseError;
 import com.aptech.dto.HttpResponseSuccess;
+import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistForAdminDto;
 import com.aptech.dto.playlist.PlaylistShort;
 import com.aptech.provider.file.UnsupportedFileTypeException;
 import com.aptech.service.PlaylistService;
@@ -39,6 +42,15 @@ public class PlaylistController {
 		this.playlistService = playlistService;
 	}
 
+	@GetMapping(path = "/admin/list")
+	public ResponseEntity<HttpResponse> getPlaylists() {
+
+		AppServiceResult<List<PlaylistForAdminDto>> result = playlistService.getPlaylists();
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<Iterable<PlaylistForAdminDto>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
 	@RequestMapping(path = "/single/{playlistId}", method = RequestMethod.GET)
 	public ResponseEntity<HttpResponse> getTrack(@PathVariable(value = "playlistId", required = true) Long playlistId) {
 
@@ -88,6 +100,23 @@ public class PlaylistController {
 		AppServiceResult<List<PlaylistShort>> result = playlistService.getPlaylistByType(playlistTypeId);
 
 		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<List<PlaylistShort>>(result.getData()))
+				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
+	}
+	
+	@GetMapping(path = "/my-playlist")
+	public ResponseEntity<HttpResponse> getPlaylistByUserLoggedIn(
+			@RequestParam(name = "page-number", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(name = "page-size", required = false, defaultValue = "30") int pageSize) {
+
+		PageParam pageParam = new PageParam();
+		pageParam.setPageIndex(pageNumber);
+		pageParam.setPageSize(pageSize);
+		pageParam.setSortBy("dateNew");
+		pageParam.setIsAcsending(Boolean.FALSE);
+		
+		AppServiceResult<PageDto<PlaylistShort>> result = playlistService.getPlaylistByUserLoggedIn(pageParam);
+
+		return result.isSuccess() ? ResponseEntity.ok(new HttpResponseSuccess<PageDto<PlaylistShort>>(result.getData()))
 				: ResponseEntity.badRequest().body(new HttpResponseError(null, result.getMessage()));
 	}
 }

@@ -88,11 +88,24 @@ public class TrackServiceImpl implements TrackService {
 
 		this.trackFileService = FileServiceFactory.getFileService(FileType.TRACK);
 	}
-
+	
 	@Override
-	public AppServiceResult<TrackDto> getTrack() {
-		// TODO Auto-generated method stub
-		return null;
+	public AppServiceResult<List<TrackDto>> getTracks() {
+		try {
+			List<Track> entities = trackRepository.findAll();
+
+			List<TrackDto> result = new ArrayList<TrackDto>();
+
+			if (entities != null)
+				entities.forEach(item -> result.add(TrackDto.CreateFromEntity(item)));
+
+			return new AppServiceResult<List<TrackDto>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<TrackDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
 	}
 
 	@Override
@@ -246,27 +259,6 @@ public class TrackServiceImpl implements TrackService {
 	}
 
 	@Override
-	public AppBaseResult likedTrack(Long trackId, boolean state) {
-		try {
-			int recordChange = 0;
-			if (state)
-				recordChange = trackRepository.addLikedToId(trackId);
-			else
-				recordChange = trackRepository.removeLikedToId(trackId);
-
-			if (recordChange > 0)
-				return AppBaseResult.GenarateIsSucceed();
-			else
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						AppError.Validattion.errorMessage());
-		} catch (Exception e) {
-			e.printStackTrace();
-
-			return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(), AppError.Unknown.errorMessage());
-		}
-	}
-
-	@Override
 	public AppServiceResult<List<TrackDto>> getTrackByAppStatus(Long statusId) {
 		try {
 			List<Track> tracks = trackRepository.findAllByAppStatusId(statusId);
@@ -295,8 +287,8 @@ public class TrackServiceImpl implements TrackService {
 			if (recordChange > 0)
 				return AppBaseResult.GenarateIsSucceed();
 			else
-				return AppBaseResult.GenarateIsFailed(AppError.Validattion.errorCode(),
-						AppError.Validattion.errorMessage());
+				return AppBaseResult.GenarateIsFailed(AppError.Unknown.errorCode(),
+						AppError.Unknown.errorMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 
@@ -403,13 +395,13 @@ public class TrackServiceImpl implements TrackService {
 					.forEntity(Track.class).get();
 
 			org.apache.lucene.search.Query combinedQuery = queryBuilder.keyword()
-					.onFields("name", "album.name", "singers.nickName").matching(params.getText()).createQuery();
+					.onFields("name", "album.name", "singers.nickName").ignoreAnalyzer().matching(params.getText()).createQuery();
 
 			org.hibernate.search.jpa.FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(combinedQuery,
 					Track.class);
 			jpaQuery.setFirstResult(params.getPageParam().getPageIndex() * params.getPageParam().getPageSize());
 			jpaQuery.setMaxResults(params.getPageParam().getPageSize());
-
+			
 			List<Track> tracks = jpaQuery.getResultList();
 
 			PageDto<TrackShort> result = new PageDto<TrackShort>();

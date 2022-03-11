@@ -25,6 +25,6 @@ public class PlaylistCreate {
 	private Long genreId;
 
 	private Long playlistTypeId;
-	
+
 	private MultipartFile imgFile;
 }

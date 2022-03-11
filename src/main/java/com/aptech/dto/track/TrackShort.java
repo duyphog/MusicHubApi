@@ -23,9 +23,9 @@ public class TrackShort {
 	private Long liked;
 
 	private Long listened;
-	
+
 	private Integer durationSeconds;
-	
+
 	private Integer bitRate;
 
 	private List<SingerDto> singers = new ArrayList<SingerDto>();
@@ -39,7 +39,7 @@ public class TrackShort {
 		dest.listened = src.getListened();
 		dest.durationSeconds = src.getDurationSeconds();
 		dest.bitRate = src.getBitRate();
-		
+
 		if (src.getSingers() != null)
 			for (Artist singer : src.getSingers()) {
 				dest.singers.add(SingerDto.CreateFromEntity(singer));

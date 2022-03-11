@@ -7,15 +7,19 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.aptech.constant.AppError;
 import com.aptech.constant.RoleConstant;
 import com.aptech.domain.AppBaseResult;
 import com.aptech.domain.AppServiceResult;
+import com.aptech.dto.pagingation.PageDto;
+import com.aptech.dto.pagingation.PageParam;
 import com.aptech.dto.playlist.PlaylistCreate;
 import com.aptech.dto.playlist.PlaylistDetailUpdate;
 import com.aptech.dto.playlist.PlaylistDto;
+import com.aptech.dto.playlist.PlaylistForAdminDto;
 import com.aptech.dto.playlist.PlaylistShort;
 import com.aptech.entity.AppRole;
 import com.aptech.entity.AppUser;
@@ -67,7 +71,26 @@ public class PlaylistServiceImpl implements PlaylistService {
 
 		this.imageFileService = FileServiceFactory.getFileService(FileType.IMAGE);
 	}
+	
+	@Override
+	public AppServiceResult<List<PlaylistForAdminDto>> getPlaylists() {
+		try {
+			List<Playlist> entities = playlistRepository.findAll();
 
+			List<PlaylistForAdminDto> result = new ArrayList<PlaylistForAdminDto>();
+
+			if (entities != null)
+				entities.forEach(entity -> result.add(PlaylistForAdminDto.CreateFromEntity(entity)));
+
+			return new AppServiceResult<List<PlaylistForAdminDto>>(true, 0, "Succeed!", result);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new AppServiceResult<List<PlaylistForAdminDto>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
+	
 	@Override
 	public AppServiceResult<PlaylistDto> getPlaylist(Long playlistId) {
 		try {
@@ -272,4 +295,28 @@ public class PlaylistServiceImpl implements PlaylistService {
 		}
 	}
 
+	@Override
+	public AppServiceResult<PageDto<PlaylistShort>> getPlaylistByUserLoggedIn(PageParam pageParam) {
+		try {
+			AppUser userLoggedIn = appUserRepository.findByUsername(AppUtils.getCurrentUsername());
+			if (userLoggedIn == null) {
+				logger.warn("Current user is null!");
+
+				return new AppServiceResult<PageDto<PlaylistShort>>(false, AppError.Validattion.errorCode(),
+						"Do not get current user!", null);
+			}
+
+			Page<Playlist> playlists = playlistRepository.findAllByAppUser(userLoggedIn, pageParam.getPageable()); //OrderByDateNewDesc
+
+			Page<PlaylistShort> dtoPage = playlists.map(item -> PlaylistShort.CreateFromEntity(item));
+			
+			return new AppServiceResult<PageDto<PlaylistShort>>(true, 0, "Succeed!", new PageDto<PlaylistShort>(dtoPage));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			return new AppServiceResult<PageDto<PlaylistShort>>(false, AppError.Unknown.errorCode(),
+					AppError.Unknown.errorMessage(), null);
+		}
+	}
 }

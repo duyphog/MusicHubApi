@@ -18,6 +18,7 @@ import com.aptech.domain.MetaData;
 import com.aptech.domain.SearchWithPagingParam;
 import com.aptech.dto.album.AlbumCreate;
 import com.aptech.dto.album.AlbumDto;
+import com.aptech.dto.album.AlbumForAdminDto;
 import com.aptech.dto.album.AlbumShort;
 import com.aptech.dto.album.AlbumWithoutTrackDto;
 import com.aptech.dto.pagingation.PageDto;
@@ -75,21 +76,21 @@ public class AlbumServiceIpml implements AlbumService {
 	}
 
 	@Override
-	public AppServiceResult<List<AlbumDto>> getAlbums() {
+	public AppServiceResult<List<AlbumForAdminDto>> getAlbums() {
 		try {
 			List<Album> entities = albumRepository.findAll();
 
-			List<AlbumDto> result = new ArrayList<AlbumDto>();
+			List<AlbumForAdminDto> result = new ArrayList<AlbumForAdminDto>();
 
 			entities.forEach(item -> {
-				result.add(AlbumDto.CreateFromEntity(item));
+				result.add(AlbumForAdminDto.CreateFromEntity(item));
 			});
 
-			return new AppServiceResult<List<AlbumDto>>(true, 0, "Succeed!", result);
+			return new AppServiceResult<List<AlbumForAdminDto>>(true, 0, "Succeed!", result);
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new AppServiceResult<List<AlbumDto>>(false, AppError.Unknown.errorCode(),
+			return new AppServiceResult<List<AlbumForAdminDto>>(false, AppError.Unknown.errorCode(),
 					AppError.Unknown.errorMessage(), null);
 		}
 	}
@@ -112,26 +113,6 @@ public class AlbumServiceIpml implements AlbumService {
 			e.printStackTrace();
 			return new AppServiceResult<AlbumDto>(false, AppError.Unknown.errorCode(), AppError.Unknown.errorMessage(),
 					null);
-		}
-	}
-
-	@Override
-	public AppServiceResult<List<AlbumDto>> getAlbumForArtistId(Long id) {
-		try {
-			List<Album> albums = albumRepository.findAll();
-
-			List<AlbumDto> result = new ArrayList<AlbumDto>();
-
-			albums.forEach(item -> {
-				result.add(AlbumDto.CreateFromEntity(item));
-			});
-
-			return new AppServiceResult<List<AlbumDto>>(true, 0, "Success", result);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return new AppServiceResult<List<AlbumDto>>(false, AppError.Unknown.errorCode(),
-					AppError.Unknown.errorMessage(), null);
 		}
 	}
 
@@ -338,12 +319,12 @@ public class AlbumServiceIpml implements AlbumService {
 
 	private Album InitializeAlbumFromDto(AlbumCreate album)
 			throws IOException, IllegalArgumentException, UnsupportedFileTypeException {
-		Long countExistAlbumName = albumRepository.findContainsName(album.getName());
 
-		if (countExistAlbumName > 0) {
+		boolean existAlbumName = albumRepository.existsByName(album.getName());
+		if (existAlbumName) {
 			logger.warn("Album name is exist: " + album.getName() + ". Can not handle farther!");
 
-			throw new IllegalArgumentException("Album name is exist " + album.getName());
+			throw new IllegalArgumentException("Album name is exist: " + album.getName());
 		}
 
 		Album newAlbum = new Album();
